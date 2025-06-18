@@ -1,0 +1,162 @@
+fileFormatVersion: 2
+guid: 0195ee84f6e55054e92ebc1f3c707dbc
+timeCreated: 1574010139
+licenseType: Store
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: UCX_Wall_B_Window_Hook_01_00
+    100002: UCX_Wall_B_Window_Hook_02_00
+    100004: UCX_Wall_B_Window_Hook_02_01
+    100006: UCX_Wall_B_Window_Hook_02_02
+    100008: UCX_Wall_Bean_A_Window_01_x2_00
+    100010: UCX_Wall_Bean_A_Window_01_x2_01
+    100012: UCX_Wall_Bean_A_Window_01_x2_02
+    100014: UCX_Wall_Exterior_B_Window_01_00
+    100016: //RootNode
+    100018: Wall_B_Window_01_x2_Panel
+    100020: Wall_B_Window_Hook_01
+    100022: Wall_B_Window_Hook_02
+    100024: C_Wall_B_Window_Hook_01_
+    100026: C_Wall_B_Window_Hook_02
+    100028: C_Wall_Bean_A_Window_01_x2
+    100030: C_Wall_Exterior_B_Window_01
+    100032: C_Wall_B_Window_Hook_01
+    400000: UCX_Wall_B_Window_Hook_01_00
+    400002: UCX_Wall_B_Window_Hook_02_00
+    400004: UCX_Wall_B_Window_Hook_02_01
+    400006: UCX_Wall_B_Window_Hook_02_02
+    400008: UCX_Wall_Bean_A_Window_01_x2_00
+    400010: UCX_Wall_Bean_A_Window_01_x2_01
+    400012: UCX_Wall_Bean_A_Window_01_x2_02
+    400014: UCX_Wall_Exterior_B_Window_01_00
+    400016: //RootNode
+    400018: Wall_B_Window_01_x2_Panel
+    400020: Wall_B_Window_Hook_01
+    400022: Wall_B_Window_Hook_02
+    400024: C_Wall_B_Window_Hook_01_
+    400026: C_Wall_B_Window_Hook_02
+    400028: C_Wall_Bean_A_Window_01_x2
+    400030: C_Wall_Exterior_B_Window_01
+    400032: C_Wall_B_Window_Hook_01
+    2300000: UCX_Wall_B_Window_Hook_01_00
+    2300002: UCX_Wall_B_Window_Hook_02_00
+    2300004: UCX_Wall_B_Window_Hook_02_01
+    2300006: UCX_Wall_B_Window_Hook_02_02
+    2300008: UCX_Wall_Bean_A_Window_01_x2_00
+    2300010: UCX_Wall_Bean_A_Window_01_x2_01
+    2300012: UCX_Wall_Bean_A_Window_01_x2_02
+    2300014: UCX_Wall_Exterior_B_Window_01_00
+    2300016: //RootNode
+    2300018: Wall_B_Window_01_x2_Panel
+    2300020: Wall_B_Window_Hook_01
+    2300022: Wall_B_Window_Hook_02
+    2300024: C_Wall_B_Window_Hook_01_
+    2300026: C_Wall_B_Window_Hook_02
+    2300028: C_Wall_Bean_A_Window_01_x2
+    2300030: C_Wall_Exterior_B_Window_01
+    2300032: C_Wall_B_Window_Hook_01
+    3300000: UCX_Wall_B_Window_Hook_01_00
+    3300002: UCX_Wall_B_Window_Hook_02_00
+    3300004: UCX_Wall_B_Window_Hook_02_01
+    3300006: UCX_Wall_B_Window_Hook_02_02
+    3300008: UCX_Wall_Bean_A_Window_01_x2_00
+    3300010: UCX_Wall_Bean_A_Window_01_x2_01
+    3300012: UCX_Wall_Bean_A_Window_01_x2_02
+    3300014: UCX_Wall_Exterior_B_Window_01_00
+    3300016: //RootNode
+    3300018: Wall_B_Window_01_x2_Panel
+    3300020: Wall_B_Window_Hook_01
+    3300022: Wall_B_Window_Hook_02
+    3300024: C_Wall_B_Window_Hook_01_
+    3300026: C_Wall_B_Window_Hook_02
+    3300028: C_Wall_Bean_A_Window_01_x2
+    3300030: C_Wall_Exterior_B_Window_01
+    3300032: C_Wall_B_Window_Hook_01
+    4300000: Wall_B_Window_01_x2
+    4300002: Wall_B_Window_Hook_01
+    4300004: Wall_B_Window_Hook_02
+    4300006: UCX_Wall_B_Window_Hook_02_00
+    4300008: UCX_Wall_B_Window_Hook_02_01
+    4300010: UCX_Wall_B_Window_Hook_02_02
+    4300012: UCX_Wall_B_Window_Hook_01_00
+    4300014: Wall_B_Window_01_x2_Panel
+    4300016: UCX_Wall_Exterior_B_Window_01_00
+    4300018: UCX_Wall_Bean_A_Window_01_x2_02
+    4300020: UCX_Wall_Bean_A_Window_01_x2_01
+    4300022: UCX_Wall_Bean_A_Window_01_x2_00
+    4300024: C_Wall_B_Window_Hook_02
+    4300026: C_Wall_B_Window_Hook_01_
+    4300028: C_Wall_Exterior_B_Window_01
+    4300030: C_Wall_Bean_A_Window_01_x2
+    4300032: C_Wall_B_Window_Hook_01
+  materials:
+    importMaterials: 1
+    materialName: 1
+    materialSearch: 2
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

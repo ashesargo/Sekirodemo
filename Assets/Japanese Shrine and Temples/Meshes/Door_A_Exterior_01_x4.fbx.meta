@@ -1,0 +1,167 @@
+fileFormatVersion: 2
+guid: 2f4ab4c639a0b20489941bb4c880bae6
+timeCreated: 1573937061
+licenseType: Store
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Door_A_Exterior_01_L1
+    100002: Door_A_Exterior_01_L2
+    100004: Door_A_Exterior_01_R1
+    100006: Door_A_Exterior_01_R2
+    100008: //RootNode
+    100010: UCX_Door_A_Exterior_01_L1_00
+    100012: UCX_Door_A_Exterior_01_L2_00
+    100014: UCX_Door_A_Exterior_01_R1_00
+    100016: UCX_Door_A_Exterior_01_R2_00
+    100018: UCX_Door_A_Exterior_01_x4_00
+    100020: UCX_Door_A_Exterior_01_x4_01
+    100022: UCX_Door_A_Exterior_01_x4_02
+    100024: UCX_Door_A_Exterior_01_x4_03
+    100026: C_Door_A_Exterior_01_L1
+    100028: C_Door_A_Exterior_01_L2
+    100030: C_Door_A_Exterior_01_R1
+    100032: C_Door_A_Exterior_01_R2
+    100034: C_Door_A_Exterior_01_x4
+    400000: Door_A_Exterior_01_L1
+    400002: Door_A_Exterior_01_L2
+    400004: Door_A_Exterior_01_R1
+    400006: Door_A_Exterior_01_R2
+    400008: //RootNode
+    400010: UCX_Door_A_Exterior_01_L1_00
+    400012: UCX_Door_A_Exterior_01_L2_00
+    400014: UCX_Door_A_Exterior_01_R1_00
+    400016: UCX_Door_A_Exterior_01_R2_00
+    400018: UCX_Door_A_Exterior_01_x4_00
+    400020: UCX_Door_A_Exterior_01_x4_01
+    400022: UCX_Door_A_Exterior_01_x4_02
+    400024: UCX_Door_A_Exterior_01_x4_03
+    400026: C_Door_A_Exterior_01_L1
+    400028: C_Door_A_Exterior_01_L2
+    400030: C_Door_A_Exterior_01_R1
+    400032: C_Door_A_Exterior_01_R2
+    400034: C_Door_A_Exterior_01_x4
+    2300000: Door_A_Exterior_01_L1
+    2300002: Door_A_Exterior_01_L2
+    2300004: Door_A_Exterior_01_R1
+    2300006: Door_A_Exterior_01_R2
+    2300008: //RootNode
+    2300010: UCX_Door_A_Exterior_01_L1_00
+    2300012: UCX_Door_A_Exterior_01_L2_00
+    2300014: UCX_Door_A_Exterior_01_R1_00
+    2300016: UCX_Door_A_Exterior_01_R2_00
+    2300018: UCX_Door_A_Exterior_01_x4_00
+    2300020: UCX_Door_A_Exterior_01_x4_01
+    2300022: UCX_Door_A_Exterior_01_x4_02
+    2300024: UCX_Door_A_Exterior_01_x4_03
+    2300026: C_Door_A_Exterior_01_L1
+    2300028: C_Door_A_Exterior_01_L2
+    2300030: C_Door_A_Exterior_01_R1
+    2300032: C_Door_A_Exterior_01_R2
+    2300034: C_Door_A_Exterior_01_x4
+    3300000: Door_A_Exterior_01_L1
+    3300002: Door_A_Exterior_01_L2
+    3300004: Door_A_Exterior_01_R1
+    3300006: Door_A_Exterior_01_R2
+    3300008: //RootNode
+    3300010: UCX_Door_A_Exterior_01_L1_00
+    3300012: UCX_Door_A_Exterior_01_L2_00
+    3300014: UCX_Door_A_Exterior_01_R1_00
+    3300016: UCX_Door_A_Exterior_01_R2_00
+    3300018: UCX_Door_A_Exterior_01_x4_00
+    3300020: UCX_Door_A_Exterior_01_x4_01
+    3300022: UCX_Door_A_Exterior_01_x4_02
+    3300024: UCX_Door_A_Exterior_01_x4_03
+    3300026: C_Door_A_Exterior_01_L1
+    3300028: C_Door_A_Exterior_01_L2
+    3300030: C_Door_A_Exterior_01_R1
+    3300032: C_Door_A_Exterior_01_R2
+    3300034: C_Door_A_Exterior_01_x4
+    4300000: Door_A_Exterior_01_x4
+    4300002: Door_A_Exterior_01_L1
+    4300004: Door_A_Exterior_01_L2
+    4300006: UCX_Door_A_Exterior_01_L2_00
+    4300008: UCX_Door_A_Exterior_01_L1_00
+    4300010: Door_A_Exterior_01_R1
+    4300012: Door_A_Exterior_01_R2
+    4300014: UCX_Door_A_Exterior_01_R2_00
+    4300016: UCX_Door_A_Exterior_01_R1_00
+    4300018: UCX_Door_A_Exterior_01_x4_03
+    4300020: UCX_Door_A_Exterior_01_x4_02
+    4300022: UCX_Door_A_Exterior_01_x4_01
+    4300024: UCX_Door_A_Exterior_01_x4_00
+    4300026: C_Door_A_Exterior_01_L2
+    4300028: C_Door_A_Exterior_01_L1
+    4300030: C_Door_A_Exterior_01_R2
+    4300032: C_Door_A_Exterior_01_R1
+    4300034: C_Door_A_Exterior_01_x4
+  materials:
+    importMaterials: 1
+    materialName: 1
+    materialSearch: 2
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
