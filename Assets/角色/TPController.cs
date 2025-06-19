@@ -70,6 +70,7 @@ public class TPContraller : MonoBehaviour
     {
         isDashing = true;
         canMove = false;
+        _animator.SetBool("isDashing", isDashing);
         if (isLocked)
         {
             _animator.SetTrigger("LockDash");
@@ -79,7 +80,7 @@ public class TPContraller : MonoBehaviour
             _animator.SetTrigger("Dash");
         }
         transform.rotation = Quaternion.LookRotation(dashDirection);
-        float dashTime = 0.5f;                      
+        float dashTime = 0.2f;                      
         float elapsed = 0f;
         while (elapsed < dashTime)
         {
@@ -89,6 +90,8 @@ public class TPContraller : MonoBehaviour
         }
         canMove = true;
         isDashing = false;
+        _animator.SetBool("isDashing", isDashing);
+
     }
     void FindLockTarget()
     {
