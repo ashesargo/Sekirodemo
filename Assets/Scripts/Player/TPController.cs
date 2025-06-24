@@ -204,7 +204,7 @@ public class TPContraller : MonoBehaviour
             // 如果有輸入方向 判斷速度
             if (inputMagnitude > 0.1f)
             {                
-                moveSpeed = isRunning ? speed * 1.5f : speed; 
+                moveSpeed = isRunning ? speed * 2f : speed; 
             }
             else
             {

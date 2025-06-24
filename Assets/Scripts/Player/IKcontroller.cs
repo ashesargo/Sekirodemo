@@ -8,19 +8,21 @@ public class IKController : MonoBehaviour
     private Quaternion leftFootRotation, rightFootRotation; // 腳 IK 的旋轉
 
     [SerializeField] private LayerMask iKLayer; // 射線檢測需要的層
-    [SerializeField] [Range(0, 0.2f)] private float rayHitOffset; // 射線檢測位置與 IK 偏移量
+    [SerializeField] [Range(0, 1f)] private float rayHitOffset; // 射線檢測位置與 IK 偏移量
     [SerializeField] private float rayCastDistance; // 射線檢測距離
 
     [SerializeField] private bool enableIK = true; // 是否啟用 IK
     [SerializeField] private float iKSphereRadius = 100; // 射線檢測球體半徑
     [SerializeField] private float PositionSphereRadius; //射線檢測距離
+    [SerializeField] private float forwardRayOffset = 0.1f; // 射線起點往前偏移距離
+
 
     void Awake()
     {
         animator = this.gameObject.GetComponent<Animator>();
         // 獲取 IK 位置
-        // leftFootIK = animator.GetIKPosition(AvatarIKGoal.LeftFoot);
-        // rightFootIK = animator.GetIKPosition(AvatarIKGoal.RightFoot);
+        leftFootIK = animator.GetIKPosition(AvatarIKGoal.LeftFoot);
+        rightFootIK = animator.GetIKPosition(AvatarIKGoal.RightFoot);
     }
 
     void OnAnimatorIK(int layerIndex)
@@ -47,26 +49,29 @@ public class IKController : MonoBehaviour
 
     void FixedUpdate()
     {
-        Debug.DrawLine(leftFootIK + (Vector3.up * 0.5f), leftFootIK + Vector3.down * rayCastDistance, Color.blue, Time.deltaTime);
-        Debug.DrawLine(rightFootIK + (Vector3.up * 0.5f), rightFootIK + Vector3.down * rayCastDistance, Color.blue, Time.deltaTime);
+        Vector3 forwardOffset = transform.forward * forwardRayOffset;
 
-        // 獲取旋轉值及位置
-        if (Physics.Raycast(leftFootIK + (Vector3.up * 0.5f), Vector3.down, out RaycastHit hit, rayCastDistance, iKLayer))
+        Vector3 leftRayOrigin = leftFootIK + Vector3.up * 0.5f + forwardOffset;
+        Vector3 rightRayOrigin = rightFootIK + Vector3.up * 0.5f -forwardOffset;
+
+        Debug.DrawLine(leftRayOrigin, leftRayOrigin + Vector3.down * rayCastDistance, Color.blue, Time.deltaTime);
+        Debug.DrawLine(rightRayOrigin, rightRayOrigin + Vector3.down * rayCastDistance, Color.blue, Time.deltaTime);
+
+        if (Physics.Raycast(leftRayOrigin, Vector3.down, out RaycastHit hit, rayCastDistance, iKLayer))
         {
             Debug.DrawRay(hit.point, hit.normal, Color.red, Time.deltaTime);
-            // 避免腳位置等於碰撞點造成穿模穿模
             leftFootPosition = hit.point + Vector3.up * rayHitOffset;
             leftFootRotation = Quaternion.FromToRotation(Vector3.up, hit.normal) * transform.rotation;
         }
 
-        if (Physics.Raycast(rightFootIK + (Vector3.up * 0.5f), Vector3.down, out RaycastHit hit_01, rayCastDistance, iKLayer))
+        if (Physics.Raycast(rightRayOrigin, Vector3.down, out RaycastHit hit_01, rayCastDistance, iKLayer))
         {
             Debug.DrawRay(hit_01.point, hit_01.normal, Color.red, Time.deltaTime);
-            // 避免腳位置等於碰撞點造成穿模穿模
             rightFootPosition = hit_01.point + Vector3.up * rayHitOffset;
             rightFootRotation = Quaternion.FromToRotation(Vector3.up, hit_01.normal) * transform.rotation;
         }
     }
+
 
     bool IsGroundedAndIdle()
     {
