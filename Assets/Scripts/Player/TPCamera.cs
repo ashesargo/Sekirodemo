@@ -108,5 +108,5 @@ public class TPCamera : MonoBehaviour
         }
         UpdateCameraTransform();
         wasLock = isLock;
-    }
+    }    
 }
