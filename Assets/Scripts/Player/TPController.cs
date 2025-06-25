@@ -145,6 +145,15 @@ public class TPContraller : MonoBehaviour
             }
         }
         //¨¤¦â²¾°Ê
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            _animator.SetBool("Guard", true);
+        }
+        if (Input.GetKeyUp(KeyCode.Mouse1))
+        {
+            _animator.SetBool("Guard", false);
+        }
+
         if (canMove)
         {            
             float fH = Input.GetAxis("Horizontal");
