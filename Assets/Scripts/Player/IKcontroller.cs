@@ -2,14 +2,15 @@ using UnityEngine;
 
 public class IKController : MonoBehaviour
 {
+    private bool enableIK = true; // 是否啟用 IK
     private Animator animator;
     private Vector3 leftFootIK, rightFootIK; // 射線檢測需要的 IK 位置
     private Vector3 leftFootPosition, rightFootPosition; // 腳 IK 的位置
     private Quaternion leftFootRotation, rightFootRotation; // 腳 IK 的旋轉
     private float leftFootWeight, rightFootWeight; // 儲存計算出的 IK 權重
 
-    [Header("IK 開關")]
-    [SerializeField] private bool enableIK = true; // 是否啟用 IK
+    [Header("階梯對齊")]
+    [SerializeField] private float stepHeightUnit = 0.2f; // 每階高度
 
     [Header("射線檢測")]
     [SerializeField] private LayerMask iKLayer; // 射線檢測需要的層
@@ -66,8 +67,12 @@ public class IKController : MonoBehaviour
         if (Physics.Raycast(leftRayOrigin, Vector3.down, out RaycastHit hit, rayCastDistance, iKLayer))
         {
             Debug.DrawRay(hit.point, hit.normal, Color.red, Time.deltaTime);
-            leftFootPosition = hit.point + Vector3.up * rayHitOffset;
-            leftFootRotation = Quaternion.FromToRotation(Vector3.up, hit.normal) * transform.rotation;
+            // 對齊階梯高度
+            Vector3 hitPos = hit.point + Vector3.up * rayHitOffset;
+            hitPos.y = Mathf.Round(hitPos.y / stepHeightUnit) * stepHeightUnit;
+            leftFootPosition = Vector3.Lerp(leftFootPosition, hitPos, Time.deltaTime * 100f);
+            leftFootRotation = Quaternion.Slerp(leftFootRotation, Quaternion.FromToRotation(Vector3.up, hit.normal) * transform.rotation, Time.deltaTime * 100f);
+
 
             // 根據距離計算權重
             float distance = hit.distance - 0.5f; // 減去射線起點的向上偏移 (0.5f)
@@ -82,8 +87,12 @@ public class IKController : MonoBehaviour
         if (Physics.Raycast(rightRayOrigin, Vector3.down, out RaycastHit hit_01, rayCastDistance, iKLayer))
         {
             Debug.DrawRay(hit_01.point, hit_01.normal, Color.red, Time.deltaTime);
-            rightFootPosition = hit_01.point + Vector3.up * rayHitOffset;
-            rightFootRotation = Quaternion.FromToRotation(Vector3.up, hit_01.normal) * transform.rotation;
+            // 對齊階梯高度
+            Vector3 hitPos = hit_01.point + Vector3.up * rayHitOffset;
+            hitPos.y = Mathf.Round(hitPos.y / stepHeightUnit) * stepHeightUnit;
+            rightFootPosition = Vector3.Lerp(rightFootPosition, hitPos, Time.deltaTime * 100f);
+            rightFootRotation = Quaternion.Slerp(rightFootRotation, Quaternion.FromToRotation(Vector3.up, hit_01.normal) * transform.rotation, Time.deltaTime * 100f);
+
 
             // 根據距離計算權重
             float distance = hit_01.distance - 0.5f; // 減去射線起點的向上偏移 (0.5f)
