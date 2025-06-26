@@ -1,0 +1,800 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+	<TITLE></TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice 4.0.1  (Win32)">
+	<META NAME="CREATED" CONTENT="20090416;11320264">
+	<META NAME="CHANGEDBY" CONTENT="Jakub Kisiel">
+	<META NAME="CHANGED" CONTENT="20140728;10423241">
+	<META NAME="Info 1" CONTENT="">
+	<META NAME="Info 2" CONTENT="">
+	<META NAME="Info 3" CONTENT="">
+	<META NAME="Info 4" CONTENT="">
+	<STYLE TYPE="text/css">
+	<!--
+		@page { size: 8.27in 11.69in; margin: 0.79in }
+		P { margin-bottom: 0.08in; so-language: zxx }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="de-DE" LINK="#000080" VLINK="#800000" DIR="LTR">
+<P LANG="zxx" ALIGN=CENTER><FONT SIZE=4 STYLE="font-size: 16pt"><B>Rifle
+Animset Pro v1.1</B></FONT></P>
+<P LANG="zxx"><BR><BR>
+</P>
+<P LANG="zxx" ALIGN=CENTER STYLE="text-decoration: none"><B>Animations
+description and usage</B></P>
+<TABLE WIDTH=100% BORDER=1 BORDERCOLOR="#000000" CELLPADDING=4 CELLSPACING=0>
+	<COL WIDTH=85*>
+	<COL WIDTH=171*>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Idle</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Doing nothing, base state</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_TurnR_90</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Turn right 90 degrees in place. Use mostly for AI.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_TurnL_90</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Turn left 90 degrees in place. Use mostly for AI.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_TurnR_180</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Turn right 180 degrees in place. Use mostly for AI.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_TurnL_180</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Turn left 180 degrees in place. Use mostly for AI.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_TurnR_90Loop</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Turn right 90 degrees, but very even, constant
+			motion. Use for Player controller.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_TurnL_90Loop</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Turn left 90 degrees, but very even, constant
+			motion. Use for Player controller.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_WalkFwdStart</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Idle to walk forward transition. Play before
+			WalkFwdLoop.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_WalkFwdLoop</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Walking forward.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_WalkFwdStop_LU</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Stopping when left foot is up in air (&quot;_LU&quot;
+			for &quot;Left Up&quot;)</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_WalkFwdStop_RU</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Stopping when right foot is up in air (&quot;_RU&quot;
+			for &quot;Right Up&quot;)</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_WalkBwdStart</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Idle to walk backward transition.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_WalkBwdLoop</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Walking backward.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_WalkBwdStop_RU</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Stopping when right foot is up in air (&quot;_RU&quot;
+			for &quot;Right Up&quot;)</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_WalkBwdStop_LU</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Stopping when left foot is up in air (&quot;_LU&quot;
+			for &quot;Left Up&quot;)</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_StrafeRightStart</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Idle to walk sideways to the right transition.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_StrafeRightLoop</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Walking sideways to the right.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_StrafeRightStop_LU</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Stopping when left foot is up in air (&quot;_LU&quot;
+			for &quot;Left Up&quot;)</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_StrafeRightStop_RU</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Stopping when right foot is up in air (&quot;_RU&quot;
+			for &quot;Right Up&quot;)</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_StrafeLeftStart</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Idle to walk sideways to the left transition.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_StrafeLeftLoop</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Walking sideways to the left.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_StrafeLeftStop_RU</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Stopping when right foot is up in air (&quot;_RU&quot;
+			for &quot;Right Up&quot;)</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_StrafeLeftStop_LU</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Stopping when left foot is up in air (&quot;_LU&quot;
+			for &quot;Left Up&quot;)</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_StrafeLeft45Loop</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Walking diagonally 45 degrees left/forward. Use in
+			2D blend tree, to avoid clipping feet.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_StrafeRight135Loop</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Walking diagonally 135 degrees right/backward. Use
+			in 2D blend tree, to avoid clipping feet.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_WalkFwdStart90_L</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Idle to walk forward transition, with simultaneous
+			90 deg. turn. Play before WalkFwdLoop.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_WalkFwdStart90_R</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Idle to walk forward transition, with simultaneous
+			90 deg. turn. Play before WalkFwdLoop.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_WalkFwdStart180_R</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Idle to walk forward transition, with simultaneous
+			180 deg. turn. Play before WalkFwdLoop.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_WalkFwdStart180_L</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Idle to walk forward transition, with simultaneous
+			180 deg. turn. Play before WalkFwdLoop.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_ShootOnce</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">One shot, full body animation.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_ShootGrenade</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">One shot, but stronger. Like shooting a grenade
+			launcher, attached to rifle.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_ShootBurst</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Short burst. Use for AI.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_ShootBurstLong</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Long burst. Use for AI.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_ShootLoop_Additive</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Additive shooting loop. Use for Player. Play on top
+			of other aniamtions as an additive animation on upper body.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Reload_2</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Reload.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Hit_L_1</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Hit, the character sways to left side.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Hit_L_2</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Hit, the character sways to left side.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Hit_R_2</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Hit, the character sways to right side.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Hit_C_1</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Hit, the character gets pushed back.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Death_L</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Death animation,  the character sways to left side</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Death_R</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Death animation,  the character sways to right side</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Melee_Hard</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Melee attack</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Melee_Kick</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Melee attack, good for kicking out doors</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Grenade_Throw_Single</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">A single grenade throw (for. ex. If you just tap the
+			button)</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Grenade_Throw_Start</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Take out grenade and wait for release the button (if
+			you hold it)</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Grenade_Throw_Loop</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Grenade ready to throw</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Grenade_Throw_Cancel</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Cancelling the grenade throw</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Grenade_Throw_Far</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Far throw</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Grenade_Throw_Close</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Roll the grenade on the ground throw.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Look_CC_Additive</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Additive animation, play on top of other animations:
+			Aiming straight.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Look_45L_Additive</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Additive animation, play on top of other animations:
+			Aiming 45 degrees left.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Look_45R_Additive</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Additive animation, play on top of other animations:
+			Aiming 45 degrees right.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Look_45U_Additive</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Additive animation, play on top of other animations:
+			Aiming 45 degrees up.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Look_45D_Additive</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Additive animation, play on top of other animations:
+			Aiming 45 degrees down.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Look_45LU_Additive</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Additive animation, play on top of other animations:
+			Aiming 45 degrees left up corner.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Look_45RU_Additive</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Additive animation, play on top of other animations:
+			Aiming 45 degrees right up corner.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Look_45LD_Additive</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Additive animation, play on top of other animations:
+			Aiming 45 degrees left down corner.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Look_45RD_Additive</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Additive animation, play on top of other animations:
+			Aiming 45 degrees right down corner.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Look_90L_Additive</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Additive animation, play on top of other animations:
+			Aiming 90 degrees left.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Look_90R_Additive</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Additive animation, play on top of other animations:
+			Aiming 90 degrees right.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Look_90U_Additive</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Additive animation, play on top of other animations:
+			Aiming 90 degrees up.</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_Look_90D_Additive</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Additive animation, play on top of other animations:
+			Aiming 90 degrees down.</P>
+		</TD>
+	</TR>
+</TABLE>
+<TABLE WIDTH=100% BORDER=1 BORDERCOLOR="#000000" CELLPADDING=4 CELLSPACING=0>
+	<COL WIDTH=85*>
+	<COL WIDTH=171*>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_SprintLoop</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Running looped</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_SprintStart</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Transition form Rifle_Idle to Run</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_SprintStop_RU</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Stopping from running when Right foot is Up</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx">Rifle_SprintStop_LU</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx">Stopping from running when Left foot is Up</P>
+		</TD>
+	</TR>
+</TABLE>
+<TABLE WIDTH=100% BORDER=1 BORDERCOLOR="#000000" CELLPADDING=4 CELLSPACING=0>
+	<COL WIDTH=85*>
+	<COL WIDTH=171*>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>Rifle_FallingLoop</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Falling in place to use with physics
+			gravity</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>Rifle_Idle2Crouch</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Standing to crouch</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>Rifle_CrouchLoop</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Crouching</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>Rifle_Crouch2Idle</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Standing up from crouching</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>Rifle_Idle_GunDown</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Relaxed idle with rifle. For un-aware
+			enemies for example</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>Rifle_Idle_GunDown2Idle</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Relaxed idle to normal, aiming idle (for
+			when enemy sees player)</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>Rifle_Climb_1m</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Climb on 1 meter high obstacle</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>Rifle_Vault_1m</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Jump over 1 meter high obstacle</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>Rifle_OpenDoor</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Small push with the left hand</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>Rifle_Death_3</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Another death animations (like shot from
+			machine gun)</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>Rifle_RunFwdLoop</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Running and aiming</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>Rifle_RunBwdLoop</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Running and aiming</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>Rifle_StrafeRunRightLoop</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Running and aiming</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>Rifle_StrafeRunLeftLoop</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Running and aiming</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>Rifle_StrafeRun45LeftLoop</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Running and aiming 45 degrees left &ndash;
+			use it to avoid legs crossing</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>Rifle_StrafeRun135LeftLoop</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Running and aiming 135 degrees right &ndash;
+			use it to avoid legs crossing</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>EquipRifle</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Put rifle from character's back to his
+			hands</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>HolsterRifle</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Put rifle from hands to back and go to
+			Idle (compatible with Movement Animset Pro)</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>Rifle_Jump_Platformer_Start</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Start jumping (no root motion) &ndash;
+			use it when you want to control the jump movement procedurally, f.
+			ex. with Character Motor</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>Rifle_Jump_Platformer_Fall</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Movement in air (no root motion) &ndash;
+			use it when you want to control the jump movement procedurally, f.
+			ex. with Character Motor</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>Rifle_Jump_Platformer_Predict_Land</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Movement from about 2m from ground to
+			touch down (no root motion) &ndash; use it when you want to
+			control the jump movement procedurally, f. ex. with Character
+			Motor</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P LANG="zxx" ALIGN=LEFT>Rifle_Jump_Platformer_Land</P>
+		</TD>
+		<TD WIDTH=67%>
+			<P LANG="zxx" ALIGN=LEFT>Landing (no root motion) &ndash; use it
+			when you want to control the jump movement procedurally, f. ex.
+			with Character Motor</P>
+		</TD>
+	</TR>
+</TABLE>
+<P LANG="zxx" ALIGN=LEFT><BR><BR>
+</P>
+<P LANG="zxx" ALIGN=CENTER><BR><BR>
+</P>
+</BODY>
+</HTML>
