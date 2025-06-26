@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -27,20 +29,24 @@ public class TPContraller : MonoBehaviour
     bool canMove = true;
     //衝刺 跑步
     [Header("Dash")]
-    public float dashDis ;
+    public float dashDis;
     private bool isDashing;
-    private bool isRunning = false;    
+    private bool isRunning = false;
     //視角鎖定
     [Header("Lock")]
     public Transform lockTarget;
     private bool isLocked = false;
     public float lockRange = 10.0f;
-    public LayerMask enemy;
+    public LayerMask enemyLayer;
     public TPCamera TPCamera;
+    //防禦
+    public bool isGuard;
+    public bool parrySuccess;
+    //攻擊combo
     public void EnableCombo()
     {
-        currentStep = comboStep ;
-        canCombo = true ;
+        currentStep = comboStep;
+        canCombo = true;
     }
     public void DisableCombo()
     {
@@ -56,6 +62,7 @@ public class TPContraller : MonoBehaviour
             canCombo = false;
         }
     }
+    //攻擊中不能移動
     public void StartAttack()
     {
         canMove = false;
@@ -64,13 +71,16 @@ public class TPContraller : MonoBehaviour
     {
         canMove = true;
         comboStep = 0;
+        canCombo = false;
         _animator.SetInteger("comboStep", comboStep);
     }
+    //衝刺
     IEnumerator Dash(Vector3 dashDirection)
     {
         isDashing = true;
         canMove = false;
         _animator.SetBool("isDashing", isDashing);
+        DisableGuard();
         if (isLocked)
         {
             _animator.SetTrigger("LockDash");
@@ -80,7 +90,7 @@ public class TPContraller : MonoBehaviour
             _animator.SetTrigger("Dash");
         }
         transform.rotation = Quaternion.LookRotation(dashDirection);
-        float dashTime = 0.2f;                      
+        float dashTime = 0.2f;
         float elapsed = 0f;
         while (elapsed < dashTime)
         {
@@ -91,11 +101,11 @@ public class TPContraller : MonoBehaviour
         canMove = true;
         isDashing = false;
         _animator.SetBool("isDashing", isDashing);
-
     }
+    //尋找鎖定目標
     void FindLockTarget()
     {
-        Collider[] targets = Physics.OverlapSphere(transform.position, lockRange, enemy);
+        Collider[] targets = Physics.OverlapSphere(transform.position, lockRange, enemyLayer);
         float closestDistance = Mathf.Infinity;
         Transform closestTarget = null;
         foreach (Collider col in targets)
@@ -113,12 +123,23 @@ public class TPContraller : MonoBehaviour
             isLocked = true;
         }
     }
+    //Guard
+    void EnableGurad()
+    {
+        _animator.SetBool("Guard", true);
+        isGuard = true;
+    }
+    void DisableGuard()
+    {
+        _animator.SetBool("Guard", false);
+        isGuard = false;
+    }
 
     // Start is called before the first frame update
     void Start()
     {
         _animator = GetComponent<Animator>();
-        _characterController = GetComponent<CharacterController>();       
+        _characterController = GetComponent<CharacterController>();
     }
 
     // Update is called once per frame
@@ -130,7 +151,7 @@ public class TPContraller : MonoBehaviour
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, Ground);
         _animator.SetBool("isGrounded", isGrounded);
         //鎖定判定
-        if(Input.GetKeyDown(KeyCode.Mouse2))
+        if (Input.GetKeyDown(KeyCode.Mouse2))
         {
             if (!isLocked)
             {
@@ -145,24 +166,28 @@ public class TPContraller : MonoBehaviour
             }
         }
         //角色移動
+        //if (Input.GetKeyDown(KeyCode.Mouse1) && enemy.canParry)
+        //{
+        //    _animator.SetTrigger("Parry");
+        //}
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
-            _animator.SetBool("Guard", true);
+            EnableGurad();
         }
         if (Input.GetKeyUp(KeyCode.Mouse1))
         {
-            _animator.SetBool("Guard", false);
+            DisableGuard();
         }
 
         if (canMove)
-        {            
+        {
             float fH = Input.GetAxis("Horizontal");
             float fV = Input.GetAxis("Vertical");
             _animator.SetFloat("Horizontal", fH);
             _animator.SetFloat("Vertical", fV);
             Vector2 inputVector = new Vector2(fH, fV);
             float inputMagnitude = inputVector.magnitude;
-            Vector3 moveDirection ;
+            Vector3 moveDirection;
             //是否鎖定 方向不同
             if (isLocked && lockTarget != null)
             {
@@ -172,7 +197,7 @@ public class TPContraller : MonoBehaviour
                 Vector3 lockRight = Vector3.Cross(Vector3.up, lockForward);
                 moveDirection = lockRight * fH + lockForward * fV;
                 moveDirection.Normalize();
-                if( !isDashing && !isRunning)
+                if (!isDashing && !isRunning)
                 {
                     transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(lockForward), rotateSensitivity * Time.deltaTime);
                 }
@@ -181,7 +206,7 @@ public class TPContraller : MonoBehaviour
                     Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
                     transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotateSensitivity * Time.deltaTime);
                 }
-            }        
+            }
             else
             {
                 Transform camTransform = tpCamera.transform;
@@ -191,17 +216,17 @@ public class TPContraller : MonoBehaviour
                 moveDirection.Normalize();
                 if (moveDirection.sqrMagnitude > 0.001f) // 確保有方向輸入才旋轉
                 {
-                Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotateSensitivity * Time.deltaTime);
+                    Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+                    transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotateSensitivity * Time.deltaTime);
                 }
             }
             // Dash 及 跑步
-            if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing && !isLocked)
+            if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing && !isLocked && canMove)
             {
                 StartCoroutine(Dash(transform.forward));
                 isRunning = true;
             }
-            else if (Input.GetKeyDown(KeyCode.LeftShift) &&  lockTarget != null)
+            else if (Input.GetKeyDown(KeyCode.LeftShift) && lockTarget != null && !isDashing && !isLocked && canMove)
             {
                 StartCoroutine(Dash(moveDirection));
                 isRunning = true;
@@ -212,16 +237,28 @@ public class TPContraller : MonoBehaviour
             }
             // 如果有輸入方向 判斷速度
             if (inputMagnitude > 0.1f)
-            {                
-                moveSpeed = isRunning ? speed * 2f : speed; 
+            {
+                if (isGuard)
+                {
+                    moveSpeed = speed * 0.6f;
+                }
+                else if (isRunning)
+                {
+                    moveSpeed = speed * 2f;
+                }
+                else
+                {
+                    moveSpeed = speed;
+                }
             }
             else
             {
                 moveSpeed = 0;
             }
             // 跳
-            if ( isGrounded && Input.GetKeyDown(KeyCode.Space))
+            if (isGrounded && Input.GetKeyDown(KeyCode.Space))
             {
+                DisableGuard();
                 verticalVelocity = jumpForce;
                 if (isLocked)
                 {
@@ -231,10 +268,10 @@ public class TPContraller : MonoBehaviour
                 {
                     _animator.SetTrigger("Jump");
                 }
-            }            
+            }
             verticalVelocity += gravity * Time.deltaTime;
-            Vector3 velocity = moveSpeed  * moveDirection;
-            velocity.y = verticalVelocity;            
+            Vector3 velocity = moveSpeed * moveDirection;
+            velocity.y = verticalVelocity;
             _characterController.Move(velocity * Time.deltaTime);
             _animator.SetFloat("Speed", moveSpeed);
         }
@@ -242,14 +279,15 @@ public class TPContraller : MonoBehaviour
         else
         {
             verticalVelocity += gravity * Time.deltaTime;
-            Vector3 velocity =  Vector3.zero ;
+            Vector3 velocity = Vector3.zero;
             velocity.y = verticalVelocity;
             _characterController.Move(velocity * Time.deltaTime);
             _animator.SetFloat("Speed", moveSpeed);
         }
         //攻擊               
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetKeyDown(KeyCode.Mouse0) && !isDashing)
         {
+            DisableGuard();
             if (isLocked)
             {
                 Vector3 directionToTarget = lockTarget.position - transform.position;
@@ -274,9 +312,9 @@ public class TPContraller : MonoBehaviour
                 else
                 {
                     _animator.SetTrigger("Attack");
-                }               
+                }
             }
 
-        }  
+        }
     }
 }
