@@ -96,6 +96,9 @@ public class TPCamera : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
+        //同步攝影機位置解決 攝影機初始化時移動問題
+        mFollowPoint.position = mFollowPointRef.position;
+
         if (wasLock != isLock)
         {
             mFollowPoint.position = mFollowPointRef.position;
