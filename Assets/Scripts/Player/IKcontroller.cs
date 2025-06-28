@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// 腳部 IK 控制器
 public class IKController : MonoBehaviour
 {
     private bool enableIK = true; // 是否啟用 IK
