@@ -23,6 +23,7 @@ public class TPContraller : MonoBehaviour
     public LayerMask Ground;              // 設定為地面圖層
     private bool isGrounded;
     //攻擊
+    bool lastIsGround;
     int comboStep = 0;
     int currentStep = 0;
     bool canCombo = false;
@@ -301,7 +302,7 @@ public class TPContraller : MonoBehaviour
                 _animator.SetInteger("comboStep", comboStep);
                 canCombo = false;
             }
-            else if (comboStep == 0)
+            else if (comboStep == 0 )
             {
                 comboStep = 1;
                 _animator.SetInteger("comboStep", comboStep);
@@ -313,8 +314,12 @@ public class TPContraller : MonoBehaviour
                 {
                     _animator.SetTrigger("Attack");
                 }
-            }
-
+            }           
         }
+        if(lastIsGround != isGrounded)
+        {
+            EndAttack();
+        }
+        lastIsGround = isGrounded;
     }
 }
