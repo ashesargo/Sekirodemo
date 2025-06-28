@@ -12,6 +12,12 @@ public class MainMenuController : MonoBehaviour
 
     private bool isMainMenuActive = false;
 
+    private void Awake()
+    {
+        Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+        Screen.fullScreen = true;
+    }
+
     void Start()
     {
         Debug.Log("MainMenuController Start");
@@ -31,7 +37,7 @@ public class MainMenuController : MonoBehaviour
 
     void Update()
     {
-                // 從設定頁回主選單
+        // 從設定頁回主選單
         if (settingsMenu.activeSelf && Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             Debug.Log("Escape pressed, going back to main menu");

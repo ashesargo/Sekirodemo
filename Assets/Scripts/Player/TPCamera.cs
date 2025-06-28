@@ -26,7 +26,7 @@ public class TPCamera : MonoBehaviour
     public Transform lockTarget;
     public float lockCameraHeight = 1.5f;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         mFollowPoint.position = mFollowPointRef.position;
         mFollowPoint.rotation = mFollowPointRef.rotation;
