@@ -14,7 +14,7 @@ public class HealthPostureUI : MonoBehaviour
     private float healthBarDamagedFadeTimer; // 受損血條延遲的計時器
 
 
-    [Header("UI 元件")]
+    [Header("UI 組件")]
     [SerializeField] private Image healthBarImage; // 血條 Image
     [SerializeField] private Image healthBarDamagedImage; // 顯示延遲效果的受損血條 Image
     [SerializeField] private Image postureBarImage; // 架勢條 Image

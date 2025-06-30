@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-// 管理角色生命值與架勢值資料的觸發器
+// 角色生命值與架勢值資料
 public class HealthPostureSystem
 {
     public event EventHandler OnDead; // 當生命值歸零觸發
@@ -16,7 +16,7 @@ public class HealthPostureSystem
 
     // 架勢自動恢復設定
     private float postureRecoveryInterval = 2f; // 架勢恢復間隔（秒）
-    private int postureRecoveryAmount = 5; // 每次恢復的架勢值
+    private int postureRecoveryAmount = 1; // 每次恢復的架勢值
     private float postureRecoveryTimer; // 架勢恢復計時器
 
     // 初始化生命與架勢系統
@@ -39,21 +39,6 @@ public class HealthPostureSystem
     public float GetPostureNormalized()
     {
         return (float)postureAmount / postureAmountMax;
-    }
-
-    // 架勢自動恢復
-    public void HandlePostureRecovery()
-    {
-        postureRecoveryTimer += Time.deltaTime;
-        
-        if (postureRecoveryTimer >= postureRecoveryInterval)
-        {
-            // 執行架勢恢復
-            PostureDecrease(postureRecoveryAmount);
-            
-            // 重置計時器
-            postureRecoveryTimer = 0f;
-        }
     }
 
     // 設定架勢恢復參數
@@ -98,6 +83,9 @@ public class HealthPostureSystem
         postureAmount += amount;
         postureAmount = Mathf.Clamp(postureAmount, 0, postureAmountMax);
 
+        // 重置架勢恢復計時器
+        postureRecoveryTimer = 0f;
+
         // 觸發架勢值增減事件
         OnPostureChanged?.Invoke(this, EventArgs.Empty);
 
@@ -116,5 +104,19 @@ public class HealthPostureSystem
 
         // 觸發架勢值增減事件
         OnPostureChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    // 架勢自動恢復
+    public void HandlePostureRecovery()
+    {
+        postureRecoveryTimer += Time.deltaTime;
+        
+        if (postureRecoveryTimer >= postureRecoveryInterval)
+        {
+            // 執行架勢恢復
+            PostureDecrease(postureRecoveryAmount);
+            // 計時器固定時間
+            postureRecoveryTimer = postureRecoveryInterval;
+        }
     }
 }
