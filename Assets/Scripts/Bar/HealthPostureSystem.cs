@@ -15,8 +15,8 @@ public class HealthPostureSystem
     private int postureAmountMax; // 最大架勢值
 
     // 架勢自動恢復設定
-    private float postureRecoveryInterval = 2f; // 架勢恢復間隔（秒）
-    private int postureRecoveryAmount = 1; // 每次恢復的架勢值
+    private float postureRecoveryInterval = 2f; // 架勢恢復延遲時間（秒）
+    private int postureRecoveryAmount = 1; // 恢復架勢值
     private float postureRecoveryTimer; // 架勢恢復計時器
 
     // 初始化生命與架勢系統
@@ -52,6 +52,7 @@ public class HealthPostureSystem
     public void HealthDamage(int damageAmount)
     {
         healthAmount -= damageAmount;
+
         // 確保生命值不會低於 0
         healthAmount = Mathf.Clamp(healthAmount, 0, healthAmountMax);
 
@@ -115,8 +116,15 @@ public class HealthPostureSystem
         {
             // 執行架勢恢復
             PostureDecrease(postureRecoveryAmount);
-            // 計時器固定時間
-            postureRecoveryTimer = postureRecoveryInterval;
+            
+            // 若為安全狀態，每 0.1 秒恢復
+            // postureRecoveryTimer = 1.9f;
+
+            // 若為被發現狀態，每 0.2 秒恢復
+            // postureRecoveryTimer = 1.8f;
+
+            // 若為戰鬥狀態，每 0.3 秒恢復
+            postureRecoveryTimer = 1.7f;
         }
     }
 }

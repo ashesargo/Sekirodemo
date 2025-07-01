@@ -26,7 +26,6 @@ public class IKController : MonoBehaviour
     [SerializeField] private float iKSphereRadius = 0.2f; // 射線檢測球體半徑
     [SerializeField] private float PositionSphereRadius = 0.2f; //射線檢測距離
 
-
     void Awake()
     {
         animator = this.gameObject.GetComponent<Animator>();
@@ -93,7 +92,6 @@ public class IKController : MonoBehaviour
             hitPos.y = Mathf.Round(hitPos.y / stepHeightUnit) * stepHeightUnit;
             rightFootPosition = Vector3.Lerp(rightFootPosition, hitPos, Time.deltaTime * 100f);
             rightFootRotation = Quaternion.Slerp(rightFootRotation, Quaternion.FromToRotation(Vector3.up, hit_01.normal) * transform.rotation, Time.deltaTime * 100f);
-
 
             // 根據距離計算權重
             float distance = hit_01.distance - 0.5f; // 減去射線起點的向上偏移 (0.5f)
