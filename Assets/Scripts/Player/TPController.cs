@@ -227,7 +227,7 @@ public class TPContraller : MonoBehaviour
                 StartCoroutine(Dash(transform.forward));
                 isRunning = true;
             }
-            else if (Input.GetKeyDown(KeyCode.LeftShift) && lockTarget != null && !isDashing && !isLocked && canMove)
+            else if (Input.GetKeyDown(KeyCode.LeftShift) && lockTarget != null && !isDashing && isLocked && canMove)
             {
                 StartCoroutine(Dash(moveDirection));
                 isRunning = true;
