@@ -4,10 +4,10 @@ using UnityEngine;
 // 角色生命值與架勢值資料
 public class HealthPostureSystem
 {
-    public event EventHandler OnDead; // 當生命值歸零觸發
-    public event EventHandler OnPostureBroken; // 架勢值集滿觸發
-    public event EventHandler OnHealthChanged; // 生命值增減觸發
-    public event EventHandler OnPostureChanged; // 架勢值增減觸發
+    public event EventHandler OnDead;   // 當生命值歸零時觸發
+    public event EventHandler OnPostureBroken;  // 當架勢值集滿時觸發
+    public event EventHandler OnHealthChanged;  // 當生命值增減時觸發
+    public event EventHandler OnPostureChanged; // 當架勢值增減時觸發 (包含架勢值集滿)
 
     private int healthAmount; // 當前生命值
     private int healthAmountMax; // 最大生命值
@@ -24,9 +24,9 @@ public class HealthPostureSystem
     {
         this.healthAmountMax = healthAmountMax;
         this.postureAmountMax = postureAmountMax;
-        this.healthAmount = healthAmountMax; // 初始生命值為最大值
-        this.postureAmount = 0; // 初始架勢值為 0
-        this.postureRecoveryTimer = 0f; // 初始化架勢恢復計時器
+        this.healthAmount = healthAmountMax;    // 初始生命值為最大值
+        this.postureAmount = 0;     // 初始架勢值為 0
+        this.postureRecoveryTimer = 0f;     // 初始化架勢恢復計時器
     }
 
     // 標準化生命值 (0~1)
