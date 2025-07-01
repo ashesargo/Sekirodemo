@@ -1791,6 +1791,7 @@ MonoBehaviour:
   postureBarImage: {fileID: 2099613035}
   postureBarHighlightGameObject: {fileID: 1129681373}
   postureBarRectTransform: {fileID: 2099613034}
+  postureBarGameObject: {fileID: 253004532}
 --- !u!1 &2099613033
 GameObject:
   m_ObjectHideFlags: 0
