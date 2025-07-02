@@ -45,16 +45,28 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2317186122431587057, guid: fbb9d524298e83744af3eeb19bfc8c9f, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2317186122431587057, guid: fbb9d524298e83744af3eeb19bfc8c9f, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2317186122431587057, guid: fbb9d524298e83744af3eeb19bfc8c9f, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2317186122431587057, guid: fbb9d524298e83744af3eeb19bfc8c9f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.442476
+      value: 7.66
       objectReference: {fileID: 0}
     - target: {fileID: 2317186122431587057, guid: fbb9d524298e83744af3eeb19bfc8c9f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -125.89467
       objectReference: {fileID: 0}
     - target: {fileID: 2317186122431587057, guid: fbb9d524298e83744af3eeb19bfc8c9f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4.4813995
+      value: 540.4051
       objectReference: {fileID: 0}
     - target: {fileID: 2317186122431587057, guid: fbb9d524298e83744af3eeb19bfc8c9f, type: 3}
       propertyPath: m_LocalRotation.w
@@ -166,7 +178,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3126514282394531915, guid: fbb9d524298e83744af3eeb19bfc8c9f, type: 3}
       propertyPath: m_Name
-      value: ModularSamurai_Ashigaru01
+      value: Gunman
       objectReference: {fileID: 0}
     - target: {fileID: 3158577755391073325, guid: fbb9d524298e83744af3eeb19bfc8c9f, type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -322,13 +334,61 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2856115580690763805, guid: fbb9d524298e83744af3eeb19bfc8c9f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3923814429401716833}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3126514282394531915, guid: fbb9d524298e83744af3eeb19bfc8c9f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8033359266429663343}
+    - targetCorrespondingSourceObject: {fileID: 3126514282394531915, guid: fbb9d524298e83744af3eeb19bfc8c9f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3609397805541874525}
   m_SourcePrefab: {fileID: 100100000, guid: fbb9d524298e83744af3eeb19bfc8c9f, type: 3}
 --- !u!4 &1546288475199267394 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2856115580690763805, guid: fbb9d524298e83744af3eeb19bfc8c9f, type: 3}
   m_PrefabInstance: {fileID: 3663520868933333599}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1852365919054973460 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3126514282394531915, guid: fbb9d524298e83744af3eeb19bfc8c9f, type: 3}
+  m_PrefabInstance: {fileID: 3663520868933333599}
+  m_PrefabAsset: {fileID: 0}
+--- !u!136 &8033359266429663343
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1852365919054973460}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.35
+  m_Height: 1.8
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &3609397805541874525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1852365919054973460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 992ed3020ec2d3243bc6c6d52ef0b056, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHP: 50
+  currentHP: 0
 --- !u!1001 &9061901507802078596
 PrefabInstance:
   m_ObjectHideFlags: 0
