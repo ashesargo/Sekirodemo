@@ -12,7 +12,14 @@ public class EnemyTest : MonoBehaviour
         if (currentHP > 0)
         {
             currentHP -= damage;
-            _animator.SetTrigger("Hit");
+            if (currentHP > 0)
+            {
+                _animator.SetTrigger("Hit");
+            }
+            else
+            {
+                _animator.SetTrigger("Death");
+            }
         }
     }
     // Start is called before the first frame update
@@ -20,13 +27,5 @@ public class EnemyTest : MonoBehaviour
     {
         _animator = GetComponent<Animator>();
         currentHP = maxHP;
-    }
-    // Update is called once per frame
-    void Update()
-    {
-        if (currentHP <= 0)
-        {
-            _animator.SetTrigger("Death");
-        }
     }
 }
