@@ -85,4 +85,5 @@ crashlytics-build.properties
 /[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Core/Property Providers.meta
 
 # 忽略整個資料夾
-Assets/_TheTalesFactory/
+Assets/_TheTalesFactory/Modular Samurai/Materials
+Assets/_TheTalesFactory/Modular Samurai/Resources
