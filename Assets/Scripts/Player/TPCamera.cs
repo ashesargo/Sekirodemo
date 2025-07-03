@@ -67,30 +67,33 @@ public class TPCamera : MonoBehaviour
             {
                 vFinalPosition = mFollowPoint.position - vDir * (rh.distance - 0.1f);
             }
-
-            //if (Physics.Linecast(mLookAtPoint.position, vFinalPosition, out rh, mCheckLayer))
-            //{
-            //    Vector3 vHit = rh.point + vDir * 0.1f;
-            //    vFinalPosition = vHit;
-            //}
             transform.position = Vector3.Lerp(transform.position, vFinalPosition, 1.0f);
-            // transform.position = Vector3.SmoothDamp(transform.position, vFinalPosition, ref mCurrentVel, 0.01f, 10.0f);
-            //transform.position = vFinalPosition;
             vDir = mFollowPoint.position - transform.position;
             transform.forward = vDir;
         }
         else if (lockTarget != null)
         {
+            // 平滑跟隨角色
             mFollowPoint.position = Vector3.Lerp(mFollowPoint.position, mFollowPointRef.position, followSpeed * Time.deltaTime);
-            Vector3 lockDirection = lockTarget.position - mFollowPoint.position;
+
+            // 取得角色與目標之間的中點
+            Vector3 centerBetween = (mFollowPoint.position + lockTarget.position) * 0.5f;
+            centerBetween.y += lockCameraHeight; // 加高度，讓攝影機看「中點上方」
+
+            // 計算從角色到中點的方向（忽略Y）
+            Vector3 lockDirection = centerBetween - mFollowPoint.position;
             lockDirection.y = 0;
             lockDirection.Normalize();
-            Vector3 vFinalDir = lockDirection;
+
+            // 計算攝影機應該在的位置
             Vector3 offset = Vector3.up * lockCameraHeight;
-            Vector3 vFinalPosition = mFollowPoint.position + offset - vFinalDir * mFollowDistance;
+            Vector3 vFinalPosition = mFollowPoint.position + offset - lockDirection * mFollowDistance;
+
+            // 平滑移動攝影機
             transform.position = Vector3.Lerp(transform.position, vFinalPosition, Time.deltaTime * followSpeed);
-            Vector3 lookTarget = lockTarget.position + Vector3.up * lockCameraHeight;
-            transform.forward = (lookTarget - transform.position).normalized;
+
+            // 攝影機朝向：看向角色與敵人之間的中點上方
+            transform.forward = (centerBetween - transform.position).normalized;
         }
     }
     // Update is called once per frame
@@ -111,5 +114,5 @@ public class TPCamera : MonoBehaviour
         }
         UpdateCameraTransform();
         wasLock = isLock;
-    }    
+    }
 }
