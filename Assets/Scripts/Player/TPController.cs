@@ -315,8 +315,11 @@ public class TPContraller : MonoBehaviour
                     _animator.SetTrigger("Attack");
                 }
             }           
-        }
-        if(lastIsGround != isGrounded)
+        }    
+    }
+    private void LateUpdate()
+    {
+        if (lastIsGround != isGrounded)
         {
             EndAttack();
         }
