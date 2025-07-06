@@ -37,7 +37,7 @@ public class Weapon : MonoBehaviour
             if (!alreadyHit.Contains(hit))
             {
                 alreadyHit.Add(hit);
-                hit.GetComponent<EnemyTest>()?.TakeDamage(damage);
+                hit.GetComponent<EnemyTest1>()?.TakeDamage(damage);
             }
         } 
     }
