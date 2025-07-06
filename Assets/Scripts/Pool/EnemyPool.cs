@@ -127,15 +127,19 @@ public class EnemyPool : MonoBehaviour
 
         if (enemy != null)
         {
-            // 設置生成位置
-            Vector3 spawnPosition = GetSpawnPosition(selectedPrefab);
-            enemy.transform.position = spawnPosition;
-
-            // 讓敵人面向玩家
-            if (playerTransform != null)
+            // 取得生成點資訊
+            Transform spawnPoint = GetSelectedSpawnPoint(selectedPrefab);
+            if (spawnPoint != null)
             {
-                Vector3 directionToPlayer = (playerTransform.position - spawnPosition).normalized;
-                enemy.transform.rotation = Quaternion.LookRotation(directionToPlayer);
+                enemy.transform.position = spawnPoint.position;
+                enemy.transform.rotation = spawnPoint.rotation;
+            }
+            else
+            {
+                // 使用隨機生成
+                Vector3 spawnPosition = GetRandomSpawnPosition();
+                enemy.transform.position = spawnPosition;
+                enemy.transform.rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
             }
 
             // 重置敵人狀態
@@ -145,7 +149,7 @@ public class EnemyPool : MonoBehaviour
                 enemyTest.currentHP = enemyTest.maxHP;
             }
 
-            Debug.Log($"已生成敵人 {selectedPrefab.name} 在位置 {spawnPosition}");
+            Debug.Log($"已生成敵人 {selectedPrefab.name} 在位置 {enemy.transform.position}，旋轉 {enemy.transform.rotation.eulerAngles}");
         }
     }
 
@@ -187,8 +191,8 @@ public class EnemyPool : MonoBehaviour
         }
     }
 
-    // 取得生成位置
-    private Vector3 GetSpawnPosition(GameObject enemyPrefab)
+    // 取得選定的生成點
+    private Transform GetSelectedSpawnPoint(GameObject enemyPrefab)
     {
         if (useFixedSpawnPoints && enemySpawnPoints.ContainsKey(enemyPrefab))
         {
@@ -199,22 +203,29 @@ public class EnemyPool : MonoBehaviour
                 {
                     // 隨機選擇一個生成點
                     int randomIndex = Random.Range(0, spawnPoints.Length);
-                    return spawnPoints[randomIndex].position;
+                    return spawnPoints[randomIndex];
                 }
                 else
                 {
                     // 依序使用生成點
                     int currentIndex = spawnPointIndices[enemyPrefab];
-                    Vector3 position = spawnPoints[currentIndex].position;
+                    Transform spawnPoint = spawnPoints[currentIndex];
 
                     // 更新索引，循環使用
                     spawnPointIndices[enemyPrefab] = (currentIndex + 1) % spawnPoints.Length;
 
-                    return position;
+                    return spawnPoint;
                 }
             }
         }
-        else if (useRandomSpawn && playerTransform != null)
+
+        return null;
+    }
+
+    // 取得隨機生成位置
+    private Vector3 GetRandomSpawnPosition()
+    {
+        if (useRandomSpawn && playerTransform != null)
         {
             // 使用隨機位置（在玩家周圍）
             Vector3 randomDirection = Random.insideUnitSphere.normalized;
@@ -260,13 +271,19 @@ public class EnemyPool : MonoBehaviour
 
             if (enemy != null)
             {
-                Vector3 spawnPosition = GetSpawnPosition(selectedPrefab);
-                enemy.transform.position = spawnPosition;
-
-                if (playerTransform != null)
+                // 取得生成點資訊
+                Transform spawnPoint = GetSelectedSpawnPoint(selectedPrefab);
+                if (spawnPoint != null)
                 {
-                    Vector3 directionToPlayer = (playerTransform.position - spawnPosition).normalized;
-                    enemy.transform.rotation = Quaternion.LookRotation(directionToPlayer);
+                    enemy.transform.position = spawnPoint.position;
+                    enemy.transform.rotation = spawnPoint.rotation;
+                }
+                else
+                {
+                    // 使用隨機生成
+                    Vector3 spawnPosition = GetRandomSpawnPosition();
+                    enemy.transform.position = spawnPosition;
+                    enemy.transform.rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
                 }
 
                 Debug.Log($"手動生成敵人 {selectedPrefab.name} 成功！");
@@ -289,13 +306,19 @@ public class EnemyPool : MonoBehaviour
 
             if (enemy != null)
             {
-                Vector3 spawnPosition = GetSpawnPosition(selectedPrefab);
-                enemy.transform.position = spawnPosition;
-
-                if (playerTransform != null)
+                // 取得生成點資訊
+                Transform spawnPoint = GetSelectedSpawnPoint(selectedPrefab);
+                if (spawnPoint != null)
                 {
-                    Vector3 directionToPlayer = (playerTransform.position - spawnPosition).normalized;
-                    enemy.transform.rotation = Quaternion.LookRotation(directionToPlayer);
+                    enemy.transform.position = spawnPoint.position;
+                    enemy.transform.rotation = spawnPoint.rotation;
+                }
+                else
+                {
+                    // 使用隨機生成
+                    Vector3 spawnPosition = GetRandomSpawnPosition();
+                    enemy.transform.position = spawnPosition;
+                    enemy.transform.rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
                 }
 
                 Debug.Log($"手動生成敵人 {selectedPrefab.name} 在索引 {index} 成功！");
