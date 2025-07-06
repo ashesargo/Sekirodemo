@@ -27,7 +27,7 @@ public class Weapon : MonoBehaviour
             Vector3.Distance(currA, prevA),
             Vector3.Distance(currB, prevB)
         );
-        Vector3 halfExtents = new Vector3(0.1f, movement / 2f, length / 2f);
+        Vector3 halfExtents = new Vector3(0.5f, movement / 2f, length / 2f);
         Vector3 forward = (currA - currB).normalized;
         Quaternion rotation = Quaternion.LookRotation(forward, Vector3.up);             
         if (!isAttacking) return;
