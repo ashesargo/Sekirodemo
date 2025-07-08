@@ -41,51 +41,51 @@ public class EnemyPool : MonoBehaviour
     [System.Serializable]
     public class EnemySpawnData
     {
-        [Tooltip("敵人預製體 - 拖拽敵人預製體到此欄位")]
+        [Tooltip("敵人預製體：拖拽敵人預製體到此欄位")]
         public GameObject enemyPrefab; // 敵人預製體
         
-        [Tooltip("生成點陣列 - 設定該類型敵人的所有可能生成位置")]
+        [Tooltip("生成點陣列：設定該類型敵人的所有可能生成位置")]
         public Transform[] spawnPoints; // 對應的多個生成點
         
-        [Tooltip("物件池大小 - 預先創建的該類型敵人數量，建議設定為實際需要的最大數量")]
+        [Tooltip("物件池大小：預先創建的該類型敵人數量，建議設定為實際需要的最大數量")]
         public int poolSize = 5; // 該類型敵人的物件池大小
         
-        [Tooltip("最大生成數量 - 1=按poolSize生成, -1=不限制, 0=不生成, 其他值=報錯")]
+        [Tooltip("最大生成數量：1=按poolSize生成, -1=不限制, 0=不生成, 其他值=報錯")]
         public int maxSpawnCount = -1; // 最大生成數量，1=按poolSize生成, -1=不限制，0=不生成
     }
     
     [Header("多敵人預製體設定")]
-    [Tooltip("敵人預製體和生成點陣列 - 每種敵人類型的詳細設定")]
+    [Tooltip("敵人預製體和生成點陣列：每種敵人類型的詳細設定")]
     public EnemySpawnData[] enemySpawnData; // 敵人預製體和生成點陣列
     
     [Header("物件池設定")]
-    [Tooltip("物件池父物件 - 所有池化敵人的父物件，建議設為空物件")]
+    [Tooltip("物件池父物件：所有池化敵人的父物件，建議設為空物件")]
     public Transform poolParent; // 物件池父物件
     
     [Header("生成器設定")]
-    [Tooltip("玩家位置 - 用於計算隨機生成位置")]
+    [Tooltip("玩家位置：用於計算隨機生成位置")]
     public Transform playerTransform; // 玩家位置
     
-    [Tooltip("生成範圍 - 隨機生成時與玩家的距離")]
+    [Tooltip("生成範圍：隨機生成時與玩家的距離")]
     public float spawnRadius = 25f; // 生成範圍（用於隨機生成）
     
-    [Tooltip("生成間隔 - 每次生成敵人的時間間隔（秒）")]
+    [Tooltip("生成間隔：每次生成敵人的時間間隔（秒）")]
     public float spawnInterval = 2f; // 生成間隔
     
-    [Tooltip("最大敵人數 - 同時存在的最大敵人數")]
+    [Tooltip("最大敵人數：同時存在的最大敵人數")]
     public int maxEnemies = 15; // 最大敵人數
     
-    [Tooltip("是否重新生成死亡的敵人 - 建議設為 false")]
+    [Tooltip("是否重新生成死亡的敵人：建議設為 false")]
     public bool respawnDeadEnemies = false; // 是否重新生成死亡的敵人（設為false）
     
     [Header("生成模式")]
-    [Tooltip("是否使用固定生成點 - 啟用時使用預設的生成點位置")]
+    [Tooltip("是否使用固定生成點：啟用時使用預設的生成點位置")]
     public bool useFixedSpawnPoints = true; // 是否使用固定生成點
     
-    [Tooltip("是否使用隨機生成 - 啟用時在玩家周圍隨機生成")]
+    [Tooltip("是否使用隨機生成：啟用時在玩家周圍隨機生成")]
     public bool useRandomSpawn = false; // 是否使用隨機生成
     
-    [Tooltip("是否隨機選擇生成點 - 啟用時隨機選擇預設生成點")]
+    [Tooltip("是否隨機選擇生成點：啟用時隨機選擇預設生成點")]
     public bool useRandomSpawnPoint = false; // 是否隨機選擇生成點
     
     // ===== 私有變數 =====
