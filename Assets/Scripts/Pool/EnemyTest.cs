@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// ¼Ä¤H¸ê®Æ¸}¥»
-public class EnemyTest1 : MonoBehaviour
+// ï¿½Ä¤Hï¿½ï¿½Æ¸}ï¿½ï¿½
+public class EnemyTest : MonoBehaviour
 {
     public int maxHP = 50;
     public int currentHP;
@@ -27,26 +27,26 @@ public class EnemyTest1 : MonoBehaviour
             else
             {
                 _animator.SetTrigger("Death");
-                // ©µ¿ð¦^¦¬¡AÅý¦º¤`°Êµe¼½©ñ§¹²¦
+                // ï¿½ï¿½ï¿½ï¿½^ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½Êµeï¿½ï¿½ï¿½ñ§¹²ï¿½
                 StartCoroutine(ReturnToPoolAfterDeath());
             }
         }
     }
 
-    // ¦º¤`«á©µ¿ð¦^¦¬
+    // ï¿½ï¿½ï¿½`ï¿½á©µï¿½ï¿½^ï¿½ï¿½
     private IEnumerator ReturnToPoolAfterDeath()
     {
-        // µ¥«Ý¦º¤`°Êµe¼½©ñ§¹²¦¡]¬ù2¬í¡^
+        // ï¿½ï¿½ï¿½Ý¦ï¿½ï¿½`ï¿½Êµeï¿½ï¿½ï¿½ñ§¹²ï¿½ï¿½]ï¿½ï¿½2ï¿½ï¿½ï¿½^
         yield return new WaitForSeconds(2f);
 
-        // ¦^¦¬¨ìª«¥ó¦À
+        // ï¿½^ï¿½ï¿½ï¿½ìª«ï¿½ï¿½ï¿½
         ObjectPool objectPool = ObjectPool.Instance;
         if (objectPool != null)
         {
             objectPool.ReturnPooledObject(gameObject);
         }
 
-        //// ³qª¾ EnemyPool ¼Ä¤H¦º¤`
+        //// ï¿½qï¿½ï¿½ EnemyPool ï¿½Ä¤Hï¿½ï¿½ï¿½`
         //EnemyPool enemyPool = FindObjectOfType<EnemyPool>();
         //if (enemyPool != null)
         //{

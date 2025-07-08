@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-    public Transform pointA; // ¤M®Ú
-    public Transform pointB; // ¤M¦y
+    public Transform pointA; // ï¿½Mï¿½ï¿½
+    public Transform pointB; // ï¿½Mï¿½y
     Vector3 lastA, lastB;
     public LayerMask targetLayer;
     public int damage = 10;
@@ -37,7 +37,7 @@ public class Weapon : MonoBehaviour
             if (!alreadyHit.Contains(hit))
             {
                 alreadyHit.Add(hit);
-                hit.GetComponent<EnemyTest1>()?.TakeDamage(damage);
+                hit.GetComponent<EnemyTest>()?.TakeDamage(damage);
             }
         } 
     }
