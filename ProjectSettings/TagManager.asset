@@ -5,7 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Enemy
-  - Obstacle
+  - Hook
   layers:
   - Default
   - TransparentFX
@@ -15,7 +15,7 @@ TagManager:
   - UI
   - Enemy
   - Player
-  - Obsacle
+  - HookAble
   - 
   - 
   - 

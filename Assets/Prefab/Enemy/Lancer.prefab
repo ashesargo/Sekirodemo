@@ -6306,15 +6306,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6061397711166869704, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 20.092964
+      value: -100.992004
       objectReference: {fileID: 0}
     - target: {fileID: 6061397711166869704, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 63.171852
+      value: -203.89465
       objectReference: {fileID: 0}
     - target: {fileID: 6061397711166869704, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -283.67078
+      value: 1010.7234
       objectReference: {fileID: 0}
     - target: {fileID: 6061397711166869704, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_LocalRotation.w
@@ -8147,6 +8147,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.x
       value: -48.893
       objectReference: {fileID: 0}
+    - target: {fileID: -7942748399290993877, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 64f87cdc07ed969469389f44d9775cfd, type: 2}
     - target: {fileID: -5596227540473750341, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -8175,6 +8179,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: -1341545861405689454, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 64f87cdc07ed969469389f44d9775cfd, type: 2}
     - target: {fileID: 919132149155446097, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
       propertyPath: m_Name
       value: Naginata & Yari

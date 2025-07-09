@@ -49373,15 +49373,8 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.23333333
-    functionName: WeaponStartAttack
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.5
-    functionName: WeaponEndAttack
+  - time: 0.3
+    functionName: PerformFanAttack
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
