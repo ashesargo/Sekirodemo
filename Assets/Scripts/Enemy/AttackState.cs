@@ -13,24 +13,22 @@ public class AttackState : IEnemyState
         enemy.animator.SetTrigger("Attack");
         hasAttacked = false;
         moveTimer = 0f;
-        dodgeDir = Random.value > 0.5f ? enemy.transform.right : -enemy.transform.right;
+        enemy.canAutoAttack = false;
+        // 移除 dodgeDir 隨機邏輯
     }
 
     public void UpdateState(EnemyAI enemy)
     {
-        if (!hasAttacked && enemy.animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
+        AnimatorStateInfo stateInfo = enemy.animator.GetCurrentAnimatorStateInfo(0);
+        if (!hasAttacked && stateInfo.IsName("Attack"))
         {
             hasAttacked = true;
         }
 
-        if (hasAttacked)
+        // 等待攻擊動畫結束
+        if (hasAttacked && stateInfo.IsName("Attack") && stateInfo.normalizedTime >= 1.0f)
         {
-            moveTimer += Time.deltaTime;
-            enemy.Move(dodgeDir); // simple dodge move
-            if (moveTimer >= cooldownTime)
-            {
-                enemy.SwitchState(new ChaseState());
-            }
+            enemy.SwitchState(new RetreatState());
         }
     }
 

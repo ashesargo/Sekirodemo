@@ -13,8 +13,14 @@ public class EnemyAI : MonoBehaviour
     public float avoidStrength = 10f;
     public LayerMask obstacleMask;
 
+    [Header("AI 參數")]
+    public float retreatTime = 2f;
+
     private IEnemyState currentState;
     [HideInInspector] public Vector3 velocity;
+    public bool canAutoAttack = true;
+
+    public IEnemyState CurrentState => currentState;
 
     void Start()
     {
@@ -40,7 +46,7 @@ public class EnemyAI : MonoBehaviour
         if (playerObj != null)
         {
             player = playerObj.transform;
-            Debug.Log("Player found: " + player.name);
+            //Debug.Log("Player found: " + player.name);
         }
         else
         {
@@ -76,7 +82,7 @@ public class EnemyAI : MonoBehaviour
         Vector3 desired = direction.normalized * maxSpeed;
         Vector3 steering = desired - velocity;
         
-        Debug.Log($"Seek - Direction: {direction}, Desired: {desired}, Steering: {steering}");
+        //Debug.Log($"Seek - Direction: {direction}, Desired: {desired}, Steering: {steering}");
         
         return steering;
     }
@@ -107,39 +113,41 @@ public class EnemyAI : MonoBehaviour
             avoid = avoid.normalized * maxSpeed;
         }
         
-        Debug.Log($"ObstacleAvoid - Avoid force: {avoid}");
+        //Debug.Log($"ObstacleAvoid - Avoid force: {avoid}");
         
         return avoid;
     }
 
-    public void Move(Vector3 force)
+    public void Move(Vector3 force, bool lookAtPlayer = false)
     {
-        // 限制 Y 軸移動，只允許水平移動
         force.y = 0f;
-        
         velocity += force * Time.deltaTime;
         velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
-        
-        // 確保 Y 軸速度為 0，防止浮空
         velocity.y = 0f;
-        
         transform.position += velocity * Time.deltaTime;
-        
-        // 只有當速度足夠大時才改變朝向
-        if (velocity.magnitude > 0.1f)
+
+        if (lookAtPlayer && player != null)
+        {
+            Vector3 lookDir = (player.position - transform.position);
+            lookDir.y = 0f;
+            if (lookDir.magnitude > 0.1f)
+                transform.forward = lookDir.normalized;
+        }
+        else if (velocity.magnitude > 0.1f)
         {
             Vector3 lookDirection = velocity.normalized;
-            lookDirection.y = 0f; // 確保朝向也是水平方向
+            lookDirection.y = 0f;
             if (lookDirection.magnitude > 0.1f)
-            {
                 transform.forward = lookDirection;
-            }
         }
 
-        if (IsInAttackRange())
+        // 只在 canAutoAttack 為 true 時自動攻擊
+        if (canAutoAttack && IsInAttackRange())
         {
             velocity = Vector3.zero;
-            animator.Play("Attack"); // 進入攻擊範圍時自動切換 Attack 動畫
+            animator.Play("Attack");
+            canAutoAttack = false; // 避免重複觸發
+            SwitchState(new AttackState());
         }
     }
 

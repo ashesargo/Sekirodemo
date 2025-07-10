@@ -8,6 +8,7 @@ public class EnemyTest : MonoBehaviour
     public int maxHP = 50;
     public int currentHP;
     private Animator _animator;
+    public bool isDead = false;
 
     void Start()
     {
@@ -17,17 +18,23 @@ public class EnemyTest : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        Debug.Log($"TakeDamage called! HP: {currentHP}, isDead: {isDead}, state: {GetComponent<EnemyAI>()?.CurrentState?.GetType().Name}");
+        if (isDead) return; // 死亡後不再受傷
+
         if (currentHP > 0)
         {
             currentHP -= damage;
+            EnemyAI ai = GetComponent<EnemyAI>();
             if (currentHP > 0)
             {
-                _animator.SetTrigger("Hit");
+                if (ai != null)
+                    ai.SwitchState(new HitState());
             }
             else
             {
-                _animator.SetTrigger("Death");
-                // ����^���A�����`�ʵe���񧹲�
+                isDead = true;
+                if (ai != null)
+                    ai.SwitchState(new DieState());
                 StartCoroutine(ReturnToPoolAfterDeath());
             }
         }

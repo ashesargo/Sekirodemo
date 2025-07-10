@@ -6,13 +6,13 @@ public class ChaseState : IEnemyState
     {
         Debug.Log("Entering ChaseState");
         enemy.animator.Play("Run");
+        enemy.canAutoAttack = true;
     }
 
     public void UpdateState(EnemyAI enemy)
     {
         if (enemy.IsInAttackRange())
         {
-            Debug.Log("In attack range, switching to AttackState");
             enemy.SwitchState(new AttackState());
             return;
         }
@@ -21,7 +21,7 @@ public class ChaseState : IEnemyState
         Vector3 avoid = enemy.ObstacleAvoid();
         Vector3 totalForce = seek + avoid;
         
-        Debug.Log($"Seek force: {seek}, Avoid force: {avoid}, Total force: {totalForce}, Velocity: {enemy.velocity}");
+        //Debug.Log($"Seek force: {seek}, Avoid force: {avoid}, Total force: {totalForce}, Velocity: {enemy.velocity}");
         
         enemy.Move(totalForce);
     }
