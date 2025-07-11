@@ -10,6 +10,7 @@ public class AlertState : IEnemyState
         enemy.animator.Play("Alert");
         enemy.Stop();
         timer = 0f;
+        enemy.canAutoAttack = true; // 啟用自動攻擊
     }
 
     public void UpdateState(EnemyAI enemy)

@@ -13,6 +13,7 @@ public class HitState : IEnemyState
         Debug.Log($"[HitState] EnterState: {enemy.name}");
         enemy.animator.SetTrigger("Hit");
         timer = 0f;
+        enemy.canAutoAttack = false; // 受傷時禁用自動攻擊
     }
 
     public void UpdateState(EnemyAI enemy)
@@ -35,6 +36,7 @@ public class HitState : IEnemyState
             else
             {
                 Debug.Log($"[HitState] 動畫結束或超時，切換狀態: {enemy.name}");
+                enemy.canAutoAttack = true; // 受傷結束後重新啟用自動攻擊
                 if (enemy.CanSeePlayer())
                     enemy.SwitchState(new ChaseState());
                 else

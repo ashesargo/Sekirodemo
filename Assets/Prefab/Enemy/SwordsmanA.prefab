@@ -6027,6 +6027,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHP: 50
   currentHP: 0
+  isDead: 0
 --- !u!114 &1687266463544770986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6043,15 +6044,22 @@ MonoBehaviour:
   animator: {fileID: 8253529524297296019}
   visionRange: 100
   attackRange: 10
-  maxSpeed: 5
-  avoidDistance: 1.5
-  avoidStrength: 10
+  maxSpeed: 10
+  avoidDistance: 10
+  avoidStrength: 30
   obstacleMask:
     serializedVersion: 2
-    m_Bits: 256
-  retreatTime: 2.3
+    m_Bits: 512
+  retreatTime: 2.1
+  enemyAvoidDistance: 3
+  enemyAvoidStrength: 20
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  showObstacleRays: 1
+  showDebugInfo: 1
   velocity: {x: 0, y: 0, z: 0}
-  canAutoAttack: 1
+  canAutoAttack: 0
 --- !u!95 &8253529524297296019 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 215686583444720306, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
