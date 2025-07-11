@@ -21,7 +21,7 @@ public class IdleState : IEnemyState
         float distance = Vector3.Distance(enemy.transform.position, enemy.player.position);
         bool canSee = enemy.CanSeePlayer();
         
-        Debug.Log($"Distance to player: {distance:F2}, Vision range: {enemy.visionRange}, Can see player: {canSee}");
+        //Debug.Log($"Distance to player: {distance:F2}, Vision range: {enemy.visionRange}, Can see player: {canSee}");
         
         if (canSee)
         {
