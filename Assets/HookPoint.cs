@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HookPoint : MonoBehaviour
+public class GrapplePoint : MonoBehaviour
 {
     public bool isGrapplable = true; // 是否可被勾取
     public Renderer pointRenderer; // 用於高亮顯示

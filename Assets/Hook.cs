@@ -1,36 +1,51 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Hook : MonoBehaviour
+public class PlayerGrapple : MonoBehaviour
 {
-    public float grappleRange = 10f; // ¤ÄÂêÀË´ú½d³ò
-    public float maxGrappleDistance = 15f; // ³Ì¤j¤ÄÂê¶ZÂ÷
-    public float grappleSpeed = 10f; // ¤ÄÂê²¾°Ê³t«×
-    public LayerMask grappleLayer; // ¤ÄÂêÂIªº¼h
-    public Camera mainCamera; // ¥DÄá¼v¾÷
-    public Animator animator; // ª±®a°Êµe±±¨î¾¹
-    public CharacterController controller; // ¨¤¦â±±¨î¾¹
-    public LineRenderer grappleRope; // Ã·¯ÁªºLineRenderer
+    public float grappleRange = 10f; // å‹¾é–æª¢æ¸¬ç¯„åœ
+    public float maxGrappleDistance = 15f; // æœ€å¤§å‹¾é–è·é›¢
+    public float grappleSpeed = 10f; // å‹¾é–ç§»å‹•é€Ÿåº¦
+    public float sphereRadius = 0.5f; // SphereCastçš„çƒé«”åŠå¾‘
+    public float ropeWidth = 0.03f; // ç¹©ç´¢å¯¬åº¦
+    public float ropeExtendDuration = 0.1f; // ç¹©ç´¢å°„å‡ºæ™‚é•·ï¼ˆå°„å‡ºéšæ®µï¼‰
+    public int ropeSegments = 20; // ç¹©ç´¢ç´°åˆ†ç¯€é»æ•¸
+    public float sagAmount = 1.0f; // ç¹©ç´¢ä¸‹å‚å¹…åº¦
+    public float pullTautDuration = 0.5f; // ç¹©ç´¢æ‹‰ç·Šéæ¸¡æ™‚é–“
+    public LayerMask grappleLayer; // å‹¾é–é»çš„å±¤
+    public Camera mainCamera; // ä¸»æ”å½±æ©Ÿ
+    public Animator animator; // ç©å®¶å‹•ç•«æ§åˆ¶å™¨
+    public CharacterController controller; // è§’è‰²æ§åˆ¶å™¨
+    public LineRenderer grappleRope; // ç¹©ç´¢çš„LineRenderer
+    public Transform ropeStartPoint; // ç¹©ç´¢èµ·é»ï¼ˆæ‰‹éƒ¨ä½ç½®ï¼‰
 
-    private List<HookPoint> nearbyPoints = new List<HookPoint>();
+    private List<GrapplePoint> nearbyPoints = new List<GrapplePoint>();
     private bool isGrappling = false;
+    private bool isExtendingRope = false; // æ§åˆ¶ç¹©ç´¢å»¶ä¼¸ç‹€æ…‹
+    private Vector3 currentTargetPos; // ç•¶å‰ç›®æ¨™é»ä½ç½®
+    private Coroutine extendRopeCoroutine; // å„²å­˜ ExtendRope å”ç¨‹
 
     void Start()
     {
-        // ªì©l¤ÆÃ·¯Á®ÄªG
         if (grappleRope != null)
         {
             grappleRope.enabled = false;
+            grappleRope.startWidth = ropeWidth;
+            grappleRope.endWidth = ropeWidth * 0.8f;
+            grappleRope.positionCount = 0; // åˆå§‹ç„¡ç¯€é»
+        }
+        if (ropeStartPoint == null)
+        {
+            Debug.LogWarning("RopeStartPoint æœªåˆ†é…ï¼Œå°‡ä½¿ç”¨ç©å®¶ä½ç½®ä½œç‚ºç¹©ç´¢èµ·é»");
+            ropeStartPoint = transform;
         }
     }
 
     void Update()
     {
-        // ÀË´ú½d³ò¤ºªº¤ÄÂêÂI
         UpdateNearbyPoints();
 
-        // «ö¤UEÁä¶i¦æ¤ÄÂê
         if (Input.GetKeyDown(KeyCode.E) && !isGrappling)
         {
             TryGrapple();
@@ -39,18 +54,16 @@ public class Hook : MonoBehaviour
 
     void UpdateNearbyPoints()
     {
-        // ²M°£¤§«eªº°ª«G
         foreach (var point in nearbyPoints)
         {
             point.Highlight(false);
         }
         nearbyPoints.Clear();
 
-        // ÀË´ú½d³ò¤ºªº¤ÄÂêÂI
         Collider[] colliders = Physics.OverlapSphere(transform.position, grappleRange, grappleLayer);
         foreach (var collider in colliders)
         {
-            HookPoint point = collider.GetComponent<HookPoint>();
+            GrapplePoint point = collider.GetComponent<GrapplePoint>();
             if (point != null && point.isGrapplable)
             {
                 point.Highlight(true);
@@ -61,65 +74,107 @@ public class Hook : MonoBehaviour
 
     void TryGrapple()
     {
-        // ±qÄá¼v¾÷µo®g®g½u
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, maxGrappleDistance, grappleLayer))
+        if (Physics.SphereCast(ray, sphereRadius, out hit, maxGrappleDistance, grappleLayer))
         {
-            HookPoint targetPoint = hit.collider.GetComponent<HookPoint>();
+            GrapplePoint targetPoint = hit.collider.GetComponent<GrapplePoint>();
             if (targetPoint != null && targetPoint.isGrapplable)
             {
                 StartGrapple(targetPoint);
+                return;
             }
+        }
+
+        GrapplePoint closestPoint = null;
+        float minDistance = float.MaxValue;
+
+        foreach (var point in nearbyPoints)
+        {
+            float distance = Vector3.Distance(transform.position, point.transform.position);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                closestPoint = point;
+            }
+        }
+
+        if (closestPoint != null && closestPoint.isGrapplable)
+        {
+            StartGrapple(closestPoint);
         }
     }
 
-    void StartGrapple(HookPoint target)
+    void StartGrapple(GrapplePoint target)
     {
         isGrappling = true;
+        currentTargetPos = target.transform.position;
 
-        // ¼½©ñ¤ÄÂê°Êµe
         if (animator != null)
         {
-            animator.SetTrigger("Grapple");
+            animator.SetTrigger("Grapple"); // è§¸ç™¼å°„å‡ºå‹•ç•«
+            Debug.Log("Grapple animation triggered at: " + Time.time);
+        }
+        else
+        {
+            Debug.LogWarning("Animator is null, cannot trigger Grapple animation");
         }
 
-        // ¸T¥ÎCharacterControllerªºÀq»{¦æ¬°¡]¥i¿ï¡A®Ú¾Ú§Aªº»İ¨D¡^
         if (controller != null)
         {
-            controller.enabled = false; // Á{®É¸T¥Î¥Hª½±µ±±¨î²¾°Ê
+            controller.enabled = false;
         }
 
-        // ±Ò°ÊÃ·¯Á®ÄªG
         if (grappleRope != null)
         {
             grappleRope.enabled = true;
-            StartCoroutine(UpdateRope(target.transform.position));
+            grappleRope.positionCount = 0; // é‡ç½®ç¹©ç´¢
+            StartCoroutine(DelayedUpdateRope(currentTargetPos));
         }
-
-        // ¶}©l²¾°Ê¨ì¤ÄÂêÂI
-        StartCoroutine(MoveToHookPoint(target.transform.position));
     }
 
-    IEnumerator MoveToHookPoint(Vector3 targetPos)
+    // ç”±å‹•ç•«äº‹ä»¶èª¿ç”¨ï¼Œé–‹å§‹ç¹©ç´¢å°„å‡º
+    public void StartRopeExtend()
     {
-        // ¥­·Æ²¾°Ê¨ì¥Ø¼ĞÂI
+        Debug.Log("StartRopeExtend called at: " + Time.time);
+        if (extendRopeCoroutine != null)
+        {
+            StopCoroutine(extendRopeCoroutine);
+        }
+        isExtendingRope = true;
+        extendRopeCoroutine = StartCoroutine(ExtendRope(currentTargetPos));
+    }
+
+    // ç”±å‹•ç•«äº‹ä»¶èª¿ç”¨ï¼Œé–‹å§‹ç§»å‹•å’Œ JumpToTarget
+    public void StartMoveToGrapple()
+    {
+        Debug.Log("StartMoveToGrapple called at: " + Time.time);
+        if (animator != null)
+        {
+            animator.SetBool("IsJumping", true);
+        }
+        StartCoroutine(MoveToGrapplePoint(currentTargetPos));
+    }
+
+    IEnumerator MoveToGrapplePoint(Vector3 targetPos)
+    {
+        float elapsedTime = 0f;
         while (Vector3.Distance(transform.position, targetPos) > 0.1f)
         {
             Vector3 direction = (targetPos - transform.position).normalized;
             Vector3 move = direction * grappleSpeed * Time.deltaTime;
-
-            // ¨Ï¥ÎCharacterController.Move¶i¦æ²¾°Ê
-            if (controller != null)
-            {
-                transform.position += move; // ª½±µ­×§ï¦ì¸m¡]¦]¬°controller¤w¸T¥Î¡^
-            }
-
+            transform.position += move;
+            elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        // «ì´_CharacterController
+        if (animator != null)
+        {
+            animator.SetBool("IsJumping", false);
+            animator.ResetTrigger("Grapple");
+        }
+
         if (controller != null)
         {
             controller.enabled = true;
@@ -128,28 +183,81 @@ public class Hook : MonoBehaviour
         isGrappling = false;
     }
 
+    IEnumerator DelayedUpdateRope(Vector3 targetPos)
+    {
+        yield return new WaitForSeconds(ropeExtendDuration);
+        isExtendingRope = false;
+        yield return StartCoroutine(UpdateRope(targetPos));
+    }
+
     IEnumerator UpdateRope(Vector3 targetPos)
     {
-        // §ó·sÃ·¯Áªº°_ÂI©M²×ÂI
+        float elapsedTime = 0f;
         while (isGrappling)
         {
-            grappleRope.SetPosition(0, transform.position); // Ã·¯Á°_ÂI
-            grappleRope.SetPosition(1, targetPos); // Ã·¯Á²×ÂI
+            if (!isExtendingRope)
+            {
+                float t = Mathf.Clamp01(elapsedTime / pullTautDuration);
+                float currentSag = Mathf.Lerp(sagAmount, 0f, t);
+                UpdateRopeWithSag(ropeStartPoint.position, targetPos, currentSag, ropeSegments);
+                elapsedTime += Time.deltaTime;
+            }
+            yield return null;
+        }
+        grappleRope.enabled = false;
+        grappleRope.positionCount = 0;
+    }
+
+    IEnumerator ExtendRope(Vector3 targetPos)
+    {
+        grappleRope.startWidth = ropeWidth;
+        grappleRope.endWidth = ropeWidth * 0.8f;
+
+        float elapsedTime = 0f;
+        while (elapsedTime < ropeExtendDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / ropeExtendDuration;
+            int currentSegments = Mathf.FloorToInt(Mathf.Lerp(2, ropeSegments, t));
+            Vector3 currentEndPos = Vector3.Lerp(ropeStartPoint.position, targetPos, t);
+            UpdateRopeWithSag(ropeStartPoint.position, currentEndPos, sagAmount, currentSegments);
+            Debug.Log($"ExtendRope: t={t}, segments={currentSegments}, endPos={currentEndPos}");
             yield return null;
         }
 
-        // ÁôÂÃÃ·¯Á
-        grappleRope.enabled = false;
+        UpdateRopeWithSag(ropeStartPoint.position, targetPos, sagAmount, ropeSegments);
+        isExtendingRope = false;
     }
 
-    // ½Õ¸Õ¡G¥iµø¤ÆÀË´ú½d³ò
+    void UpdateRopeWithSag(Vector3 startPos, Vector3 endPos, float currentSag, int segments)
+    {
+        grappleRope.positionCount = segments;
+        float distance = Vector3.Distance(startPos, endPos);
+        for (int i = 0; i < segments; i++)
+        {
+            float t = i / (float)(segments - 1);
+            Vector3 point = Vector3.Lerp(startPos, endPos, t);
+            if (i > 0 && i < segments - 1)
+            {
+                float sag = currentSag * Mathf.Sin(t * Mathf.PI);
+                point.y -= sag;
+            }
+            grappleRope.SetPosition(i, point);
+        }
+
+        // å¯è¦–åŒ–ç¹©ç´¢
+        for (int i = 0; i < segments - 1; i++)
+        {
+            Debug.DrawLine(grappleRope.GetPosition(i), grappleRope.GetPosition(i + 1), Color.red, 1f);
+        }
+    }
+
     void OnDrawGizmos()
     {
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, grappleRange);
     }
 
-    // ´£¨Ñ¥~³¡³X°İ¡AÀË¬d¬O§_¥¿¦b¤ÄÂê
     public bool IsGrappling()
     {
         return isGrappling;
