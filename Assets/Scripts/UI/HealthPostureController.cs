@@ -1,14 +1,17 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 // 生命值與架勢條控制器
 public class HealthPostureController : MonoBehaviour
 {
-    [SerializeField] private int maxHealth = 100;   // 最大生命值
+    [SerializeField] private int maxHealth = EnemyTest.maxHP;   // 最大生命值
     [SerializeField] private int maxPosture = 100;  // 最大架勢值
     [SerializeField] private HealthPostureUI healthPostureUI;   // 生命值與架勢 UI 顯示
 
     private HealthPostureSystem healthPostureSystem;    // 引用生命值與架勢系統
+    private Coroutine hideUICoroutine;  // 隱藏 UI 的協程
+    private static HealthPostureController lastAttackedEnemy;  // 最後一個被攻擊的敵人
 
     private void Awake()
     {
@@ -30,24 +33,106 @@ public class HealthPostureController : MonoBehaviour
     public void TakeDamage(int amount)
     {
         healthPostureSystem.HealthDamage(amount);
+        
+        // 同時增加架勢值（每次受到傷害增加10點架勢）
+        healthPostureSystem.PostureIncrease(10);
+        
+        // 顯示血條並設定為最後一個被攻擊的敵人
+        ShowHealthBar();
     }
 
     // 增加架勢
     public void AddPosture(int amount)
     {
         healthPostureSystem.PostureIncrease(amount);
+        
+        // 顯示血條並設定為最後一個被攻擊的敵人
+        ShowHealthBar();
+    }
+
+    // 顯示血條
+    private void ShowHealthBar()
+    {
+        // 檢查血量是否小於等於0，如果是則不顯示血條
+        if (healthPostureSystem.GetHealthNormalized() <= 0)
+        {
+            return;
+        }
+
+        // 如果有其他敵人正在顯示血條，先關閉它
+        if (lastAttackedEnemy != null && lastAttackedEnemy != this)
+        {
+            lastAttackedEnemy.HideHealthBar();
+        }
+
+        // 設定為最後一個被攻擊的敵人
+        lastAttackedEnemy = this;
+
+        // 顯示血條UI
+        if (healthPostureUI != null)
+        {
+            healthPostureUI.gameObject.SetActive(true);
+        }
+
+        // 停止之前的隱藏協程（如果有的話）
+        if (hideUICoroutine != null)
+        {
+            StopCoroutine(hideUICoroutine);
+        }
+
+        // 開始新的隱藏協程
+        hideUICoroutine = StartCoroutine(HideHealthBarAfterDelay(5f));
+    }
+
+    // 隱藏血條
+    public void HideHealthBar()
+    {
+        if (healthPostureUI != null)
+        {
+            healthPostureUI.gameObject.SetActive(false);
+        }
+
+        // 停止隱藏協程
+        if (hideUICoroutine != null)
+        {
+            StopCoroutine(hideUICoroutine);
+            hideUICoroutine = null;
+        }
+
+        // 如果不是最後一個被攻擊的敵人，清除引用
+        if (lastAttackedEnemy == this)
+        {
+            lastAttackedEnemy = null;
+        }
+    }
+
+    // 延遲隱藏血條的協程
+    private IEnumerator HideHealthBarAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        
+        // 只有當這個敵人仍然是最後一個被攻擊的敵人時才隱藏
+        if (lastAttackedEnemy == this)
+        {
+            HideHealthBar();
+        }
     }
 
     // 架勢恢復
     private void Update()
     {
-        healthPostureSystem.HandlePostureRecovery();
+        // 移除這裡的架勢恢復，讓 HealthPostureUI 來處理
+        // healthPostureSystem.HandlePostureRecovery();
     }
 
     // 死亡
     private void OnDead(object sender, System.EventArgs e)
     {
         Debug.Log($"{gameObject.name} 死亡！");
+        
+        // 死亡時隱藏血條
+        HideHealthBar();
+        
         // 播放死亡動畫
     }
 
@@ -59,5 +144,47 @@ public class HealthPostureController : MonoBehaviour
         // 呼叫 OnDead 事件
         OnDead(sender, e);
         // 播放死亡動畫
+    }
+
+    // 獲取當前生命值百分比
+    public float GetHealthPercentage()
+    {
+        return healthPostureSystem.GetHealthNormalized();
+    }
+
+    // 獲取當前架勢值百分比
+    public float GetPosturePercentage()
+    {
+        return healthPostureSystem.GetPostureNormalized();
+    }
+
+    // 重置生命值系統
+    public void ResetHealth()
+    {
+        // 重新創建生命值系統
+        healthPostureSystem = new HealthPostureSystem(maxHealth, maxPosture);
+        
+        // 重新設定 UI
+        if (healthPostureUI != null)
+        {
+            healthPostureUI.SetHealthPostureSystem(healthPostureSystem);
+        }
+        
+        // 重新訂閱事件
+        healthPostureSystem.OnDead += OnDead;
+        healthPostureSystem.OnPostureBroken += OnPostureBroken;
+        
+        // 隱藏血條
+        HideHealthBar();
+    }
+
+    // 當物件被銷毀時清理
+    private void OnDestroy()
+    {
+        // 如果這個敵人是最後一個被攻擊的敵人，清除引用
+        if (lastAttackedEnemy == this)
+        {
+            lastAttackedEnemy = null;
+        }
     }
 }

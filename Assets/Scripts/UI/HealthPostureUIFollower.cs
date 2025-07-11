@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class HealthPostureUIFollower : MonoBehaviour
 {
-    public Transform target;  // ¼Ä¤HÀY³¡
-    public Vector3 offset = new Vector3(0, 2f, 0);  // °¾²¾¦ì¸m
+    public Transform target;  // ï¿½Ä¤Hï¿½Yï¿½ï¿½
+    public Vector3 offset = new Vector3(0, 2f, 0);  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½m
     private Camera mainCamera;
 
     private void Start()

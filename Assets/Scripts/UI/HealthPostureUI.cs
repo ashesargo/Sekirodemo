@@ -26,7 +26,10 @@ public class HealthPostureUI : MonoBehaviour
     private void Update()
     {
         // 架勢自動恢復
-        healthPostureSystem.HandlePostureRecovery();
+        if (healthPostureSystem != null)
+        {
+            healthPostureSystem.HandlePostureRecovery();
+        }
 
         // 更新延遲血條的縮短邏輯
         healthBarDamagedFadeTimer -= Time.deltaTime;

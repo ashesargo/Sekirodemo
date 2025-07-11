@@ -9,7 +9,7 @@ public class HitState : IEnemyState
     {
         var enemyTest = enemy.GetComponent<EnemyTest>();
         if (enemyTest != null && enemyTest.isDead)
-            return; // 死亡時不再進入Hit
+            return; // 死亡時不再進入 Hit
         Debug.Log($"[HitState] EnterState: {enemy.name}");
         enemy.animator.SetTrigger("Hit");
         timer = 0f;
@@ -24,7 +24,7 @@ public class HitState : IEnemyState
 
         // 取得血量
         var enemyTest = enemy.GetComponent<EnemyTest>();
-        int hp = enemyTest != null ? enemyTest.currentHP : 1;
+        int hp = enemyTest != null ? enemyTest.GetCurrentHP() : 1;
 
         if ((stateInfo.IsName("Hit") && stateInfo.normalizedTime >= 1.0f) || timer > maxHitTime)
         {

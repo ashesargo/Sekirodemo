@@ -327,10 +327,19 @@ public class EnemyPool : MonoBehaviour
             }
             
             // 重置敵人狀態
+            // 重置敵人生命值
+            HealthPostureController healthController = enemy.GetComponent<HealthPostureController>();
+            if (healthController != null)
+            {
+                // 重新初始化生命值系統
+                healthController.ResetHealth();
+            }
+            
+            // 重置 EnemyTest 狀態
             EnemyTest enemyTest = enemy.GetComponent<EnemyTest>();
             if (enemyTest != null)
             {
-                enemyTest.currentHP = enemyTest.maxHP;
+                enemyTest.isDead = false;
             }
             
             // 增加已生成數量計數
