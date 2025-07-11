@@ -6,6 +6,7 @@ public class IdleState : IEnemyState
     {
         enemy.animator.Play("Idle");
         enemy.Stop();
+        enemy.canAutoAttack = true; // 啟用自動攻擊
     }
 
     public void UpdateState(EnemyAI enemy)
