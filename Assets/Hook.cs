@@ -9,16 +9,19 @@ public class PlayerGrapple : MonoBehaviour
     public float grappleSpeed = 10f; // 勾鎖移動速度
     public float sphereRadius = 0.5f; // SphereCast的球體半徑
     public float ropeWidth = 0.03f; // 繩索寬度
-    public float ropeExtendDuration = 0.1f; // 繩索射出時長（射出階段）
+    public float ropeExtendDuration = 0.1f; // 繩索射出時長
+    public float grapple2Duration = 0.2f; // Grapple2 動畫時長
+    public float pullTautDuration = 0.5f; // 繩索拉緊過渡時間
+    public float turnDuration = 0.2f; // 轉向目標點的時長
+    public float jumpAnimationDuration = 0.5f; // JumpToTarget 動畫時長
     public int ropeSegments = 20; // 繩索細分節點數
     public float sagAmount = 1.0f; // 繩索下垂幅度
-    public float pullTautDuration = 0.5f; // 繩索拉緊過渡時間
     public LayerMask grappleLayer; // 勾鎖點的層
     public Camera mainCamera; // 主攝影機
     public Animator animator; // 玩家動畫控制器
     public CharacterController controller; // 角色控制器
     public LineRenderer grappleRope; // 繩索的LineRenderer
-    public Transform ropeStartPoint; // 繩索起點（手部位置）
+    public Transform ropeStartPoint; // 繩索起點（應為 RightHand 的子物件）
 
     private List<GrapplePoint> nearbyPoints = new List<GrapplePoint>();
     private bool isGrappling = false;
@@ -35,10 +38,38 @@ public class PlayerGrapple : MonoBehaviour
             grappleRope.endWidth = ropeWidth * 0.8f;
             grappleRope.positionCount = 0; // 初始無節點
         }
+        else
+        {
+            Debug.LogError("GrappleRope 未分配，請在 Inspector 中分配 LineRenderer");
+        }
+
         if (ropeStartPoint == null)
         {
-            Debug.LogWarning("RopeStartPoint 未分配，將使用玩家位置作為繩索起點");
+            Debug.LogError("RopeStartPoint 未分配，請在 Inspector 中分配並設為 RightHand 的子物件");
             ropeStartPoint = transform;
+        }
+        else if (ropeStartPoint.parent == null)
+        {
+            Debug.LogError("ropeStartPoint 的父物件未設置，請將其設為 RightHand");
+        }
+        else if (ropeStartPoint.localScale != Vector3.one)
+        {
+            Debug.LogWarning($"ropeStartPoint Scale ({ropeStartPoint.localScale}) 不是 (1,1,1)，可能導致位置錯誤");
+        }
+
+        if (animator == null)
+        {
+            Debug.LogError("Animator 未分配，請在 Inspector 中分配");
+        }
+
+        if (mainCamera == null)
+        {
+            Debug.LogError("MainCamera 未分配，請在 Inspector 中分配");
+        }
+
+        if (controller == null)
+        {
+            Debug.LogError("CharacterController 未分配，請在 Inspector 中分配");
         }
     }
 
@@ -50,6 +81,39 @@ public class PlayerGrapple : MonoBehaviour
         {
             TryGrapple();
         }
+
+        // 調試 Animator 狀態
+        if (isGrappling && animator != null)
+        {
+            AnimatorStateInfo baseState = animator.GetCurrentAnimatorStateInfo(0); // Base Layer
+            AnimatorStateInfo upperState = animator.GetCurrentAnimatorStateInfo(1); // UpperBody Layer
+            Debug.Log($"Base state: {GetCurrentStateName(baseState)}, normalizedTime: {baseState.normalizedTime}, UpperBody state: {GetCurrentStateName(upperState)}, Time: {Time.time}");
+        }
+    }
+
+    void LateUpdate()
+    {
+        // 備用繩索更新，確保 JumpToTarget 階段繩索跟隨
+        if (isGrappling && grappleRope.enabled && !isExtendingRope)
+        {
+            AnimatorStateInfo baseState = animator.GetCurrentAnimatorStateInfo(0);
+            AnimatorStateInfo upperState = animator.GetCurrentAnimatorStateInfo(1);
+            if (baseState.IsName("JumpToTarget") || upperState.IsName("Grapple2"))
+            {
+                Vector3 ropeStartPos = ropeStartPoint.position;
+                Vector3 ropeEndPos = currentTargetPos;
+                UpdateRopeWithSag(ropeStartPos, ropeEndPos, sagAmount, ropeSegments);
+                Debug.Log($"LateUpdate: Base state={GetCurrentStateName(baseState)}, UpperBody state={GetCurrentStateName(upperState)}, ropeStartPoint={ropeStartPoint.position}, Time={Time.time}");
+            }
+        }
+    }
+
+    string GetCurrentStateName(AnimatorStateInfo stateInfo)
+    {
+        if (stateInfo.IsName("Grapple")) return "Grapple";
+        if (stateInfo.IsName("Grapple2")) return "Grapple2";
+        if (stateInfo.IsName("JumpToTarget")) return "JumpToTarget";
+        return "Other";
     }
 
     void UpdateNearbyPoints()
@@ -82,7 +146,7 @@ public class PlayerGrapple : MonoBehaviour
             GrapplePoint targetPoint = hit.collider.GetComponent<GrapplePoint>();
             if (targetPoint != null && targetPoint.isGrapplable)
             {
-                StartGrapple(targetPoint);
+                StartCoroutine(StartGrappleWithTurn(targetPoint));
                 return;
             }
         }
@@ -102,8 +166,30 @@ public class PlayerGrapple : MonoBehaviour
 
         if (closestPoint != null && closestPoint.isGrapplable)
         {
-            StartGrapple(closestPoint);
+            StartCoroutine(StartGrappleWithTurn(closestPoint));
         }
+    }
+
+    IEnumerator StartGrappleWithTurn(GrapplePoint target)
+    {
+        Vector3 targetDirection = (target.transform.position - transform.position).normalized;
+        targetDirection.y = 0;
+        Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+        Quaternion startRotation = transform.rotation;
+
+        float elapsedTime = 0f;
+        while (elapsedTime < turnDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / turnDuration;
+            transform.rotation = Quaternion.Slerp(startRotation, targetRotation, t);
+            Debug.Log($"Turning: t={t}, rotation={transform.rotation.eulerAngles}, Time={Time.time}");
+            yield return null;
+        }
+        transform.rotation = targetRotation;
+        Debug.Log($"Turn completed: rotation={transform.rotation.eulerAngles}, Time={Time.time}");
+
+        StartGrapple(target);
     }
 
     void StartGrapple(GrapplePoint target)
@@ -113,7 +199,7 @@ public class PlayerGrapple : MonoBehaviour
 
         if (animator != null)
         {
-            animator.SetTrigger("Grapple"); // 觸發射出動畫
+            animator.SetTrigger("Grapple");
             Debug.Log("Grapple animation triggered at: " + Time.time);
         }
         else
@@ -125,16 +211,19 @@ public class PlayerGrapple : MonoBehaviour
         {
             controller.enabled = false;
         }
+        else
+        {
+            Debug.LogWarning("CharacterController is null, cannot disable controller");
+        }
 
         if (grappleRope != null)
         {
             grappleRope.enabled = true;
-            grappleRope.positionCount = 0; // 重置繩索
+            grappleRope.positionCount = 0;
             StartCoroutine(DelayedUpdateRope(currentTargetPos));
         }
     }
 
-    // 由動畫事件調用，開始繩索射出
     public void StartRopeExtend()
     {
         Debug.Log("StartRopeExtend called at: " + Time.time);
@@ -146,41 +235,84 @@ public class PlayerGrapple : MonoBehaviour
         extendRopeCoroutine = StartCoroutine(ExtendRope(currentTargetPos));
     }
 
-    // 由動畫事件調用，開始移動和 JumpToTarget
-    public void StartMoveToGrapple()
+    public void Grapple2()
     {
-        Debug.Log("StartMoveToGrapple called at: " + Time.time);
+        Debug.Log("Grapple2 called at: " + Time.time);
         if (animator != null)
         {
-            animator.SetBool("IsJumping", true);
+            animator.SetTrigger("Grapple2");
+            Debug.Log("Grapple2 triggered at: " + Time.time);
+            StartCoroutine(DelayedMoveToGrapple());
         }
+        else
+        {
+            Debug.LogWarning("Animator is null, cannot trigger Grapple2");
+        }
+    }
+
+    public void StartMoveToGrapple()
+    {
+        Debug.Log($"StartMoveToGrapple called: Base state={GetCurrentStateName(animator.GetCurrentAnimatorStateInfo(0))}, UpperBody state={GetCurrentStateName(animator.GetCurrentAnimatorStateInfo(1))}, Time={Time.time}");
+    }
+
+    IEnumerator DelayedMoveToGrapple()
+    {
+        Debug.Log($"DelayedMoveToGrapple: Waiting for {grapple2Duration}s, Time={Time.time}");
+        yield return new WaitForSeconds(grapple2Duration); // 等待 Grapple2 動畫結束
+        animator.SetBool("IsJumping", true);
+        float distance = Vector3.Distance(transform.position, currentTargetPos);
+        float moveTime = distance / grappleSpeed;
+        animator.speed = jumpAnimationDuration / Mathf.Max(moveTime, 0.1f); // 確保動畫播放完整
+        Debug.Log($"JumpToTarget started: animator.speed={animator.speed}, moveTime={moveTime}, Time={Time.time}");
         StartCoroutine(MoveToGrapplePoint(currentTargetPos));
     }
 
     IEnumerator MoveToGrapplePoint(Vector3 targetPos)
     {
         float elapsedTime = 0f;
-        while (Vector3.Distance(transform.position, targetPos) > 0.1f)
+        Vector3 startPos = transform.position;
+        float distance = Vector3.Distance(startPos, targetPos);
+        float moveTime = distance / grappleSpeed;
+
+        while (elapsedTime < moveTime && Vector3.Distance(transform.position, targetPos) > 0.01f)
         {
-            Vector3 direction = (targetPos - transform.position).normalized;
-            Vector3 move = direction * grappleSpeed * Time.deltaTime;
-            transform.position += move;
             elapsedTime += Time.deltaTime;
+            float t = elapsedTime / moveTime;
+            transform.position = Vector3.Lerp(startPos, targetPos, t);
+            Debug.Log($"MoveToGrapplePoint: t={t}, position={transform.position}, distance={Vector3.Distance(transform.position, targetPos)}, Time={Time.time}");
             yield return null;
         }
+
+        transform.position = targetPos;
+        Debug.Log($"Reached target: position={transform.position}, Time={Time.time}");
+
+        // 確保動畫播放至少 jumpAnimationDuration
+        float remainingTime = jumpAnimationDuration - elapsedTime;
+        if (remainingTime > 0)
+        {
+            Debug.Log($"Waiting for remaining animation time: {remainingTime}s, Time={Time.time}");
+            yield return new WaitForSeconds(remainingTime);
+        }
+
+
 
         if (animator != null)
         {
             animator.SetBool("IsJumping", false);
             animator.ResetTrigger("Grapple");
+            animator.ResetTrigger("Grapple2");
+            animator.speed = 1f;
+            Debug.Log("JumpToTarget ended, IsJumping reset, Time: " + Time.time);
         }
 
         if (controller != null)
         {
             controller.enabled = true;
+            Debug.Log("CharacterController enabled, Time: " + Time.time);
         }
 
         isGrappling = false;
+        Debug.Log("Grapple completed, isGrappling: false, Time: " + Time.time);
     }
 
     IEnumerator DelayedUpdateRope(Vector3 targetPos)
@@ -200,12 +332,14 @@ public class PlayerGrapple : MonoBehaviour
                 float t = Mathf.Clamp01(elapsedTime / pullTautDuration);
                 float currentSag = Mathf.Lerp(sagAmount, 0f, t);
                 UpdateRopeWithSag(ropeStartPoint.position, targetPos, currentSag, ropeSegments);
+                Debug.Log($"UpdateRope: t={t}, sag={currentSag}, ropeStartPoint={ropeStartPoint.position}, Time={Time.time}");
                 elapsedTime += Time.deltaTime;
             }
             yield return null;
         }
         grappleRope.enabled = false;
         grappleRope.positionCount = 0;
+        Debug.Log("UpdateRope ended, rope disabled, Time: " + Time.time);
     }
 
     IEnumerator ExtendRope(Vector3 targetPos)
@@ -219,13 +353,13 @@ public class PlayerGrapple : MonoBehaviour
             elapsedTime += Time.deltaTime;
             float t = elapsedTime / ropeExtendDuration;
             int currentSegments = Mathf.FloorToInt(Mathf.Lerp(2, ropeSegments, t));
-            Vector3 currentEndPos = Vector3.Lerp(ropeStartPoint.position, targetPos, t);
-            UpdateRopeWithSag(ropeStartPoint.position, currentEndPos, sagAmount, currentSegments);
-            Debug.Log($"ExtendRope: t={t}, segments={currentSegments}, endPos={currentEndPos}");
+            Vector3 ropeStartPos = ropeStartPoint.position;
+            Vector3 ropeEndPos = Vector3.Lerp(ropeStartPoint.position, targetPos, t);
+            UpdateRopeWithSag(ropeStartPos, ropeEndPos, sagAmount, currentSegments);
+            Debug.Log($"ExtendRope: t={t}, segments={currentSegments}, ropeStartPoint={ropeStartPoint.position}, Time={Time.time}");
             yield return null;
         }
 
-        UpdateRopeWithSag(ropeStartPoint.position, targetPos, sagAmount, ropeSegments);
         isExtendingRope = false;
     }
 
@@ -250,6 +384,7 @@ public class PlayerGrapple : MonoBehaviour
         {
             Debug.DrawLine(grappleRope.GetPosition(i), grappleRope.GetPosition(i + 1), Color.red, 1f);
         }
+        Debug.DrawRay(ropeStartPoint.position, Vector3.up * 0.5f, Color.green, 1f);
     }
 
     void OnDrawGizmos()
@@ -261,5 +396,10 @@ public class PlayerGrapple : MonoBehaviour
     public bool IsGrappling()
     {
         return isGrappling;
+    }
+    public void DisableGrapple()
+    {
+        grappleRope.enabled = false;
+        grappleRope.positionCount = 0;
     }
 }

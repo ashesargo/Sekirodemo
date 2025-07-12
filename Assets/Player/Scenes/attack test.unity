@@ -151,13 +151,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grappleRange: 1000
   maxGrappleDistance: 1000
-  grappleSpeed: 100
+  grappleSpeed: 120
   sphereRadius: 0.5
   ropeWidth: 0.2
   ropeExtendDuration: 0.4
+  grapple2Duration: 0.2
+  pullTautDuration: 0.5
+  turnDuration: 0.2
+  jumpAnimationDuration: 0.5
   ropeSegments: 30
   sagAmount: 2
-  pullTautDuration: 1
   grappleLayer:
     serializedVersion: 2
     m_Bits: 256
@@ -577,7 +580,7 @@ Transform:
   m_GameObject: {fileID: 580159004}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0, y: 0.285, z: -0.006}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1172,8 +1175,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 992ed3020ec2d3243bc6c6d52ef0b056, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 50
-  currentHP: 0
+  isDead: 0
 --- !u!1001 &3211238373452948594
 PrefabInstance:
   m_ObjectHideFlags: 0
