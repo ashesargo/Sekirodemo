@@ -325,4 +325,8 @@ public class TPContraller : MonoBehaviour
         }
         lastIsGround = isGrounded;
     }
+    public void TakeDamage(float damage) 
+    {
+        _animator.SetTrigger("Hit");
+    }
 }
