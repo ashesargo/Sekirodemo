@@ -6042,7 +6042,7 @@ MonoBehaviour:
   animator: {fileID: 8253529524297296019}
   visionRange: 100
   attackRange: 10
-  maxSpeed: 10
+  maxSpeed: 15
   avoidDistance: 10
   avoidStrength: 30
   obstacleMask:

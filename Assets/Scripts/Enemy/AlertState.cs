@@ -19,7 +19,18 @@ public class AlertState : IEnemyState
         if (timer > alertTime)
         {
             if (enemy.IsInAttackRange())
-                enemy.SwitchState(new AttackState());
+            {
+                // 檢查是否為遠程兵種
+                var rangedEnemy = enemy.GetComponent<RangedEnemy>();
+                if (rangedEnemy != null)
+                {
+                    enemy.SwitchState(new AimState());
+                }
+                else
+                {
+                    enemy.SwitchState(new AttackState());
+                }
+            }
             else
                 enemy.SwitchState(new ChaseState());
         }

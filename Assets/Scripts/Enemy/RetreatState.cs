@@ -42,14 +42,25 @@ public class RetreatState : IEnemyState
         // 使用專門的撤退避障方法，檢測後方（撤退專用）
         Vector3 retreatObstacleAvoid = enemy.RetreatObstacleAvoid();
         
+        // 調試：檢查避障是否工作
+        if (retreatObstacleAvoid.magnitude > 0.1f)
+        {
+            Debug.Log($"RetreatState: 避障工作正常！避障力: {retreatObstacleAvoid}");
+        }
+        else
+        {
+            Debug.Log($"RetreatState: 沒有檢測到需要避障的障礙物，避障力: {retreatObstacleAvoid}");
+        }
+        
         // 結合後退力和後方避障
         Vector3 totalForce = retreatForce + retreatObstacleAvoid;
         
         // 撤退時面向玩家，保持戰鬥姿態，但確保移動方向正確
         enemy.Move(totalForce, true);
         
-        // 詳細的調試信息
-        if (enemy.showDebugInfo)
+        // 詳細的調試信息（強制顯示撤退避障信息）
+        bool shouldShowDebug = enemy.showDebugInfo || true; // 暫時強制顯示調試信息
+        if (shouldShowDebug)
         {
             Debug.Log($"RetreatState: 後退中，時間 = {timer:F2}");
             Debug.Log($"  敵人位置: {enemy.transform.position}");
