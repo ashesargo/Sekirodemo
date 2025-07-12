@@ -7301,6 +7301,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6869600998273829490, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2323692198660248372}
+    - targetCorrespondingSourceObject: {fileID: 6869600998273829490, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7658690381631198487}
   m_SourcePrefab: {fileID: 100100000, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
 --- !u!4 &2592737532880117844 stripped
 Transform:
@@ -7329,8 +7332,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 992ed3020ec2d3243bc6c6d52ef0b056, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 50
-  currentHP: 0
+  isDead: 0
 --- !u!136 &2323692198660248372
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -7354,6 +7356,61 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &7658690381631198487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3403077399576037378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ede9019da687ddd46b1547c1fb033561, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 7577657594013935353, guid: 972a6246fb2f80e4e94afe1a476f3a53, type: 3}
+  animator: {fileID: 8255613398275737794}
+  visionRange: 100
+  attackRange: 10
+  maxSpeed: 20
+  avoidDistance: 10
+  avoidStrength: 30
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 512
+  retreatTime: 2
+  enemyAvoidDistance: 10
+  enemyAvoidStrength: 30
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  detectionBoxSize: {x: 5, y: 10, z: 10}
+  detectionBoxOffset: 5
+  detectionBoxYOffset: 5
+  showDetectionBox: 1
+  retreatBoxSize: {x: 5, y: 10, z: 10}
+  retreatBoxOffset: 5
+  retreatBoxYOffset: 5
+  retreatObstacleMask:
+    serializedVersion: 2
+    m_Bits: 512
+  showDebugInfo: 0
+  velocity: {x: 0, y: 0, z: 0}
+  canAutoAttack: 1
+  currentComboCount: 0
+  maxComboCount: 3
+  comboAnimations:
+  - Combo1
+  - Combo2
+  - Combo3
+  combo1Duration: 6
+  combo2Duration: 1
+  combo3Duration: 1
+--- !u!95 &8255613398275737794 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 215686583444720306, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+  m_PrefabInstance: {fileID: 8101854144654213744}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8697935815332273580
 PrefabInstance:
   m_ObjectHideFlags: 0

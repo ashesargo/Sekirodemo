@@ -166,7 +166,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400002, guid: 165130b8a71020641b870cab32d18c5e, type: 3}
+  m_Motion: {fileID: 7400002, guid: ed8e56e80aa058544a9b88ed21d852c6, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -253,7 +253,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Samurai Animator
+  m_Name: SamuraiB Animator
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: Blend
@@ -450,13 +450,13 @@ AnimatorStateMachine:
     m_Position: {x: 510, y: 320, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2465947049803765419}
-    m_Position: {x: 760, y: 320, z: 0}
+    m_Position: {x: 780, y: 320, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -93314580640188675}
     m_Position: {x: 250, y: 250, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 4876887981801451748}
-    m_Position: {x: 240, y: 440, z: 0}
+    m_Position: {x: 250, y: 440, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 7749814935932382271}
     m_Position: {x: 510, y: 440, z: 0}

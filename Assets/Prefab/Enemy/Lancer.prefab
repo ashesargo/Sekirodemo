@@ -8075,8 +8075,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   retreatTime: 2.1
-  enemyAvoidDistance: 3
-  enemyAvoidStrength: 10
+  enemyAvoidDistance: 10
+  enemyAvoidStrength: 30
   enemyLayerMask:
     serializedVersion: 2
     m_Bits: 64
@@ -8090,7 +8090,7 @@ MonoBehaviour:
   retreatObstacleMask:
     serializedVersion: 2
     m_Bits: 512
-  showDebugInfo: 1
+  showDebugInfo: 0
   velocity: {x: 0, y: 0, z: 0}
   canAutoAttack: 0
 --- !u!4 &8719892328623682782 stripped

@@ -37,10 +37,25 @@ public class HitState : IEnemyState
             {
                 Debug.Log($"[HitState] 動畫結束或超時，切換狀態: {enemy.name}");
                 enemy.canAutoAttack = true; // 受傷結束後重新啟用自動攻擊
-                if (enemy.CanSeePlayer())
-                    enemy.SwitchState(new ChaseState());
+                
+                // 檢查是否為Boss
+                BossAI bossAI = enemy.GetComponent<BossAI>();
+                if (bossAI != null)
+                {
+                    // Boss受傷後重置連擊計數
+                    bossAI.ResetComboCount();
+                    
+                    // Boss受傷後直接進入追擊狀態，不回到Idle
+                    Debug.Log("HitState: Boss受傷後直接進入追擊狀態");
+                    enemy.SwitchState(new BossChaseState());
+                }
                 else
-                    enemy.SwitchState(new IdleState());
+                {
+                    if (enemy.CanSeePlayer())
+                        enemy.SwitchState(new ChaseState());
+                    else
+                        enemy.SwitchState(new IdleState());
+                }
             }
         }
     }
