@@ -20,14 +20,14 @@ public class ChaseState : IEnemyState
         }
 
         Vector3 seek = enemy.Seek(enemy.player.position);
-        Vector3 avoid = enemy.ObstacleAvoid();
-        Vector3 enemyAvoid = enemy.EnemyAvoid(); // 添加敵人避障
-        Vector3 totalForce = seek + avoid + enemyAvoid; // 結合所有力
+        Vector3 obstacleAvoid = enemy.ObstacleAvoid(); // 前方避障（追擊專用）
+        Vector3 enemyAvoid = enemy.EnemyAvoid(); // 敵人避障
+        Vector3 totalForce = seek + obstacleAvoid + enemyAvoid; // 結合所有力
         
         // 調試信息
         if (enemy.showDebugInfo)
         {
-            Debug.Log($"ChaseState Debug - Seek: {seek}, Obstacle Avoid: {avoid}, Enemy Avoid: {enemyAvoid}, Total: {totalForce}");
+            Debug.Log($"ChaseState Debug - Seek: {seek}, 前方避障: {obstacleAvoid}, 敵人避障: {enemyAvoid}, 總力: {totalForce}");
         }
         
         //Debug.Log($"Seek force: {seek}, Avoid force: {avoid}, Enemy avoid: {enemyAvoid}, Total force: {totalForce}, Velocity: {enemy.velocity}");

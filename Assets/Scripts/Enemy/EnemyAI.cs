@@ -11,7 +11,7 @@ public class EnemyAI : MonoBehaviour
     public float maxSpeed = 3f;
     public float avoidDistance = 1.5f;
     public float avoidStrength = 10f;
-    public LayerMask obstacleMask;
+    public LayerMask obstacleMask = 1 << 9; // 只檢測 Obstacle 層 (Layer 9)
 
     [Header("AI 參數")]
     public float retreatTime = 2f;
@@ -19,15 +19,27 @@ public class EnemyAI : MonoBehaviour
     [Header("敵人碰撞避免")]
     public float enemyAvoidDistance = 2f;
     public float enemyAvoidStrength = 15f;
-    public LayerMask enemyLayerMask = -1; // 預設為所有層
+    public LayerMask enemyLayerMask = 1 << 6; // 只檢測 Enemy 層 (Layer 6)
+
+    [Header("立方體避障系統")]
+    public Vector3 detectionBoxSize = new Vector3(2f, 1f, 1.5f); // 立方體大小
+    public float detectionBoxOffset = 1f; // 立方體前方偏移距離
+    public float detectionBoxYOffset = 0f; // 立方體Y軸偏移距離
+    public bool showDetectionBox = true; // 是否顯示偵測立方體
+    
+    [Header("撤退避障設定")]
+    public Vector3 retreatBoxSize = new Vector3(0.8f, 0.5f, 0.8f); // 撤退專用立方體大小（更小）
+    public float retreatBoxOffset = 0.5f; // 撤退立方體偏移距離（更近）
+    public float retreatBoxYOffset = 0f; // 撤退立方體Y軸偏移距離
+    public LayerMask retreatObstacleMask = (1 << 9) | (1 << 6); // 檢測 Obstacle 層 (9) 和 Enemy 層 (6)
 
     [Header("調試選項")]
-    public bool showObstacleRays = true;
     public bool showDebugInfo = false;
 
     private IEnemyState currentState;
     [HideInInspector] public Vector3 velocity;
     public bool canAutoAttack = true;
+    private bool isObstacleDetected = false; // 是否檢測到障礙物
 
     public IEnemyState CurrentState => currentState;
 
@@ -69,7 +81,6 @@ public class EnemyAI : MonoBehaviour
         if (playerObj != null)
         {
             player = playerObj.transform;
-            //Debug.Log("Player found: " + player.name);
         }
         else
         {
@@ -105,130 +116,82 @@ public class EnemyAI : MonoBehaviour
         Vector3 desired = direction.normalized * maxSpeed;
         Vector3 steering = desired - velocity;
         
-        //Debug.Log($"Seek - Direction: {direction}, Desired: {desired}, Steering: {steering}");
-        
         return steering;
     }
 
+    // 追擊專用避障方法 - 使用前方立方體檢測
     public Vector3 ObstacleAvoid()
     {
         Vector3 avoid = Vector3.zero;
+        isObstacleDetected = false;
         
-        // 調試：檢查 obstacleMask
+        // 計算前方偵測立方體的位置和旋轉（用於追擊）
+        Vector3 boxCenter = transform.position + transform.forward * detectionBoxOffset + Vector3.up * detectionBoxYOffset;
+        Quaternion boxRotation = transform.rotation;
+        
+        // 使用 OverlapBox 檢測前方立方體內的障礙物
+        Collider[] hitColliders = Physics.OverlapBox(boxCenter, detectionBoxSize * 0.5f, boxRotation, obstacleMask);
+        
         if (showDebugInfo)
         {
-            Debug.Log($"ObstacleAvoid - obstacleMask: {obstacleMask.value}, avoidDistance: {avoidDistance}");
+            Debug.Log($"ObstacleAvoid - 前方立方體中心: {boxCenter}, 大小: {detectionBoxSize}, 檢測到 {hitColliders.Length} 個 Collider");
         }
         
-        // 簡單測試：檢查前方是否有任何障礙物
-        Ray testRay = new Ray(transform.position, transform.forward);
-        if (Physics.Raycast(testRay, out RaycastHit testHit, avoidDistance, obstacleMask))
+        if (hitColliders.Length > 0)
         {
-            if (showDebugInfo)
+            isObstacleDetected = true;
+            
+            // 計算避障方向 - 遠離所有檢測到的障礙物
+            foreach (var hitCollider in hitColliders)
             {
-                Debug.Log($"ObstacleAvoid: 檢測到障礙物 {testHit.collider.name} 在距離 {testHit.distance}");
+                // 跳過自己的 Collider
+                if (hitCollider.gameObject == gameObject)
+                {
+                    if (showDebugInfo)
+                    {
+                        Debug.Log($"ObstacleAvoid - 跳過自己的 Collider: {hitCollider.name}");
+                    }
+                    continue;
+                }
+                
+                Vector3 directionToObstacle = hitCollider.transform.position - transform.position;
+                directionToObstacle.y = 0f; // 只考慮水平方向
+                
+                if (directionToObstacle.magnitude > 0.1f)
+                {
+                    Vector3 awayFromObstacle = -directionToObstacle.normalized;
+                    float distance = directionToObstacle.magnitude;
+                    
+                    // 根據距離調整避障強度，距離越近強度越大
+                    float distanceRatio = Mathf.Clamp01(1f - (distance / detectionBoxSize.z));
+                    float adjustedStrength = avoidStrength * distanceRatio;
+                    
+                    avoid += awayFromObstacle * adjustedStrength;
+                    
+                    if (showDebugInfo)
+                    {
+                        Debug.Log($"ObstacleAvoid - 檢測到前方障礙物: {hitCollider.name}, 距離: {distance:F2}, 避障力: {awayFromObstacle * adjustedStrength}");
+                    }
+                }
+            }
+            
+            // 限制避障力的最大值
+            if (avoid.magnitude > maxSpeed)
+            {
+                avoid = avoid.normalized * maxSpeed;
             }
         }
         else
         {
             if (showDebugInfo)
             {
-                Debug.Log("ObstacleAvoid: 前方沒有檢測到障礙物");
+                Debug.Log("ObstacleAvoid - 沒有檢測到前方障礙物");
             }
-        }
-        
-        // 增加射線密度，包含更多檢測方向
-        Vector3[] dirs = {
-            transform.forward,                                    // 前方
-            (transform.forward + transform.right * 0.5f).normalized,     // 右前方30度
-            (transform.forward - transform.right * 0.5f).normalized,     // 左前方30度
-            (transform.forward + transform.right).normalized,     // 右前方45度
-            (transform.forward - transform.right).normalized,     // 左前方45度
-            (transform.forward + transform.right * 1.5f).normalized,     // 右前方60度
-            (transform.forward - transform.right * 1.5f).normalized,     // 左前方60度
-            transform.right,                                      // 右方
-            -transform.right,                                     // 左方
-        };
-
-        foreach (var dir in dirs)
-        {
-            // 水平射線檢測
-            Ray ray = new Ray(transform.position, dir);
-            if (Physics.Raycast(ray, out RaycastHit hit, avoidDistance, obstacleMask))
-            {
-                Vector3 away = (transform.position - hit.point).normalized;
-                away.y = 0f; // 只考慮水平避障
-                
-                // 根據距離調整避障強度，距離越近強度越大
-                float distanceRatio = 1f - (hit.distance / avoidDistance);
-                float adjustedStrength = avoidStrength * distanceRatio;
-                
-                avoid += away * adjustedStrength;
-                
-                // 調試信息
-                if (showDebugInfo)
-                {
-                    Debug.Log($"Hit obstacle: {hit.collider.name} at distance {hit.distance}, force: {away * adjustedStrength}");
-                }
-                
-                if (showObstacleRays)
-                {
-                    Debug.DrawRay(transform.position, dir * hit.distance, Color.red);
-                }
-            }
-            else
-            {
-                // 調試信息 - 沒有碰撞的射線
-                if (showObstacleRays)
-                {
-                    Debug.DrawRay(transform.position, dir * avoidDistance, Color.green);
-                }
-            }
-            
-            // 懸空障礙物檢測 - 向上射線
-            Vector3 upDir = new Vector3(dir.x, 1f, dir.z).normalized;
-            Ray upRay = new Ray(transform.position, upDir);
-            if (Physics.Raycast(upRay, out RaycastHit upHit, avoidDistance * 0.8f, obstacleMask))
-            {
-                Vector3 away = (transform.position - upHit.point).normalized;
-                away.y = 0f; // 只考慮水平避障
-                
-                // 懸空障礙物的避障強度較小
-                float distanceRatio = 1f - (upHit.distance / (avoidDistance * 0.8f));
-                float adjustedStrength = avoidStrength * distanceRatio * 0.6f; // 懸空障礙物避障強度較小
-                
-                avoid += away * adjustedStrength;
-                
-                // 調試信息
-                if (showDebugInfo)
-                {
-                    Debug.Log($"Hit overhead obstacle: {upHit.collider.name} at distance {upHit.distance}, force: {away * adjustedStrength}");
-                }
-                
-                if (showObstacleRays)
-                {
-                    Debug.DrawRay(transform.position, upDir * upHit.distance, Color.magenta);
-                }
-            }
-            else
-            {
-                // 調試信息 - 沒有懸空障礙物
-                if (showObstacleRays)
-                {
-                    Debug.DrawRay(transform.position, upDir * (avoidDistance * 0.8f), Color.cyan);
-                }
-            }
-        }
-        
-        // 限制避障力的最大值
-        if (avoid.magnitude > maxSpeed)
-        {
-            avoid = avoid.normalized * maxSpeed;
         }
         
         if (showDebugInfo && avoid.magnitude > 0.1f)
         {
-            Debug.Log($"ObstacleAvoid - Total avoid force: {avoid}");
+            Debug.Log($"ObstacleAvoid - 前方總避障力: {avoid}");
         }
         
         return avoid;
@@ -266,19 +229,21 @@ public class EnemyAI : MonoBehaviour
             Vector3 directionToEnemy = enemyCollider.transform.position - transform.position;
             directionToEnemy.y = 0f; // 只考慮水平方向
             
-            float distance = directionToEnemy.magnitude;
-            if (distance < 0.1f) // 避免除以零
-                continue;
-                
-            // 計算避障力，距離越近力越大
-            float avoidForce = enemyAvoidStrength / (distance * distance);
-            Vector3 awayFromEnemy = -directionToEnemy.normalized * avoidForce;
-            
-            avoid += awayFromEnemy;
-            
-            if (showDebugInfo)
+            if (directionToEnemy.magnitude > 0.1f)
             {
-                Debug.Log($"EnemyAvoid - 敵人: {otherEnemy.name}, 距離: {distance:F2}, 避障力: {awayFromEnemy}");
+                Vector3 awayFromEnemy = -directionToEnemy.normalized;
+                float distance = directionToEnemy.magnitude;
+                
+                // 根據距離調整避障強度
+                float distanceRatio = Mathf.Clamp01(1f - (distance / enemyAvoidDistance));
+                float adjustedStrength = enemyAvoidStrength * distanceRatio;
+                
+                avoid += awayFromEnemy * adjustedStrength;
+                
+                if (showDebugInfo)
+                {
+                    Debug.Log($"EnemyAvoid - 檢測到敵人: {otherEnemy.name}, 距離: {distance:F2}, 避障力: {awayFromEnemy * adjustedStrength}");
+                }
             }
         }
         
@@ -318,8 +283,6 @@ public class EnemyAI : MonoBehaviour
             if (lookDirection.magnitude > 0.1f)
                 transform.forward = lookDirection;
         }
-
-        // 移除自動攻擊邏輯，讓狀態機自己控制
     }
 
     public void Stop()
@@ -328,7 +291,7 @@ public class EnemyAI : MonoBehaviour
     }
 
     // 視覺化調試
-    void OnDrawGizmosSelected()
+    void OnDrawGizmos()
     {
         // 繪製敵人避障範圍
         Gizmos.color = Color.red;
@@ -342,326 +305,125 @@ public class EnemyAI : MonoBehaviour
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, visionRange);
         
-        // 繪製障礙物避障範圍
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, avoidDistance);
-        
-        // 繪製增加密度的避障檢測射線
-        Vector3[] dirs = {
-            transform.forward,
-            (transform.forward + transform.right * 0.5f).normalized,
-            (transform.forward - transform.right * 0.5f).normalized,
-            (transform.forward + transform.right).normalized,
-            (transform.forward - transform.right).normalized,
-            (transform.forward + transform.right * 1.5f).normalized,
-            (transform.forward - transform.right * 1.5f).normalized,
-            transform.right,
-            -transform.right
-        };
-        
-        // 水平射線
-        Gizmos.color = Color.cyan;
-        foreach (var dir in dirs)
+        // 繪製偵測立方體
+        if (showDetectionBox)
         {
-            Gizmos.DrawRay(transform.position, dir * avoidDistance);
-        }
-        
-        // 懸空障礙物檢測射線
-        Gizmos.color = Color.magenta;
-        foreach (var dir in dirs)
-        {
-            Vector3 upDir = new Vector3(dir.x, 1f, dir.z).normalized;
-            Gizmos.DrawRay(transform.position, upDir * (avoidDistance * 0.8f));
-        }
-        
-        // 繪製撤退避障射線
-        Vector3[] retreatDirs = {
-            -transform.forward,
-            (-transform.forward + transform.right).normalized,
-            (-transform.forward - transform.right).normalized,
-            transform.right,
-            -transform.right,
-            (-transform.forward + transform.right * 0.5f).normalized,
-            (-transform.forward - transform.right * 0.5f).normalized
-        };
-        
-        Gizmos.color = new Color(1f, 0.5f, 0f, 1f); // 橙色
-        foreach (var dir in retreatDirs)
-        {
-            Gizmos.DrawRay(transform.position, dir * avoidDistance);
-        }
-    }
-
-    // 測試障礙物檢測的方法（可在 Inspector 中調用）
-    [ContextMenu("Test Obstacle Detection")]
-    public void TestObstacleDetection()
-    {
-        Debug.Log("=== 高密度射線障礙物檢測測試 ===");
-        Debug.Log($"obstacleMask: {obstacleMask.value}");
-        Debug.Log($"avoidDistance: {avoidDistance}");
-        
-        // 測試前方射線
-        Ray ray = new Ray(transform.position, transform.forward);
-        if (Physics.Raycast(ray, out RaycastHit hit, avoidDistance, obstacleMask))
-        {
-            Debug.Log($"前方射線檢測到: {hit.collider.name}, 距離: {hit.distance}, 層: {hit.collider.gameObject.layer}");
-        }
-        else
-        {
-            Debug.Log("前方射線沒有檢測到障礙物");
-        }
-        
-        // 測試右前方30度射線
-        Ray rayRight30 = new Ray(transform.position, (transform.forward + transform.right * 0.5f).normalized);
-        if (Physics.Raycast(rayRight30, out RaycastHit hitRight30, avoidDistance, obstacleMask))
-        {
-            Debug.Log($"右前方30度射線檢測到: {hitRight30.collider.name}, 距離: {hitRight30.distance}");
-        }
-        else
-        {
-            Debug.Log("右前方30度射線沒有檢測到障礙物");
-        }
-        
-        // 測試左前方30度射線
-        Ray rayLeft30 = new Ray(transform.position, (transform.forward - transform.right * 0.5f).normalized);
-        if (Physics.Raycast(rayLeft30, out RaycastHit hitLeft30, avoidDistance, obstacleMask))
-        {
-            Debug.Log($"左前方30度射線檢測到: {hitLeft30.collider.name}, 距離: {hitLeft30.distance}");
-        }
-        else
-        {
-            Debug.Log("左前方30度射線沒有檢測到障礙物");
-        }
-        
-        // 測試懸空障礙物 - 前方向上射線
-        Vector3 upDir = new Vector3(transform.forward.x, 1f, transform.forward.z).normalized;
-        Ray upRay = new Ray(transform.position, upDir);
-        if (Physics.Raycast(upRay, out RaycastHit upHit, avoidDistance * 0.8f, obstacleMask))
-        {
-            Debug.Log($"前方懸空射線檢測到: {upHit.collider.name}, 距離: {upHit.distance}");
-        }
-        else
-        {
-            Debug.Log("前方懸空射線沒有檢測到障礙物");
-        }
-        
-        // 測試右方射線
-        Ray rayRight = new Ray(transform.position, transform.right);
-        if (Physics.Raycast(rayRight, out RaycastHit hitRight, avoidDistance, obstacleMask))
-        {
-            Debug.Log($"右方射線檢測到: {hitRight.collider.name}, 距離: {hitRight.distance}");
-        }
-        else
-        {
-            Debug.Log("右方射線沒有檢測到障礙物");
-        }
-        
-        // 測試左方射線
-        Ray rayLeft = new Ray(transform.position, -transform.right);
-        if (Physics.Raycast(rayLeft, out RaycastHit hitLeft, avoidDistance, obstacleMask))
-        {
-            Debug.Log($"左方射線檢測到: {hitLeft.collider.name}, 距離: {hitLeft.distance}");
-        }
-        else
-        {
-            Debug.Log("左方射線沒有檢測到障礙物");
-        }
-    }
-
-    // 測試場景中所有障礙物的方法
-    [ContextMenu("Test Scene Obstacles")]
-    public void TestSceneObstacles()
-    {
-        Debug.Log("=== 場景障礙物檢測測試 ===");
-        
-        // 查找場景中所有有 Collider 的物件
-        Collider[] allColliders = FindObjectsOfType<Collider>();
-        Debug.Log($"場景中共有 {allColliders.Length} 個 Collider");
-        
-        foreach (var collider in allColliders)
-        {
-            Debug.Log($"物件: {collider.name}, Layer: {collider.gameObject.layer}, Tag: {collider.gameObject.tag}");
-        }
-        
-        // 檢查敵人周圍的物件
-        Collider[] nearbyColliders = Physics.OverlapSphere(transform.position, avoidDistance * 2f);
-        Debug.Log($"敵人周圍 {avoidDistance * 2f} 距離內有 {nearbyColliders.Length} 個 Collider");
-        
-        foreach (var collider in nearbyColliders)
-        {
-            if (collider.gameObject != gameObject) // 排除自己
-            {
-                float distance = Vector3.Distance(transform.position, collider.transform.position);
-                Debug.Log($"附近物件: {collider.name}, Layer: {collider.gameObject.layer}, 距離: {distance:F2}");
-            }
-        }
-    }
-
-    // 測試敵人避障的方法
-    [ContextMenu("Test Enemy Avoidance")]
-    public void TestEnemyAvoidance()
-    {
-        Debug.Log("=== 敵人避障測試 ===");
-        Debug.Log($"enemyAvoidDistance: {enemyAvoidDistance}");
-        Debug.Log($"enemyAvoidStrength: {enemyAvoidStrength}");
-        Debug.Log($"enemyLayerMask: {enemyLayerMask.value}");
-        
-        // 檢測周圍的敵人
-        Collider[] nearbyEnemies = Physics.OverlapSphere(transform.position, enemyAvoidDistance, enemyLayerMask);
-        Debug.Log($"檢測到 {nearbyEnemies.Length} 個附近的 Collider");
-        
-        foreach (var enemyCollider in nearbyEnemies)
-        {
-            if (enemyCollider.gameObject == gameObject)
-            {
-                Debug.Log($"跳過自己: {enemyCollider.name}");
-                continue;
-            }
+            Vector3 boxCenter = transform.position + transform.forward * detectionBoxOffset + Vector3.up * detectionBoxYOffset;
             
-            EnemyAI otherEnemy = enemyCollider.GetComponent<EnemyAI>();
-            if (otherEnemy == null)
-            {
-                Debug.Log($"不是敵人: {enemyCollider.name}");
-                continue;
-            }
+            // 根據是否檢測到障礙物改變顏色
+            Gizmos.color = isObstacleDetected ? Color.red : Color.green;
             
-            float distance = Vector3.Distance(transform.position, enemyCollider.transform.position);
-            Debug.Log($"敵人: {otherEnemy.name}, 距離: {distance:F2}");
-        }
-        
-        // 測試所有層的檢測
-        Collider[] allNearby = Physics.OverlapSphere(transform.position, enemyAvoidDistance);
-        Debug.Log($"所有層檢測到 {allNearby.Length} 個 Collider");
-        
-        foreach (var collider in allNearby)
-        {
-            if (collider.gameObject != gameObject)
-            {
-                EnemyAI otherEnemy = collider.GetComponent<EnemyAI>();
-                if (otherEnemy != null)
-                {
-                    float distance = Vector3.Distance(transform.position, collider.transform.position);
-                    Debug.Log($"所有層檢測到敵人: {otherEnemy.name}, Layer: {collider.gameObject.layer}, 距離: {distance:F2}");
-                }
-            }
+            // 繪製立方體邊線
+            Gizmos.matrix = Matrix4x4.TRS(boxCenter, transform.rotation, Vector3.one);
+            Gizmos.DrawWireCube(Vector3.zero, detectionBoxSize);
+            Gizmos.matrix = Matrix4x4.identity;
+            
+            // 繪製立方體中心點（調試用）
+            Gizmos.color = Color.white;
+            Gizmos.DrawWireSphere(boxCenter, 0.1f);
+            
+            // 繪製從敵人到立方體中心的線（調試用）
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(transform.position, boxCenter);
+            
+            // 繪製撤退偵測立方體（橙色，基於背向玩家方向）
+            Vector3 retreatDirection = (transform.position - player.position).normalized;
+            retreatDirection.y = 0f;
+            Vector3 retreatBoxCenter = transform.position + retreatDirection * retreatBoxOffset + Vector3.up * retreatBoxYOffset;
+            Gizmos.color = new Color(1f, 0.5f, 0f, 1f); // 橙色
+            // 使用基於背向玩家方向的旋轉
+            Quaternion retreatBoxRotation = Quaternion.LookRotation(retreatDirection);
+            Gizmos.matrix = Matrix4x4.TRS(retreatBoxCenter, retreatBoxRotation, Vector3.one);
+            Gizmos.DrawWireCube(Vector3.zero, retreatBoxSize);
+            Gizmos.matrix = Matrix4x4.identity;
+            
+            // 繪製撤退立方體中心點
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(retreatBoxCenter, 0.1f);
+            
+            // 繪製從敵人到撤退立方體中心的線
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawLine(transform.position, retreatBoxCenter);
         }
     }
 
-    // 簡化的避障方法（備選方案）
-    public Vector3 SimpleObstacleAvoid()
-    {
-        Vector3 avoid = Vector3.zero;
-        
-        // 檢測前方是否有障礙物
-        Ray ray = new Ray(transform.position, transform.forward);
-        if (Physics.Raycast(ray, out RaycastHit hit, avoidDistance))
-        {
-            // 如果檢測到任何物體（不只是 obstacleMask）
-            Vector3 away = (transform.position - hit.point).normalized;
-            away.y = 0f;
-            avoid = away * avoidStrength;
-            
-            if (showDebugInfo)
-            {
-                Debug.Log($"SimpleObstacleAvoid - Hit: {hit.collider.name}, Force: {avoid}");
-            }
-        }
-        
-        return avoid;
-    }
-
-    // 備用避障方法 - 不依賴 obstacleMask
-    public Vector3 BackupObstacleAvoid()
-    {
-        Vector3 avoid = Vector3.zero;
-        
-        // 診斷：檢查射線檢測是否正常工作
-        Debug.Log($"BackupObstacleAvoid: 開始檢測，位置 = {transform.position}, 前方 = {transform.forward}, 檢測距離 = {avoidDistance}");
-        
-        // 檢測前方是否有任何障礙物（不限制層）
-        Ray ray = new Ray(transform.position, transform.forward);
-        
-        // 先測試所有層的射線檢測
-        if (Physics.Raycast(ray, out RaycastHit hit, avoidDistance))
-        {
-            Vector3 away = (transform.position - hit.point).normalized;
-            away.y = 0f;
-            avoid = away * avoidStrength;
-            
-            Debug.Log($"BackupObstacleAvoid - 檢測到物體: {hit.collider.name}, Layer: {hit.collider.gameObject.layer}, 距離: {hit.distance}, 避障力: {avoid}");
-        }
-        else
-        {
-            Debug.Log($"BackupObstacleAvoid - 前方 {avoidDistance} 距離內沒有檢測到任何物體");
-            
-            // 測試更長的距離
-            if (Physics.Raycast(ray, out RaycastHit longHit, avoidDistance * 2f))
-            {
-                Debug.Log($"BackupObstacleAvoid - 在 {avoidDistance * 2f} 距離內檢測到: {longHit.collider.name}, Layer: {longHit.collider.gameObject.layer}");
-            }
-            else
-            {
-                Debug.Log($"BackupObstacleAvoid - 即使在 {avoidDistance * 2f} 距離內也沒有檢測到任何物體");
-            }
-        }
-        
-        return avoid;
-    }
-
-    // 撤退專用避障方法 - 檢測後方和側面
+    // 撤退專用避障方法 - 使用後方立方體檢測
     public Vector3 RetreatObstacleAvoid()
     {
         Vector3 avoid = Vector3.zero;
         
-        // 檢測後方和側面的障礙物
-        Vector3[] retreatDirs = {
-            -transform.forward,                                   // 後方
-            (-transform.forward + transform.right).normalized,    // 右後方
-            (-transform.forward - transform.right).normalized,    // 左後方
-            transform.right,                                      // 右方
-            -transform.right,                                     // 左方
-            (-transform.forward + transform.right * 0.5f).normalized,  // 右後方30度
-            (-transform.forward - transform.right * 0.5f).normalized   // 左後方30度
-        };
-
-        foreach (var dir in retreatDirs)
+        // 計算背向玩家的方向（用於撤退立方體位置和避障）
+        Vector3 retreatDirection = (transform.position - player.position).normalized;
+        retreatDirection.y = 0f;
+        
+        // 計算後方偵測立方體的位置和旋轉（基於背向玩家方向）
+        Vector3 retreatBoxCenter = transform.position + retreatDirection * retreatBoxOffset + Vector3.up * retreatBoxYOffset;
+        // 使用基於背向玩家方向的旋轉
+        Quaternion retreatBoxRotation = Quaternion.LookRotation(retreatDirection);
+        
+        // 使用 OverlapBox 檢測後方立方體內的障礙物（使用更小的撤退立方體）
+        Collider[] hitColliders = Physics.OverlapBox(retreatBoxCenter, retreatBoxSize * 0.5f, retreatBoxRotation, retreatObstacleMask);
+        
+        if (showDebugInfo)
         {
-            Ray ray = new Ray(transform.position, dir);
-            if (Physics.Raycast(ray, out RaycastHit hit, avoidDistance, obstacleMask))
-            {
-                Vector3 away = (transform.position - hit.point).normalized;
-                away.y = 0f;
-                
-                // 根據距離調整避障強度
-                float distanceRatio = 1f - (hit.distance / avoidDistance);
-                float adjustedStrength = avoidStrength * distanceRatio;
-                
-                avoid += away * adjustedStrength;
-                
-                Debug.Log($"RetreatObstacleAvoid - 檢測到障礙物: {hit.collider.name}, 方向: {dir}, 距離: {hit.distance}, 避障力: {away * adjustedStrength}");
-            }
-            else
-            {
-                // 如果 obstacleMask 沒有檢測到，嘗試檢測所有層
-                if (Physics.Raycast(ray, out RaycastHit hitAll, avoidDistance))
-                {
-                    Vector3 away = (transform.position - hitAll.point).normalized;
-                    away.y = 0f;
-                    
-                    float distanceRatio = 1f - (hitAll.distance / avoidDistance);
-                    float adjustedStrength = avoidStrength * distanceRatio;
-                    
-                    avoid += away * adjustedStrength;
-                    
-                    Debug.Log($"RetreatObstacleAvoid - 檢測到物體(所有層): {hitAll.collider.name}, 方向: {dir}, 距離: {hitAll.distance}, 避障力: {away * adjustedStrength}");
-                }
-            }
+            Debug.Log($"RetreatObstacleAvoid - 檢測到 {hitColliders.Length} 個指定層的 Collider (Obstacle + Enemy)");
+            Debug.Log($"RetreatObstacleAvoid - retreatObstacleMask: {retreatObstacleMask.value}");
         }
         
-        // 限制避障力的最大值
-        if (avoid.magnitude > maxSpeed)
+        if (hitColliders.Length > 0)
         {
-            avoid = avoid.normalized * maxSpeed;
+            // 計算避障方向 - 遠離所有檢測到的障礙物
+            foreach (var hitCollider in hitColliders)
+            {
+                // 跳過自己的 Collider
+                if (hitCollider.gameObject == gameObject)
+                {
+                    if (showDebugInfo)
+                    {
+                        Debug.Log($"RetreatObstacleAvoid - 跳過自己的 Collider: {hitCollider.name}");
+                    }
+                    continue;
+                }
+                
+                Vector3 directionToObstacle = hitCollider.transform.position - transform.position;
+                directionToObstacle.y = 0f; // 只考慮水平方向
+                
+                if (directionToObstacle.magnitude > 0.1f)
+                {
+                    Vector3 awayFromObstacle = -directionToObstacle.normalized;
+                    float distance = directionToObstacle.magnitude;
+                    
+                    // 根據距離調整避障強度，撤退時使用正常避障強度
+                    float distanceRatio = Mathf.Clamp01(1f - (distance / retreatBoxSize.z));
+                    float adjustedStrength = avoidStrength * distanceRatio; // 使用正常避障強度
+                    
+                    avoid += awayFromObstacle * adjustedStrength;
+                    
+                    if (showDebugInfo)
+                    {
+                        string objectType = hitCollider.gameObject.layer == 9 ? "障礙物" : "敵人";
+                        Debug.Log($"RetreatObstacleAvoid - 檢測到{objectType}: {hitCollider.name}, Layer: {hitCollider.gameObject.layer}, 距離: {distance:F2}, 避障力: {awayFromObstacle * adjustedStrength}");
+                    }
+                }
+            }
+            
+            // 限制避障力的最大值
+            if (avoid.magnitude > maxSpeed)
+            {
+                avoid = avoid.normalized * maxSpeed;
+            }
+            
+            if (showDebugInfo)
+            {
+                Debug.Log($"RetreatObstacleAvoid - 最終避障力: {avoid}");
+            }
+        }
+        else
+        {
+            if (showDebugInfo)
+            {
+                Debug.Log("RetreatObstacleAvoid - 沒有檢測到障礙物或敵人，不產生避障力");
+            }
         }
         
         return avoid;
