@@ -8069,8 +8069,8 @@ MonoBehaviour:
   visionRange: 100
   attackRange: 20
   maxSpeed: 10
-  avoidDistance: 10
-  avoidStrength: 30
+  avoidDistance: 20
+  avoidStrength: 40
   obstacleMask:
     serializedVersion: 2
     m_Bits: 512
