@@ -6908,8 +6908,8 @@ MonoBehaviour:
   animator: {fileID: 3368920649114396822}
   visionRange: 100
   attackRange: 10
-  maxSpeed: 10
-  avoidDistance: 10
+  maxSpeed: 15
+  avoidDistance: 12
   avoidStrength: 30
   obstacleMask:
     serializedVersion: 2

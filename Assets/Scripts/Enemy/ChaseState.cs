@@ -14,8 +14,18 @@ public class ChaseState : IEnemyState
         // 檢查是否在攻擊範圍內
         if (enemy.IsInAttackRange())
         {
-            Debug.Log("ChaseState: 進入攻擊範圍，切換到 AttackState");
-            enemy.SwitchState(new AttackState());
+            // 檢查是否為遠程兵種
+            var rangedEnemy = enemy.GetComponent<RangedEnemy>();
+            if (rangedEnemy != null)
+            {
+                Debug.Log("ChaseState: 進入攻擊範圍，切換到 AimState (遠程兵種)");
+                enemy.SwitchState(new AimState());
+            }
+            else
+            {
+                Debug.Log("ChaseState: 進入攻擊範圍，切換到 AttackState (近戰兵種)");
+                enemy.SwitchState(new AttackState());
+            }
             return;
         }
 
