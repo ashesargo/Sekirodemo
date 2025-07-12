@@ -6868,8 +6868,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 992ed3020ec2d3243bc6c6d52ef0b056, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 50
-  currentHP: 0
   isDead: 0
 --- !u!136 &5750749029780248980
 CapsuleCollider:
@@ -6918,11 +6916,20 @@ MonoBehaviour:
     m_Bits: 512
   retreatTime: 2.1
   enemyAvoidDistance: 3
-  enemyAvoidStrength: 20
+  enemyAvoidStrength: 10
   enemyLayerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
-  showObstacleRays: 1
+    m_Bits: 64
+  detectionBoxSize: {x: 5, y: 10, z: 10}
+  detectionBoxOffset: 5
+  detectionBoxYOffset: 5
+  showDetectionBox: 1
+  retreatBoxSize: {x: 5, y: 10, z: 10}
+  retreatBoxOffset: 5
+  retreatBoxYOffset: 5
+  retreatObstacleMask:
+    serializedVersion: 2
+    m_Bits: 512
   showDebugInfo: 1
   velocity: {x: 0, y: 0, z: 0}
   canAutoAttack: 0
