@@ -12318,6 +12318,7 @@ GameObject:
   - component: {fileID: 6061397711166869704}
   - component: {fileID: 215686583444720306}
   - component: {fileID: 5157647425813147406}
+  - component: {fileID: 1740071847312567996}
   m_Layer: 0
   m_Name: ModularSamurai
   m_TagString: Untagged
@@ -12393,6 +12394,28 @@ MonoBehaviour:
   maxHealth: 100
   maxPosture: 100
   healthPostureUI: {fileID: 4393573506154213519}
+--- !u!114 &1740071847312567996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6869600998273829490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55f4d4c5a0f2f614dbc5f07bf7182379, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stepHeightUnit: 0.2
+  iKLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  rayCastDistance: 0
+  rayHitOffset: 0.5
+  forwardRayOffset: 0.1
+  ikFalloffDistance: 1
+  iKSphereRadius: 0.2
+  PositionSphereRadius: 0.2
 --- !u!1 &6990316013176573253
 GameObject:
   m_ObjectHideFlags: 0
