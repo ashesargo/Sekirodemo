@@ -25,6 +25,7 @@ public class AttackState : IEnemyState
         {
             hasAttacked = true;
             Debug.Log("AttackState: 攻擊動畫開始播放");
+            enemy.Stop(); // 停止移動
         }
 
         // 等待攻擊動畫結束
