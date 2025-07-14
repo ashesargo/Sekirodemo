@@ -9,7 +9,7 @@ using UnityEngine.Playables;
 [RequireComponent(typeof(CharacterController))]
 public class TPContrallerV2 : MonoBehaviour
 {
-    [Header("Äá¼v¾÷")]
+    [Header("ï¿½ï¿½vï¿½ï¿½")]
     public Transform tpCamera;
     public float rotateSensitivity;
 
@@ -20,7 +20,7 @@ public class TPContrallerV2 : MonoBehaviour
     public LayerMask enemyLayer;
     public TPCamera TPCamera;
 
-    [Header("²¾°Ê°Ñ¼Æ")]
+    [Header("ï¿½ï¿½ï¿½Ê°Ñ¼ï¿½")]
     public float walkSpeed = 2f;
     public float runSpeed = 5f;
     public float dodgeDistance = 5f;
@@ -28,7 +28,7 @@ public class TPContrallerV2 : MonoBehaviour
     public float jumpForce = 5f;
     public float gravity = -9.81f;
 
-    [Header("§ðÀ» Combo")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ Combo")]
     public int maxCombo = 3;
     public float comboResetTime = 1.0f;
 
@@ -39,7 +39,7 @@ public class TPContrallerV2 : MonoBehaviour
     private bool isGrounded;
     private float dodgeTimer;
 
-    // Combo ¨t²ÎÅÜ¼Æ
+    // Combo ï¿½tï¿½ï¿½ï¿½Ü¼ï¿½
     private int comboStep = 0;
     private bool isAttacking = false;
     private bool canCombo = false;
@@ -111,7 +111,7 @@ public class TPContrallerV2 : MonoBehaviour
             moveDirection = camTransform.right * fH + camTransform.forward * fV;
             moveDirection.y = 0;
             moveDirection.Normalize();
-            if (moveDirection.sqrMagnitude > 0.001f) // ½T«O¦³¤è¦V¿é¤J¤~±ÛÂà
+            if (moveDirection.sqrMagnitude > 0.001f) // ï¿½Tï¿½Oï¿½ï¿½ï¿½ï¿½Vï¿½ï¿½Jï¿½~ï¿½ï¿½ï¿½ï¿½
             {
                 Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
                 transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotateSensitivity * Time.deltaTime);
@@ -191,7 +191,7 @@ public class TPContrallerV2 : MonoBehaviour
 
         if (!isAttacking)
         {
-            // ­º¦¸§ðÀ»
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             isAttacking = true;
             comboStep = 1;
             PlayAttackAnimation(comboStep);
