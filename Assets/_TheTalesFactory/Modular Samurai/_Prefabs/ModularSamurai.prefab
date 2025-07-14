@@ -12410,10 +12410,10 @@ MonoBehaviour:
   iKLayer:
     serializedVersion: 2
     m_Bits: 8
-  rayCastDistance: 0
-  rayHitOffset: 0.5
+  rayCastDistance: 10
+  rayHitOffset: 1
   forwardRayOffset: 0.1
-  ikFalloffDistance: 1
+  ikFalloffDistance: 0.5
   iKSphereRadius: 0.2
   PositionSphereRadius: 0.2
 --- !u!1 &6990316013176573253

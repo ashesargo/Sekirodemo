@@ -588,7 +588,12 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 8820455251518893584, guid: b92002cd29f5282489e451d0f40af0c7, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 5373964217268028117, guid: b92002cd29f5282489e451d0f40af0c7, type: 3}
     m_RemovedGameObjects:
     - {fileID: 122092, guid: b92002cd29f5282489e451d0f40af0c7, type: 3}
     m_AddedGameObjects:
@@ -1009,6 +1014,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1526596839366080372}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6469acb63f9308948931637bccafa65a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8974924784016855424}
     - targetCorrespondingSourceObject: {fileID: -7598310969569340042, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8034766494229675496}
@@ -10280,9 +10288,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   rayCastDistance: 10
-  rayHitOffset: 0.5
-  forwardRayOffset: 0
-  ikFalloffDistance: 1
+  rayHitOffset: 1
+  forwardRayOffset: 0.1
+  ikFalloffDistance: 0.5
   iKSphereRadius: 0.2
   PositionSphereRadius: 0.2
 --- !u!114 &1526596839366080372
@@ -10303,6 +10311,24 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   damage: 20
+--- !u!114 &8974924784016855424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7089492386816834627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94b8ea4020dd34a50b6dc3eedd829f25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponCollider: {fileID: 897234438494386866}
+  environmentLayer:
+    serializedVersion: 2
+    m_Bits: 520
+  sparkPrefab: {fileID: 6572068886274405076, guid: f73ed91945e52446780ed004b5b36939, type: 3}
+  weaponRange: 2
 --- !u!4 &7492753023716862852 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8550051735096251754, guid: 6469acb63f9308948931637bccafa65a, type: 3}

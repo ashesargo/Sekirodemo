@@ -154,7 +154,6 @@ GameObject:
   - component: {fileID: 3355342}
   - component: {fileID: 2377680}
   - component: {fileID: 5408976}
-  - component: {fileID: 5373964217268028117}
   m_Layer: 0
   m_Name: Katana_Mokko
   m_TagString: Untagged
@@ -175,7 +174,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5603175414121990268}
   - {fileID: 422376}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -256,23 +254,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &5373964217268028117
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 176074}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94b8ea4020dd34a50b6dc3eedd829f25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  weaponTip: {fileID: 0}
-  environmentLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  sparkPrefab: {fileID: 0}
 --- !u!1 &184162
 GameObject:
   m_ObjectHideFlags: 0
@@ -432,56 +413,3 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.016146889, y: 0.2728604, z: 0.023882736}
   m_Center: {x: -0.0018989267, y: 0.29994196, z: 0.00088040216}
---- !u!1 &5994484604477959593
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5603175414121990268}
-  - component: {fileID: 8820455251518893584}
-  m_Layer: 0
-  m_Name: WeaponTipCollider
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5603175414121990268
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5994484604477959593}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.6580739, y: -0.0000000037252894, z: 0.00000005960463, w: 0.75295335}
-  m_LocalPosition: {x: 0.0022117347, y: -0.006027907, z: 0.19945769}
-  m_LocalScale: {x: 1, y: 1, z: 1.0572368}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 465456}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &8820455251518893584
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5994484604477959593}
-  m_Material: {fileID: 13400000, guid: e26af8b40b8a1204f8102f9d30f24732, type: 2}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.0051669236, y: 0.36496106, z: 0.027787037}
-  m_Center: {x: -0.0023200111, y: 0.33118007, z: 0.00048294978}
