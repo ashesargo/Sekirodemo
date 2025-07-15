@@ -7,81 +7,63 @@ public class WeaponEffect : MonoBehaviour
     public Collider weaponCollider; // 武器 collider
     public LayerMask environmentLayer;  // 判定層
     public GameObject sparkPrefab;  // 火花 prefab
-    public float weaponRange = 2f;  // 武器檢測範圍
+    public float weaponRange = 1f;  // 武器檢測範圍
 
-    private float nextSparkTime;  // 下次觸發火花時間
-    private Animator animator;  // 動畫控制器
-
-    // 記錄本段攻擊已觸發的碰撞體
-    private HashSet<Collider> hitCollidersThisAttack = new HashSet<Collider>();
-
-    private int lastAttackStateHash; // 上一幀攻擊狀態
-    private bool wasAttackingLastFrame = false;
-
-    void Start()
-    {
-        animator = GetComponentInParent<Animator>();
-    }
+    private bool isDetecting = false;  // 是否正在檢測
+    private HashSet<Collider> hitCollidersThisAttack = new HashSet<Collider>();  // 記錄本段攻擊已觸發的碰撞體
 
     void Update()
     {
-        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-        bool isAttacking = stateInfo.IsTag("Attack");
-
-        if (isAttacking && Time.time > nextSparkTime)
+        if (isDetecting)
         {
             DetectCollisionAndSpawnSpark();
         }
+    }
 
-        // 檢查是否換了攻擊段數（切換到不同動畫 clip）
-        if (isAttacking)
-        {
-            int currentAttackStateHash = stateInfo.fullPathHash;
+    // 動畫事件：開始檢測
+    public void StartDetection()
+    {
+        isDetecting = true;
+        hitCollidersThisAttack.Clear();  // 清空上一段攻擊的碰撞體記錄
+    }
 
-            if (!wasAttackingLastFrame || currentAttackStateHash != lastAttackStateHash)
-            {
-                // 進入新的攻擊段（或剛從非攻擊切入攻擊）
-                hitCollidersThisAttack.Clear();
-            }
-
-            lastAttackStateHash = currentAttackStateHash;
-            wasAttackingLastFrame = true;
-        }
-        else
-        {
-            wasAttackingLastFrame = false;
-            lastAttackStateHash = 0;
-            hitCollidersThisAttack.Clear();
-        }
+    // 動畫事件：停止檢測
+    public void StopDetection()
+    {
+        isDetecting = false;
+        hitCollidersThisAttack.Clear();  // 清空碰撞體記錄
     }
 
     void DetectCollisionAndSpawnSpark()
     {
         if (weaponCollider == null || sparkPrefab == null) return;
 
-        Vector3 weaponCenter = weaponCollider.transform.position;
-        Collider[] hitColliders = Physics.OverlapSphere(weaponCenter, weaponRange, environmentLayer);
+        // 使用 weaponCollider 的實際範圍進行碰撞檢測
+        Collider[] hitColliders = Physics.OverlapBox(
+            weaponCollider.bounds.center,
+            weaponCollider.bounds.extents,
+            weaponCollider.transform.rotation,
+            environmentLayer
+        );
 
         foreach (Collider col in hitColliders)
         {
-            if (hitCollidersThisAttack.Contains(col)) continue;
+            if (hitCollidersThisAttack.Contains(col)) continue;  // 跳過已觸發的碰撞體
 
-            Vector3 closestPoint = col.ClosestPoint(weaponCenter);
+            Vector3 closestPoint = col.ClosestPoint(weaponCollider.bounds.center);
 
-            if (Physics.Raycast(weaponCenter, (closestPoint - weaponCenter).normalized, out RaycastHit hitInfo, weaponRange, environmentLayer))
+            if (Physics.Raycast(weaponCollider.bounds.center, (closestPoint - weaponCollider.bounds.center).normalized, out RaycastHit hitInfo, weaponRange, environmentLayer))
             {
                 SpawnSpark(hitInfo.point, hitInfo.normal);
             }
             else
             {
-                Vector3 fallbackNormal = (closestPoint - weaponCenter).normalized;
+                Vector3 fallbackNormal = (closestPoint - weaponCollider.bounds.center).normalized;
                 SpawnSpark(closestPoint, fallbackNormal);
             }
 
-            hitCollidersThisAttack.Add(col);
+            hitCollidersThisAttack.Add(col);  // 記錄已觸發的碰撞體
         }
-
-        nextSparkTime = Time.time;
     }
 
     public void SpawnSpark(Vector3 position, Vector3 normal)
