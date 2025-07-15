@@ -133,6 +133,9 @@ public class HealthPostureController : MonoBehaviour
         // 死亡時隱藏血條
         HideHealthBar();
         
+        // 關掉敵人 collider
+        GetComponent<Collider>().enabled = false;
+        
         // 播放死亡動畫
     }
 
