@@ -4,9 +4,17 @@ using System.Collections.Generic;
 // 武器特效
 public class WeaponEffect : MonoBehaviour
 {
+    [System.Serializable]
+    public class LayerEffectMapping
+    {
+        public LayerMask layerMask;
+        public GameObject effectPrefab;
+    }
+
     public Collider weaponCollider; // 武器 collider
     public LayerMask environmentLayer;  // 判定層
-    public GameObject sparkPrefab;  // 火花 prefab
+    public GameObject defaultSparkPrefab;  // 預設火花 prefab
+    public List<LayerEffectMapping> layerEffectMappings = new List<LayerEffectMapping>();  // 層級特效映射
     public float weaponRange = 1f;  // 武器檢測範圍
 
     private bool isDetecting = false;  // 是否正在檢測
@@ -36,7 +44,7 @@ public class WeaponEffect : MonoBehaviour
 
     void DetectCollisionAndSpawnSpark()
     {
-        if (weaponCollider == null || sparkPrefab == null) return;
+        if (weaponCollider == null) return;
 
         // 使用 weaponCollider 的實際範圍進行碰撞檢測
         Collider[] hitColliders = Physics.OverlapBox(
@@ -54,21 +62,48 @@ public class WeaponEffect : MonoBehaviour
 
             if (Physics.Raycast(weaponCollider.bounds.center, (closestPoint - weaponCollider.bounds.center).normalized, out RaycastHit hitInfo, weaponRange, environmentLayer))
             {
-                SpawnSpark(hitInfo.point, hitInfo.normal);
+                SpawnSpark(hitInfo.point, hitInfo.normal, col.gameObject.layer);
             }
             else
             {
                 Vector3 fallbackNormal = (closestPoint - weaponCollider.bounds.center).normalized;
-                SpawnSpark(closestPoint, fallbackNormal);
+                SpawnSpark(closestPoint, fallbackNormal, col.gameObject.layer);
             }
 
             hitCollidersThisAttack.Add(col);  // 記錄已觸發的碰撞體
         }
     }
 
+    public void SpawnSpark(Vector3 position, Vector3 normal, int hitLayer)
+    {
+        // 根據碰撞層選擇對應的特效
+        GameObject effectPrefab = GetEffectPrefabForLayer(hitLayer);
+        
+        if (effectPrefab != null)
+        {
+            GameObject effect = Instantiate(effectPrefab, position, Quaternion.LookRotation(normal));
+            Destroy(effect, 1f);
+        }
+    }
+
+    // 根據層級獲取對應的特效預製體
+    private GameObject GetEffectPrefabForLayer(int layer)
+    {
+        foreach (LayerEffectMapping mapping in layerEffectMappings)
+        {
+            if (((1 << layer) & mapping.layerMask) != 0)
+            {
+                return mapping.effectPrefab;
+            }
+        }
+        
+        // 如果沒有找到對應的特效，返回預設特效
+        return defaultSparkPrefab;
+    }
+
+    // 為了向後兼容，保留舊的方法
     public void SpawnSpark(Vector3 position, Vector3 normal)
     {
-        GameObject spark = Instantiate(sparkPrefab, position, Quaternion.LookRotation(normal));
-        Destroy(spark, 1f);
+        SpawnSpark(position, normal, 0); // 使用預設層級
     }
 }
