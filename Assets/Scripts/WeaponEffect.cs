@@ -84,7 +84,7 @@ public class WeaponEffect : MonoBehaviour
         nextSparkTime = Time.time;
     }
 
-    void SpawnSpark(Vector3 position, Vector3 normal)
+    public void SpawnSpark(Vector3 position, Vector3 normal)
     {
         GameObject spark = Instantiate(sparkPrefab, position, Quaternion.LookRotation(normal));
         Destroy(spark, 1f);
