@@ -5,7 +5,7 @@ using UnityEngine;
 // 敵人測試
 public class EnemyTest : MonoBehaviour
 {
-    public static int maxHP = 50;
+    public static int maxHP = 100;
     private Animator _animator;
     public bool isDead = false;
     
