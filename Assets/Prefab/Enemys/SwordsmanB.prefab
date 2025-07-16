@@ -6904,7 +6904,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1d8e5816e061df488dc86a1cd4edfb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 7577657594013935353, guid: 972a6246fb2f80e4e94afe1a476f3a53, type: 3}
   animator: {fileID: 3368920649114396822}
   visionRange: 100
   attackRange: 10

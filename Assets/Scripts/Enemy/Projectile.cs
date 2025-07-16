@@ -4,7 +4,7 @@ public class Projectile : MonoBehaviour
 {
     [Header("子彈設定")]
     public float damage = 10f;
-    public float lifetime = 5f; // 子彈存活時間
+    public float lifetime = 10f; // 子彈存活時間
     public float speed = 20f;
     
     [Header("視覺效果")]
@@ -45,26 +45,22 @@ public class Projectile : MonoBehaviour
         // 檢查是否命中目標層
         if (((1 << other.gameObject.layer) & targetLayers) != 0)
         {
-            // 對玩家造成傷害
-            //if (other.CompareTag("Player"))
-            //{
-            //    var playerHealth = other.GetComponent<PlayerHealth>();
-            //    if (playerHealth != null)
-            //    {
-            //        playerHealth.TakeDamage(damage);
-            //        Debug.Log($"Projectile: 對玩家造成 {damage} 點傷害");
-            //    }
-            //}
-            
+            if (other.CompareTag("Player"))
+            {
+                var status = other.GetComponent<PlayerStatus>();
+                if (status != null)
+                {
+                    status.TakeDamage(damage);
+                    Debug.Log($"Projectile: 對玩家造成 {damage} 點傷害");
+                }
+            }
             // 播放命中效果
             PlayHitEffect();
-            
             // 播放命中音效
             if (hitSound != null && audioSource != null)
             {
                 audioSource.PlayOneShot(hitSound);
             }
-            
             // 銷毀子彈
             if (destroyOnHit)
             {
@@ -78,26 +74,22 @@ public class Projectile : MonoBehaviour
         // 檢查是否命中目標層
         if (((1 << collision.gameObject.layer) & targetLayers) != 0)
         {
-            // 對玩家造成傷害
-            //if (collision.gameObject.CompareTag("Player"))
-            //{
-            //    var playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
-            //    if (playerHealth != null)
-            //    {
-            //        playerHealth.TakeDamage(damage);
-            //        Debug.Log($"Projectile: 對玩家造成 {damage} 點傷害");
-            //    }
-            //}
-            
+            if (collision.gameObject.CompareTag("Player"))
+            {
+                var status = collision.gameObject.GetComponent<PlayerStatus>();
+                if (status != null)
+                {
+                    status.TakeDamage(damage);
+                    Debug.Log($"Projectile: 對玩家造成 {damage} 點傷害");
+                }
+            }
             // 播放命中效果
             PlayHitEffect();
-            
             // 播放命中音效
             if (hitSound != null && audioSource != null)
             {
                 audioSource.PlayOneShot(hitSound);
             }
-            
             // 銷毀子彈
             if (destroyOnHit)
             {

@@ -15,6 +15,7 @@ public class TPContraller : MonoBehaviour
     private Animator _animator;
     private CharacterController _characterController;
     PlayerGrapple _playerGrapple;
+    PlayerStatus _playerStatus;
     public float gravity = -9.81f;
     public float jumpForce = 8f;
     private float verticalVelocity;
@@ -143,12 +144,13 @@ public class TPContraller : MonoBehaviour
         _animator = GetComponent<Animator>();
         _characterController = GetComponent<CharacterController>();
         _playerGrapple = GetComponent<PlayerGrapple>();
+        _playerStatus = GetComponent<PlayerStatus>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (_playerGrapple.IsGrappling()) return;
+        if (_playerGrapple.IsGrappling() || _playerStatus.isDeath==true) return;
         TPCamera.isLock = isLocked;
         TPCamera.lockTarget = lockTarget;
         //是否在地面   

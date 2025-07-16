@@ -283,6 +283,28 @@ public class EnemyAI : MonoBehaviour
         velocity = Vector3.zero;
     }
 
+    // 近戰攻擊時對玩家造成傷害（前方90度扇形範圍判定）
+    public void DealMeleeDamage(float damage)
+    {
+        if (player == null) return;
+        Vector3 toPlayer = (player.position - transform.position);
+        toPlayer.y = 0f;
+        float distance = toPlayer.magnitude;
+        if (distance < attackRange + 1f) // 距離判定
+        {
+            Vector3 forward = transform.forward;
+            float angle = Vector3.Angle(forward, toPlayer);
+            if (angle <= 45f) // 前方90度扇形
+            {
+                var status = player.GetComponent<PlayerStatus>();
+                if (status != null)
+                {
+                    status.TakeDamage(damage);
+                }
+            }
+        }
+    }
+
     // 視覺化調試
     void OnDrawGizmos()
     {
