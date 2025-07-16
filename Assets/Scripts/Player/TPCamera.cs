@@ -59,7 +59,6 @@ public class TPCamera : MonoBehaviour
             Vector3 vFinalPosition = mFollowPoint.position + vFinalDir * mFollowDistance;
             Vector3 vDir = mFollowPoint.position - vFinalPosition;
             vDir.Normalize();
-
             RaycastHit rh;
             Ray r = new Ray(mFollowPoint.position, -vDir);
 
@@ -88,6 +87,17 @@ public class TPCamera : MonoBehaviour
             // 計算攝影機應該在的位置
             Vector3 offset = Vector3.up * lockCameraHeight;
             Vector3 vFinalPosition = mFollowPoint.position + offset - lockDirection * mFollowDistance;
+
+            // 避障檢查
+            Vector3 vDir = mFollowPoint.position - vFinalPosition;
+            vDir.Normalize();
+            RaycastHit rh;
+            Ray r = new Ray(mFollowPoint.position, -vDir);
+
+            if (Physics.SphereCast(r, 0.1f, out rh, mFollowDistance, mCheckLayer))
+            {
+                vFinalPosition = mFollowPoint.position - vDir * (rh.distance - 0.1f);
+            }
 
             // 平滑移動攝影機
             transform.position = Vector3.Lerp(transform.position, vFinalPosition, Time.deltaTime * followSpeed);
