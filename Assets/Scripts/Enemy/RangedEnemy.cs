@@ -15,6 +15,9 @@ public class RangedEnemy : MonoBehaviour
     [Header("視覺效果")]
     public ParticleSystem muzzleFlash; // 槍口火焰效果
     
+    [Header("子彈目標（可選）")]
+    public Transform projectileTarget; // 可在Inspector指定
+    
     private AudioSource audioSource;
     private EnemyAI enemyAI;
 
@@ -46,25 +49,35 @@ public class RangedEnemy : MonoBehaviour
         // 生成子彈
         GameObject projectile = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
         
-        // 設定子彈方向（朝向玩家）
-        if (enemyAI.player != null)
+        // 設定子彈方向（朝向玩家或指定目標）
+        Vector3 targetPos;
+        if (projectileTarget != null)
         {
-            Vector3 direction = (enemyAI.player.position - firePoint.position).normalized;
-            projectile.transform.forward = direction;
-            
-            // 添加子彈移動組件
-            Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
-            if (projectileRb != null)
-            {
-                projectileRb.velocity = direction * projectileSpeed;
-            }
-            
-            // 設定子彈傷害
-            Projectile projectileScript = projectile.GetComponent<Projectile>();
-            if (projectileScript != null)
-            {
-                projectileScript.damage = projectileDamage;
-            }
+            targetPos = projectileTarget.position;
+        }
+        else if (enemyAI.player != null)
+        {
+            targetPos = enemyAI.player.position + Vector3.up * 6f; // 預設胸口高度
+        }
+        else
+        {
+            targetPos = firePoint.position + firePoint.forward * 10f; // fallback
+        }
+        Vector3 direction = (targetPos - firePoint.position).normalized;
+        projectile.transform.forward = direction;
+        
+        // 添加子彈移動組件
+        Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
+        if (projectileRb != null)
+        {
+            projectileRb.velocity = direction * projectileSpeed;
+        }
+        
+        // 設定子彈傷害
+        Projectile projectileScript = projectile.GetComponent<Projectile>();
+        if (projectileScript != null)
+        {
+            projectileScript.damage = projectileDamage;
         }
         
         // 播放射擊音效

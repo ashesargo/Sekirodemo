@@ -7225,6 +7225,7 @@ MonoBehaviour:
   shootSound: {fileID: 0}
   reloadSound: {fileID: 0}
   muzzleFlash: {fileID: 0}
+  projectileTarget: {fileID: 0}
 --- !u!95 &5877804063483958700 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 215686583444720306, guid: eb198f9017afb5e45a01d418e8811423, type: 3}

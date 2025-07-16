@@ -9,6 +9,8 @@ public class BossRangedAttack : MonoBehaviour
     public float projectileDamage = 30f; // 子彈傷害
     public AudioClip shootSound; // 發射音效
     public ParticleSystem muzzleFlash; // 發射特效
+    [Header("子彈目標（可選）")]
+    public Transform projectileTarget; // 可在Inspector指定
 
     private AudioSource audioSource;
     private EnemyAI enemyAI;
@@ -36,22 +38,32 @@ public class BossRangedAttack : MonoBehaviour
         }
         // 生成子彈
         GameObject projectile = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
-        // 設定子彈方向（朝向玩家）
-        if (enemyAI.player != null)
+        // 設定子彈方向（朝向玩家或指定目標）
+        Vector3 targetPos;
+        if (projectileTarget != null)
         {
-            Vector3 direction = (enemyAI.player.position - firePoint.position).normalized;
-            projectile.transform.forward = direction;
-            Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
-            if (projectileRb != null)
-            {
-                projectileRb.velocity = direction * projectileSpeed;
-            }
-            // 設定子彈傷害
-            Projectile projectileScript = projectile.GetComponent<Projectile>();
-            if (projectileScript != null)
-            {
-                projectileScript.damage = projectileDamage;
-            }
+            targetPos = projectileTarget.position;
+        }
+        else if (enemyAI.player != null)
+        {
+            targetPos = enemyAI.player.position + Vector3.up * 6f;
+        }
+        else
+        {
+            targetPos = firePoint.position + firePoint.forward * 10f;
+        }
+        Vector3 direction = (targetPos - firePoint.position).normalized;
+        projectile.transform.forward = direction;
+        Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
+        if (projectileRb != null)
+        {
+            projectileRb.velocity = direction * projectileSpeed;
+        }
+        // 設定子彈傷害
+        Projectile projectileScript = projectile.GetComponent<Projectile>();
+        if (projectileScript != null)
+        {
+            projectileScript.damage = projectileDamage;
         }
         // 播放發射音效
         if (shootSound != null && audioSource != null)
