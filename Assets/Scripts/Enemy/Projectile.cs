@@ -12,7 +12,7 @@ public class Projectile : MonoBehaviour
     public AudioClip hitSound; // 命中音效
     
     [Header("碰撞設定")]
-    public LayerMask targetLayers = 1; // 可以命中的層
+    public LayerMask targetLayers = 7; // 可以命中的層
     public bool destroyOnHit = true; // 命中後是否銷毀
     
     private float timer = 0f;
@@ -43,7 +43,7 @@ public class Projectile : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         // 檢查是否命中目標層
-        if (((1 << other.gameObject.layer) & targetLayers) != 0)
+        if (((7 << other.gameObject.layer) & targetLayers) != 0)
         {
             if (other.CompareTag("Player"))
             {
@@ -72,7 +72,7 @@ public class Projectile : MonoBehaviour
     void OnCollisionEnter(Collision collision)
     {
         // 檢查是否命中目標層
-        if (((1 << collision.gameObject.layer) & targetLayers) != 0)
+        if (((7 << collision.gameObject.layer) & targetLayers) != 0)
         {
             if (collision.gameObject.CompareTag("Player"))
             {

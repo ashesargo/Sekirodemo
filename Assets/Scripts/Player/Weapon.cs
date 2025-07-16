@@ -28,6 +28,7 @@ public class Weapon : MonoBehaviour
             {
                 // 擊中！
                 hit.GetComponent<EnemyTest>()?.TakeDamage(damage);
+
                 alreadyHit.Add(hit);
             }
         }
