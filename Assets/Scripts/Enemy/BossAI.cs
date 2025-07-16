@@ -18,7 +18,7 @@ public class BossAI : EnemyAI
     {
         // Boss特有的初始化
         animator = GetComponent<Animator>();
-        FindBossPlayer();
+        // 不再尋找玩家，直接使用基底類別的CachedPlayer
         SwitchState(new BossIdleState());
         
         // 調試：檢查 obstacleMask 設置
@@ -38,19 +38,7 @@ public class BossAI : EnemyAI
         Debug.Log("BossAI: Boss初始化完成");
     }
     
-    // Boss專用的尋找玩家方法
-    private void FindBossPlayer()
-    {
-        GameObject playerObj = GameObject.FindWithTag("Player");
-        if (playerObj != null)
-        {
-            player = playerObj.transform;
-        }
-        else
-        {
-            Debug.LogWarning("找不到 Player，請確認場景中有物件 Tag = 'Player'");
-        }
-    }
+    // 移除FindBossPlayer方法
     
     // 獲取下一個連擊動畫
     public string GetNextComboAnimation()
