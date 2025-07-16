@@ -12319,7 +12319,6 @@ GameObject:
   - component: {fileID: 215686583444720306}
   - component: {fileID: 5157647425813147406}
   - component: {fileID: 1740071847312567996}
-  - component: {fileID: 3537035747307249754}
   m_Layer: 0
   m_Name: ModularSamurai
   m_TagString: Untagged
@@ -12417,24 +12416,6 @@ MonoBehaviour:
   ikFalloffDistance: 0.5
   iKSphereRadius: 0.2
   PositionSphereRadius: 0.2
---- !u!114 &3537035747307249754
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6869600998273829490}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1eee98ea24e36c47a50b075edc24766, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attackRadius: 3
-  attackAngle: 90
-  targetLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  damage: 10
 --- !u!1 &6990316013176573253
 GameObject:
   m_ObjectHideFlags: 0

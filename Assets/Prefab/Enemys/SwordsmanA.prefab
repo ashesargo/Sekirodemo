@@ -3747,6 +3747,18 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3537035747307249754, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: attackAngle
+      value: 120
+      objectReference: {fileID: 0}
+    - target: {fileID: 3537035747307249754, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: attackRadius
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3537035747307249754, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: targetLayer.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
     - target: {fileID: 3557696090481690480, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -6038,7 +6050,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1d8e5816e061df488dc86a1cd4edfb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 7577657594013935353, guid: 972a6246fb2f80e4e94afe1a476f3a53, type: 3}
   animator: {fileID: 8253529524297296019}
   visionRange: 100
   attackRange: 10
