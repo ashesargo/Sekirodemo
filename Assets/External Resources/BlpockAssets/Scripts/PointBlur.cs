@@ -23,6 +23,11 @@ public class PointBlur : MonoBehaviour {
     public GameObject Spark;
     
     /// <summary>
+    /// TPController 引用，用於檢查 parrySuccess 狀態
+    /// </summary>
+    public TPContraller tpController;
+    
+    /// <summary>
     /// 後處理材質
     /// </summary>
     Material material;
@@ -43,12 +48,14 @@ public class PointBlur : MonoBehaviour {
     /// </summary>
     private Texture2D gradTexture;
     
+
+    
     /// <summary>
     /// 初始化函數
     /// </summary>
     private void Start()
     {
-        // 初始化梯度貼圖（將waveform曲線轉換為貼圖）
+        // 初始化梯度貼圖（將 waveform 曲線轉換為貼圖）
         gradTexture = new Texture2D(2048, 1, TextureFormat.Alpha8, false);
         gradTexture.wrapMode = TextureWrapMode.Clamp;
         gradTexture.filterMode = FilterMode.Bilinear;
@@ -66,6 +73,12 @@ public class PointBlur : MonoBehaviour {
         material = new Material(PointBlurShader);
         material.hideFlags = HideFlags.DontSave;
         material.SetTexture("_GradTex", gradTexture);
+        
+        // 如果沒有手動指定 TPController，嘗試自動找到它
+        if (tpController == null)
+        {
+            tpController = FindObjectOfType<TPContraller>();
+        }
     }
     
     /// <summary>
@@ -133,23 +146,32 @@ public class PointBlur : MonoBehaviour {
         material.SetFloat("_Aspect", Camera.main.aspect);
         material.SetFloat("_BlurCircleRadius", BlurRadius);
 
-        // 檢測滑鼠左鍵點擊
-        if (Input.GetMouseButtonDown(0))
+        // 檢查 TPController 是否存在
+        if (tpController != null)
         {
-            // 重置時間計數器
-            t = 0;
-            
-            // 使用射線檢測來獲取點擊的世界座標
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if(Physics.Raycast(ray,out hit))
+            // 當 parrySuccess 為 true 時觸發模糊效果
+            if (tpController.parrySuccess)
             {
-                // 在點擊位置生成火花特效
-                Instantiate(Spark, new Vector3(hit.point.x,hit.point.y,0), Quaternion.identity);
+                // 重置時間計數器
+                t = 0;
                 
-                // 將世界座標轉換為螢幕座標，再轉換為0-1範圍的UV座標
-                BlurCenter = Camera.main.WorldToScreenPoint(new Vector3(hit.point.x, hit.point.y, 0));
-                BlurCenter.Set(BlurCenter.x / Screen.width, BlurCenter.y / Screen.height);
+                // 使用射線檢測來獲取玩家前方的位置
+                RaycastHit hit;
+                Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0));
+                if(Physics.Raycast(ray, out hit))
+                {
+                    // 在擊中位置生成火花特效
+                    Instantiate(Spark, new Vector3(hit.point.x, hit.point.y, 0), Quaternion.identity);
+                    
+                    // 將世界座標轉換為螢幕座標，再轉換為0-1範圍的UV座標
+                    BlurCenter = Camera.main.WorldToScreenPoint(new Vector3(hit.point.x, hit.point.y, 0));
+                    BlurCenter.Set(BlurCenter.x / Screen.width, BlurCenter.y / Screen.height);
+                }
+                else
+                {
+                    // 如果沒有擊中任何物體，使用螢幕中心作為模糊中心
+                    BlurCenter = new Vector2(0.5f, 0.5f);
+                }
             }
         }
     }
