@@ -68,69 +68,18 @@ public class PlayerGrapple : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("未分配繩索材質，創建默認材質");
                 grappleRope.material = new Material(Shader.Find("Standard"));
                 grappleRope.material.color = Color.white;
             }
         }
-        else
-        {
-            Debug.LogError("GrappleRope 未分配，請在 Inspector 中分配 LineRenderer");
-        }
-
-        if (ropeStartPoint == null)
-        {
-            Debug.LogError("RopeStartPoint 未分配，請設為 RightHand 的子物件");
-            ropeStartPoint = transform;
-        }
-
-        if (animator == null)
-        {
-            Debug.LogError("Animator 未分配");
-        }
-
-        if (mainCamera == null)
-        {
-            mainCamera = Camera.main;
-            if (mainCamera == null)
-            {
-                Debug.LogError("MainCamera 未找到，請確保場景中有 MainCamera");
-            }
-        }
-
-        if (controller == null)
-        {
-            Debug.LogError("CharacterController 未分配");
-        }
-
-        if (!gameObject.CompareTag("Player"))
-        {
-            Debug.LogError("玩家物件未設置 Player 標籤");
-        }
-
         // 檢查 grappleLayer 是否有效
-        if (grappleLayer.value == 0)
-        {
-            Debug.LogError("grappleLayer 未設置，請在 Inspector 中選擇 'Grapple' 圖層");
-        }
-        else
-        {
-            string layerName = LayerMask.LayerToName(Mathf.FloorToInt(Mathf.Log(grappleLayer.value, 2)));
-            Debug.Log($"PlayerGrapple 初始化完成: grappleLayer={layerName}, mainCamera={mainCamera != null}");
-        }
+        string layerName = LayerMask.LayerToName(Mathf.FloorToInt(Mathf.Log(grappleLayer.value, 2)));
 
         // 初始化 UI 圖示管理
         if (indicatorCanvas != null)
         {
             canvasScaler = indicatorCanvas.GetComponent<CanvasScaler>();
-            if (canvasScaler == null)
-            {
-                Debug.LogError("IndicatorCanvas 缺少 CanvasScaler 組件");
-            }
-        }
-        else
-        {
-            Debug.LogError("IndicatorCanvas 未分配，請在 Inspector 中設置獨立的 Canvas");
+
         }
     }
 
@@ -154,46 +103,22 @@ public class PlayerGrapple : MonoBehaviour
             UpdateRopeWithSag(ropeStartPos, ropeEndPos, sagAmount, ropeSegments);
         }
     }
-
-    string GetCurrentStateName(AnimatorStateInfo stateInfo)
-    {
-        if (stateInfo.IsName("Grapple")) return "Grapple";
-        if (stateInfo.IsName("Grapple2")) return "Grapple2";
-        if (stateInfo.IsName("JumpToTarget")) return "JumpToTarget";
-        return "Other";
-    }
-
     void UpdateNearbyPoints()
     {
         nearbyPoints.Clear();
-
-        // 確保 grappleLayer 有效
-        if (grappleLayer.value == 0)
-        {
-            Debug.LogWarning("grappleLayer 未設置，無法檢測勾鎖點");
-            return;
-        }
-
         Collider[] colliders = Physics.OverlapSphere(transform.position, grappleRange, grappleLayer);
         string layerName = grappleLayer.value == 0 ? "未設置" : LayerMask.LayerToName(Mathf.FloorToInt(Mathf.Log(grappleLayer.value, 2)));
-        Debug.Log($"OverlapSphere 檢測到 {colliders.Length} 個物件 (grappleRange={grappleRange}, Layer={layerName})");
         foreach (var collider in colliders)
         {
             GrapplePoint point = collider.GetComponent<GrapplePoint>();
             if (point != null && point.isGrapplable)
             {
                 nearbyPoints.Add(point);
-                Debug.Log($"勾鎖點 {collider.name} 在範圍內，Position={collider.transform.position}");
-
                 // 為新檢測到的目標創建圖示
                 if (!targetInfos.Exists(info => info.target == point.transform))
                 {
                     CreateIndicatorForTarget(point.transform);
                 }
-            }
-            else
-            {
-                Debug.LogWarning($"物件 {collider.name} 未包含 GrapplePoint 或 isGrapplable=false");
             }
         }
 
@@ -215,8 +140,6 @@ public class PlayerGrapple : MonoBehaviour
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         Debug.DrawRay(ray.origin, ray.direction * maxGrappleDistance, Color.yellow, 2f);
         RaycastHit[] hits = Physics.SphereCastAll(ray, sphereRadius, maxGrappleDistance, grappleLayer);
-        Debug.Log($"SphereCastAll 檢測到 {hits.Length} 個物件 (sphereRadius={sphereRadius}, maxGrappleDistance={maxGrappleDistance})");
-
         // 重置所有目標的射線擊中狀態
         foreach (var info in targetInfos)
         {
@@ -229,7 +152,6 @@ public class PlayerGrapple : MonoBehaviour
             GrapplePoint point = hit.collider.GetComponent<GrapplePoint>();
             if (point != null && point.isGrapplable)
             {
-                Debug.Log($"勾鎖點 {hit.collider.name} 被射線選中，HitPoint={hit.point}");
                 TargetInfo info = targetInfos.Find(t => t.target == point.transform);
                 if (info != null)
                 {
@@ -244,8 +166,6 @@ public class PlayerGrapple : MonoBehaviour
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         Debug.DrawRay(ray.origin, ray.direction * maxGrappleDistance, Color.yellow, 2f);
         RaycastHit[] hits = Physics.SphereCastAll(ray, sphereRadius, maxGrappleDistance, grappleLayer);
-        Debug.Log($"TryGrapple: SphereCastAll 檢測到 {hits.Length} 個物件");
-
         GrapplePoint closestPoint = null;
         float minDistance = float.MaxValue;
 
@@ -255,7 +175,6 @@ public class PlayerGrapple : MonoBehaviour
             if (point != null && point.isGrapplable)
             {
                 float distance = Vector3.Distance(transform.position, point.transform.position);
-                Debug.Log($"檢測到勾鎖點: {hit.collider.name}, 距離: {distance}, isGrapplable: {point.isGrapplable}, Position: {point.transform.position}");
                 if (distance < minDistance)
                 {
                     minDistance = distance;
@@ -268,10 +187,6 @@ public class PlayerGrapple : MonoBehaviour
         {
             selectedPoint = closestPoint;
             StartCoroutine(StartGrappleWithTurn(closestPoint));
-        }
-        else
-        {
-            Debug.Log("未檢測到可用的勾鎖點");
         }
     }
 
@@ -303,7 +218,6 @@ public class PlayerGrapple : MonoBehaviour
         if (animator != null)
         {
             animator.SetTrigger("Grapple");
-            Debug.Log("Grapple animation triggered");
         }
 
         if (controller != null)
@@ -317,7 +231,6 @@ public class PlayerGrapple : MonoBehaviour
             grappleRope.positionCount = 2;
             grappleRope.SetPosition(0, ropeStartPoint.position);
             grappleRope.SetPosition(1, currentTargetPos);
-            Debug.Log($"啟用繩索，起點={ropeStartPoint.position}, 終點={currentTargetPos}, 節點數={grappleRope.positionCount}");
             StartCoroutine(DelayedUpdateRope(currentTargetPos));
         }
     }
@@ -395,7 +308,6 @@ public class PlayerGrapple : MonoBehaviour
         {
             grappleRope.enabled = false;
             grappleRope.positionCount = 0;
-            Debug.Log("繩索已禁用");
         }
     }
 
@@ -497,13 +409,11 @@ public class PlayerGrapple : MonoBehaviour
     {
         if (indicatorPrefab == null)
         {
-            Debug.LogError("IndicatorPrefab 未分配，請在 Inspector 中設置 UI 圖示預製體");
             return;
         }
 
         if (indicatorCanvas == null)
         {
-            Debug.LogError("IndicatorCanvas 未分配，請在 Inspector 中設置獨立的 Canvas");
             return;
         }
 
@@ -514,7 +424,6 @@ public class PlayerGrapple : MonoBehaviour
 
         if (indicatorImage == null || indicatorRect == null)
         {
-            Debug.LogError("IndicatorPrefab 缺少 Image 或 RectTransform 組件");
             Destroy(indicatorObj);
             return;
         }

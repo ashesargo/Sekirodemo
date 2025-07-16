@@ -14,6 +14,7 @@ public class TPContraller : MonoBehaviour
     public float rotateSensitivity;
     private Animator _animator;
     private CharacterController _characterController;
+    PlayerGrapple _playerGrapple;
     public float gravity = -9.81f;
     public float jumpForce = 8f;
     private float verticalVelocity;
@@ -141,11 +142,13 @@ public class TPContraller : MonoBehaviour
     {
         _animator = GetComponent<Animator>();
         _characterController = GetComponent<CharacterController>();
+        _playerGrapple = GetComponent<PlayerGrapple>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (_playerGrapple.IsGrappling()) return;
         TPCamera.isLock = isLocked;
         TPCamera.lockTarget = lockTarget;
         //是否在地面   
@@ -272,7 +275,7 @@ public class TPContraller : MonoBehaviour
             }
             verticalVelocity += gravity * Time.deltaTime;
             Vector3 velocity = moveSpeed * moveDirection;
-            velocity.y = verticalVelocity;
+            velocity.y = Mathf.Max(verticalVelocity, -100);
             _characterController.Move(velocity * Time.deltaTime);
             _animator.SetFloat("Speed", moveSpeed);
         }
@@ -281,7 +284,7 @@ public class TPContraller : MonoBehaviour
         {
             verticalVelocity += gravity * Time.deltaTime;
             Vector3 velocity = Vector3.zero;
-            velocity.y = verticalVelocity;
+            velocity.y = Mathf.Max(verticalVelocity, -100);
             _characterController.Move(velocity * Time.deltaTime);
             _animator.SetFloat("Speed", moveSpeed);
         }
@@ -302,7 +305,7 @@ public class TPContraller : MonoBehaviour
                 _animator.SetInteger("comboStep", comboStep);
                 canCombo = false;
             }
-            else if (comboStep == 0 )
+            else if (comboStep == 0)
             {
                 comboStep = 1;
                 _animator.SetInteger("comboStep", comboStep);
@@ -314,8 +317,8 @@ public class TPContraller : MonoBehaviour
                 {
                     _animator.SetTrigger("Attack");
                 }
-            }           
-        }    
+            }
+        }
     }
     private void LateUpdate()
     {
@@ -325,7 +328,7 @@ public class TPContraller : MonoBehaviour
         }
         lastIsGround = isGrounded;
     }
-    public void TakeDamage(float damage) 
+    public void TakeDamage(float damage)
     {
         _animator.SetTrigger("Hit");
     }

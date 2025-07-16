@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
 {
-    public Transform player;
+    public static Transform CachedPlayer; // 靜態快取
+    public Transform player { get { return CachedPlayer; } }
     public Animator animator;
 
     public float visionRange = 1000f;
@@ -43,10 +44,20 @@ public class EnemyAI : MonoBehaviour
 
     public IEnemyState CurrentState => currentState;
 
-    void Start()
+    void Awake()
     {
         animator = GetComponent<Animator>();
-        FindPlayer();
+        // 只在第一次時尋找並快取
+        if (CachedPlayer == null)
+        {
+            GameObject playerObj = GameObject.FindWithTag("Player");
+            if (playerObj != null)
+                CachedPlayer = playerObj.transform;
+        }
+    }
+
+    void Start()
+    {
         SwitchState(new IdleState());
         
         // 調試：檢查 obstacleMask 設置
@@ -66,26 +77,8 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
-        // 如果 player 尚未找到，每幀嘗試尋找
-        if (player == null)
-        {
-            FindPlayer();
-            if (player == null) return; // 找不到就不執行狀態機
-        }
+        if (player == null) return; // 找不到就不執行狀態機
         currentState?.UpdateState(this);
-    }
-
-    private void FindPlayer()
-    {
-        GameObject playerObj = GameObject.FindWithTag("Player");
-        if (playerObj != null)
-        {
-            player = playerObj.transform;
-        }
-        else
-        {
-            Debug.LogWarning("找不到 Player，請確認場景中有物件 Tag = 'Player'");
-        }
     }
 
     public void SwitchState(IEnemyState newState)
