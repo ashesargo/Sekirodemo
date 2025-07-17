@@ -7300,9 +7300,6 @@ PrefabInstance:
       addedObject: {fileID: 7013022994317564026}
     - targetCorrespondingSourceObject: {fileID: 6869600998273829490, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2323692198660248372}
-    - targetCorrespondingSourceObject: {fileID: 6869600998273829490, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 7658690381631198487}
   m_SourcePrefab: {fileID: 100100000, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
 --- !u!4 &2592737532880117844 stripped
@@ -7333,29 +7330,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isDead: 0
---- !u!136 &2323692198660248372
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3403077399576037378}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.35
-  m_Height: 1.8
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.9, z: 0}
 --- !u!114 &7658690381631198487
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7368,7 +7342,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ede9019da687ddd46b1547c1fb033561, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 7577657594013935353, guid: 972a6246fb2f80e4e94afe1a476f3a53, type: 3}
   animator: {fileID: 8255613398275737794}
   visionRange: 100
   attackRange: 10
