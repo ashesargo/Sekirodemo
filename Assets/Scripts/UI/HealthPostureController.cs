@@ -26,20 +26,12 @@ public class HealthPostureController : MonoBehaviour
         // 初始化 HealthPostureUI
         if (healthPostureUI != null)
         {
-            Debug.Log($"[HealthPostureController] {gameObject.name} 正在連接 HealthPostureUI，healthPostureSystem 實例: {healthPostureSystem.GetHashCode()}");
             healthPostureUI.SetHealthPostureSystem(healthPostureSystem);
-            Debug.Log($"[HealthPostureController] {gameObject.name} HealthPostureUI 已連接");
-        }
-        else
-        {
-            Debug.LogWarning($"[HealthPostureController] {gameObject.name} HealthPostureUI 未連接！請檢查 Inspector 中的 healthPostureUI 欄位");
         }
 
         // 訂閱事件
         healthPostureSystem.OnDead += OnDead;
         healthPostureSystem.OnPostureBroken += OnPostureBroken;
-        
-        Debug.Log($"[HealthPostureController] {gameObject.name} 初始化完成，最大生命值: {maxHealth}");
     }
 
     // 根據組件類型自動設定最大生命值
@@ -49,32 +41,22 @@ public class HealthPostureController : MonoBehaviour
         if (GetComponent<PlayerStatus>() != null)
         {
             maxHealth = PlayerStatus.maxHP;
-            Debug.Log($"{gameObject.name} 檢測到 PlayerStatus，設定最大生命值為: {maxHealth}");
         }
         // 檢查是否有 EnemyTest 組件（敵人）
         else if (GetComponent<EnemyTest>() != null)
         {
             maxHealth = EnemyTest.maxHP;
-            Debug.Log($"{gameObject.name} 檢測到 EnemyTest，設定最大生命值為: {maxHealth}");
         }
         // 如果都沒有，使用預設值
-        else
-        {
-            Debug.LogWarning($"{gameObject.name} 未檢測到 PlayerStatus 或 EnemyTest 組件，使用預設最大生命值: {maxHealth}");
-        }
     }
 
     // 受到傷害
     public void TakeDamage(int amount)
     {
-        Debug.Log($"[HealthPostureController] {gameObject.name} 受到 {amount} 點傷害");
-        
         healthPostureSystem.HealthDamage(amount);
         
         // 同時增加架勢值（每次受到傷害增加10點架勢）
         healthPostureSystem.PostureIncrease(10);
-        
-        Debug.Log($"[HealthPostureController] 當前生命值: {healthPostureSystem.GetHealthNormalized() * 100:F1}%, 架勢值: {healthPostureSystem.GetPostureNormalized() * 100:F1}%");
         
         // 顯示血條並設定為最後一個被攻擊的敵人
         ShowHealthBar();
@@ -196,8 +178,6 @@ public class HealthPostureController : MonoBehaviour
     // 死亡
     private void OnDead(object sender, System.EventArgs e)
     {
-        Debug.Log($"{gameObject.name} 死亡！");
-        
         // 檢查是否為玩家
         bool isPlayer = GetComponent<PlayerStatus>() != null;
         
@@ -225,11 +205,6 @@ public class HealthPostureController : MonoBehaviour
         if (deathUI != null)
         {
             deathUI.SetActive(true);
-            Debug.Log($"[HealthPostureController] {gameObject.name} 死亡UI 已顯示");
-        }
-        else
-        {
-            Debug.LogWarning($"[HealthPostureController] {gameObject.name} 死亡UI 未連接！請在 Inspector 中連接死亡UI");
         }
     }
 
@@ -239,7 +214,6 @@ public class HealthPostureController : MonoBehaviour
         if (deathUI != null)
         {
             deathUI.SetActive(false);
-            Debug.Log($"[HealthPostureController] {gameObject.name} 死亡UI 已隱藏");
         }
     }
 
@@ -263,15 +237,12 @@ public class HealthPostureController : MonoBehaviour
         {
             enemyCollider.enabled = false;
             colliderDisabled = true;
-            Debug.Log($"{gameObject.name} 碰撞器已關閉");
         }
     }
 
     // 架勢被打破
     private void OnPostureBroken(object sender, System.EventArgs e)
     {
-        Debug.Log($"{gameObject.name} 架勢被打破！");
-
         // 呼叫 OnDead 事件
         OnDead(sender, e);
         // 播放死亡動畫

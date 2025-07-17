@@ -26,7 +26,6 @@ public class PlayerStatus : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        Debug.Log($"Player TakeDamage called! HP: {GetCurrentHP()}, isDeath: {isDeath}");
         if (isDeath) return; // 死亡後不再受傷
 
         // 使用 HealthPostureController 處理傷害
