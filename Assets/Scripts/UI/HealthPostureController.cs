@@ -8,6 +8,7 @@ public class HealthPostureController : MonoBehaviour
     [SerializeField] private int maxHealth = 100;   // 最大生命值（預設值，會在 Awake 中自動設定）
     [SerializeField] private int maxPosture = 100;  // 最大架勢值
     [SerializeField] private HealthPostureUI healthPostureUI;   // 生命值與架勢 UI 顯示
+    [SerializeField] private GameObject deathUI;   // 死亡UI
 
     private HealthPostureSystem healthPostureSystem;    // 引用生命值與架勢系統
     private Coroutine hideUICoroutine;  // 隱藏 UI 的協程
@@ -200,7 +201,12 @@ public class HealthPostureController : MonoBehaviour
         // 檢查是否為玩家
         bool isPlayer = GetComponent<PlayerStatus>() != null;
         
-        if (!isPlayer)
+        if (isPlayer)
+        {
+            // 玩家死亡時顯示死亡UI
+            ShowDeathUI();
+        }
+        else
         {
             // 敵人死亡時隱藏血條
             HideHealthBar();
@@ -211,6 +217,30 @@ public class HealthPostureController : MonoBehaviour
         }
         
         // 播放死亡動畫
+    }
+
+    // 顯示死亡UI
+    private void ShowDeathUI()
+    {
+        if (deathUI != null)
+        {
+            deathUI.SetActive(true);
+            Debug.Log($"[HealthPostureController] {gameObject.name} 死亡UI 已顯示");
+        }
+        else
+        {
+            Debug.LogWarning($"[HealthPostureController] {gameObject.name} 死亡UI 未連接！請在 Inspector 中連接死亡UI");
+        }
+    }
+
+    // 隱藏死亡UI
+    public void HideDeathUI()
+    {
+        if (deathUI != null)
+        {
+            deathUI.SetActive(false);
+            Debug.Log($"[HealthPostureController] {gameObject.name} 死亡UI 已隱藏");
+        }
     }
 
     // 等待武器特效完成後關閉碰撞器
