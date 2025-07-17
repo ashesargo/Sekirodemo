@@ -5,7 +5,7 @@ using System.Collections;
 // 生命值與架勢條控制器
 public class HealthPostureController : MonoBehaviour
 {
-    [SerializeField] private int maxHealth = EnemyTest.maxHP;   // 最大生命值
+    [SerializeField] private int maxHealth = 100;   // 最大生命值（預設值，會在 Awake 中自動設定）
     [SerializeField] private int maxPosture = 100;  // 最大架勢值
     [SerializeField] private HealthPostureUI healthPostureUI;   // 生命值與架勢 UI 顯示
 
@@ -16,27 +16,64 @@ public class HealthPostureController : MonoBehaviour
 
     private void Awake()
     {
+        // 自動檢測並設定最大生命值
+        SetMaxHealthBasedOnComponent();
+        
         // 初始化生命值與架勢系統
         healthPostureSystem = new HealthPostureSystem(maxHealth, maxPosture);
 
         // 初始化 HealthPostureUI
         if (healthPostureUI != null)
         {
+            Debug.Log($"[HealthPostureController] {gameObject.name} 正在連接 HealthPostureUI，healthPostureSystem 實例: {healthPostureSystem.GetHashCode()}");
             healthPostureUI.SetHealthPostureSystem(healthPostureSystem);
+            Debug.Log($"[HealthPostureController] {gameObject.name} HealthPostureUI 已連接");
+        }
+        else
+        {
+            Debug.LogWarning($"[HealthPostureController] {gameObject.name} HealthPostureUI 未連接！請檢查 Inspector 中的 healthPostureUI 欄位");
         }
 
         // 訂閱事件
         healthPostureSystem.OnDead += OnDead;
         healthPostureSystem.OnPostureBroken += OnPostureBroken;
+        
+        Debug.Log($"[HealthPostureController] {gameObject.name} 初始化完成，最大生命值: {maxHealth}");
+    }
+
+    // 根據組件類型自動設定最大生命值
+    private void SetMaxHealthBasedOnComponent()
+    {
+        // 檢查是否有 PlayerStatus 組件（玩家）
+        if (GetComponent<PlayerStatus>() != null)
+        {
+            maxHealth = PlayerStatus.maxHP;
+            Debug.Log($"{gameObject.name} 檢測到 PlayerStatus，設定最大生命值為: {maxHealth}");
+        }
+        // 檢查是否有 EnemyTest 組件（敵人）
+        else if (GetComponent<EnemyTest>() != null)
+        {
+            maxHealth = EnemyTest.maxHP;
+            Debug.Log($"{gameObject.name} 檢測到 EnemyTest，設定最大生命值為: {maxHealth}");
+        }
+        // 如果都沒有，使用預設值
+        else
+        {
+            Debug.LogWarning($"{gameObject.name} 未檢測到 PlayerStatus 或 EnemyTest 組件，使用預設最大生命值: {maxHealth}");
+        }
     }
 
     // 受到傷害
     public void TakeDamage(int amount)
     {
+        Debug.Log($"[HealthPostureController] {gameObject.name} 受到 {amount} 點傷害");
+        
         healthPostureSystem.HealthDamage(amount);
         
         // 同時增加架勢值（每次受到傷害增加10點架勢）
         healthPostureSystem.PostureIncrease(10);
+        
+        Debug.Log($"[HealthPostureController] 當前生命值: {healthPostureSystem.GetHealthNormalized() * 100:F1}%, 架勢值: {healthPostureSystem.GetPostureNormalized() * 100:F1}%");
         
         // 顯示血條並設定為最後一個被攻擊的敵人
         ShowHealthBar();
@@ -60,34 +97,63 @@ public class HealthPostureController : MonoBehaviour
             return;
         }
 
-        // 如果有其他敵人正在顯示血條，先關閉它
-        if (lastAttackedEnemy != null && lastAttackedEnemy != this)
+        // 檢查是否為玩家
+        bool isPlayer = GetComponent<PlayerStatus>() != null;
+
+        if (isPlayer)
         {
-            lastAttackedEnemy.HideHealthBar();
+            // 玩家血條始終顯示，不需要隱藏邏輯
+            if (healthPostureUI != null)
+            {
+                healthPostureUI.gameObject.SetActive(true);
+            }
         }
-
-        // 設定為最後一個被攻擊的敵人
-        lastAttackedEnemy = this;
-
-        // 顯示血條UI
-        if (healthPostureUI != null)
+        else
         {
-            healthPostureUI.gameObject.SetActive(true);
-        }
+            // 敵人血條邏輯：隱藏其他敵人的血條
+            if (lastAttackedEnemy != null && lastAttackedEnemy != this)
+            {
+                lastAttackedEnemy.HideHealthBar();
+            }
 
-        // 停止之前的隱藏協程（如果有的話）
-        if (hideUICoroutine != null)
-        {
-            StopCoroutine(hideUICoroutine);
-        }
+            // 設定為最後一個被攻擊的敵人
+            lastAttackedEnemy = this;
 
-        // 開始新的隱藏協程
-        hideUICoroutine = StartCoroutine(HideHealthBarAfterDelay(5f));
+            // 顯示血條UI
+            if (healthPostureUI != null)
+            {
+                healthPostureUI.gameObject.SetActive(true);
+            }
+
+            // 停止之前的隱藏協程（如果有的話）
+            if (hideUICoroutine != null)
+            {
+                StopCoroutine(hideUICoroutine);
+            }
+
+            // 開始新的隱藏協程
+            hideUICoroutine = StartCoroutine(HideHealthBarAfterDelay(5f));
+        }
     }
 
     // 隱藏血條
     public void HideHealthBar()
     {
+        // 檢查是否為玩家
+        bool isPlayer = GetComponent<PlayerStatus>() != null;
+
+        if (isPlayer)
+        {
+            // 玩家血條不隱藏，只停止協程
+            if (hideUICoroutine != null)
+            {
+                StopCoroutine(hideUICoroutine);
+                hideUICoroutine = null;
+            }
+            return;
+        }
+
+        // 敵人血條隱藏邏輯
         if (healthPostureUI != null)
         {
             healthPostureUI.gameObject.SetActive(false);
@@ -131,12 +197,18 @@ public class HealthPostureController : MonoBehaviour
     {
         Debug.Log($"{gameObject.name} 死亡！");
         
-        // 死亡時隱藏血條
-        HideHealthBar();
+        // 檢查是否為玩家
+        bool isPlayer = GetComponent<PlayerStatus>() != null;
         
-        // 不立即關閉碰撞器，等待武器特效完成後由WeaponEffect系統來處理
-        // 如果沒有武器特效系統，則使用延遲關閉作為備用方案
-        StartCoroutine(DisableColliderAfterEffect());
+        if (!isPlayer)
+        {
+            // 敵人死亡時隱藏血條
+            HideHealthBar();
+            
+            // 不立即關閉碰撞器，等待武器特效完成後由WeaponEffect系統來處理
+            // 如果沒有武器特效系統，則使用延遲關閉作為備用方案
+            StartCoroutine(DisableColliderAfterEffect());
+        }
         
         // 播放死亡動畫
     }

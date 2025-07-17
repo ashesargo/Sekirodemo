@@ -20,32 +20,32 @@ public class TPContraller : MonoBehaviour
     public float jumpForce = 8f;
     private float verticalVelocity;
     [Header("Ground Check")]
-    public Transform groundCheck;             // ³]¦b¸}©³
-    public float groundDistance = 1f;       // °»´ú¶ZÂ÷
-    public LayerMask Ground;              // ³]©w¬°¦a­±¹Ï¼h
+    public Transform groundCheck;             // ï¿½]ï¿½bï¿½}ï¿½ï¿½
+    public float groundDistance = 1f;       // ï¿½ï¿½ï¿½ï¿½ï¿½Zï¿½ï¿½
+    public LayerMask Ground;              // ï¿½]ï¿½wï¿½ï¿½ï¿½aï¿½ï¿½ï¿½Ï¼h
     private bool isGrounded;
-    //§ğÀ»
+    //ï¿½ï¿½ï¿½ï¿½
     bool lastIsGround;
     int comboStep = 0;
     int currentStep = 0;
     bool canCombo = false;
     bool canMove = true;
-    //½Ä¨ë ¶]¨B
+    //ï¿½Ä¨ï¿½ ï¿½]ï¿½B
     [Header("Dash")]
     public float dashDis;
     private bool isDashing;
     private bool isRunning = false;
-    //µø¨¤Âê©w
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½w
     [Header("Lock")]
     public Transform lockTarget;
     private bool isLocked = false;
     public float lockRange = 10.0f;
     public LayerMask enemyLayer;
     public TPCamera TPCamera;
-    //¨¾¿m
+    //ï¿½ï¿½ï¿½m
     public bool isGuard;
     public bool parrySuccess;
-    //§ğÀ»combo
+    //ï¿½ï¿½ï¿½ï¿½combo
     public void EnableCombo()
     {
         currentStep = comboStep;
@@ -65,7 +65,7 @@ public class TPContraller : MonoBehaviour
             canCombo = false;
         }
     }
-    //§ğÀ»¤¤¤£¯à²¾°Ê
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½à²¾ï¿½ï¿½
     public void StartAttack()
     {
         canMove = false;
@@ -77,7 +77,7 @@ public class TPContraller : MonoBehaviour
         canCombo = false;
         _animator.SetInteger("comboStep", comboStep);
     }
-    //½Ä¨ë
+    //ï¿½Ä¨ï¿½
     IEnumerator Dash(Vector3 dashDirection)
     {
         isDashing = true;
@@ -105,7 +105,7 @@ public class TPContraller : MonoBehaviour
         isDashing = false;
         _animator.SetBool("isDashing", isDashing);
     }
-    //´M§äÂê©w¥Ø¼Ğ
+    //ï¿½Mï¿½ï¿½ï¿½ï¿½wï¿½Ø¼ï¿½
     void FindLockTarget()
     {
         Collider[] targets = Physics.OverlapSphere(transform.position, lockRange, enemyLayer);
@@ -153,10 +153,10 @@ public class TPContraller : MonoBehaviour
         if (_playerGrapple.IsGrappling() || _playerStatus.isDeath==true) return;
         TPCamera.isLock = isLocked;
         TPCamera.lockTarget = lockTarget;
-        //¬O§_¦b¦a­±   
+        //ï¿½Oï¿½_ï¿½bï¿½aï¿½ï¿½   
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, Ground);
         _animator.SetBool("isGrounded", isGrounded);
-        //Âê©w§P©w
+        //ï¿½ï¿½wï¿½Pï¿½w
         if (Input.GetKeyDown(KeyCode.Mouse2))
         {
             if (!isLocked)
@@ -171,7 +171,7 @@ public class TPContraller : MonoBehaviour
                 _animator.SetBool("Lock", isLocked);
             }
         }
-        //¨¤¦â²¾°Ê
+        //ï¿½ï¿½ï¿½â²¾ï¿½ï¿½
         //if (Input.GetKeyDown(KeyCode.Mouse1) && enemy.canParry)
         //{
         //    _animator.SetTrigger("Parry");
@@ -194,7 +194,7 @@ public class TPContraller : MonoBehaviour
             Vector2 inputVector = new Vector2(fH, fV);
             float inputMagnitude = inputVector.magnitude;
             Vector3 moveDirection;
-            //¬O§_Âê©w ¤è¦V¤£¦P
+            //ï¿½Oï¿½_ï¿½ï¿½w ï¿½ï¿½Vï¿½ï¿½ï¿½P
             if (isLocked && lockTarget != null)
             {
                 Vector3 directionToTarget = lockTarget.position - transform.position;
@@ -220,13 +220,13 @@ public class TPContraller : MonoBehaviour
                 moveDirection = camTransform.right * fH + camTransform.forward * fV;
                 moveDirection.y = 0;
                 moveDirection.Normalize();
-                if (moveDirection.sqrMagnitude > 0.001f) // ½T«O¦³¤è¦V¿é¤J¤~±ÛÂà
+                if (moveDirection.sqrMagnitude > 0.001f) // ï¿½Tï¿½Oï¿½ï¿½ï¿½ï¿½Vï¿½ï¿½Jï¿½~ï¿½ï¿½ï¿½ï¿½
                 {
                     Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
                     transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotateSensitivity * Time.deltaTime);
                 }
             }
-            // Dash ¤Î ¶]¨B
+            // Dash ï¿½ï¿½ ï¿½]ï¿½B
             if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing && !isLocked && canMove)
             {
                 StartCoroutine(Dash(transform.forward));
@@ -241,7 +241,7 @@ public class TPContraller : MonoBehaviour
             {
                 isRunning = false;
             }
-            // ¦pªG¦³¿é¤J¤è¦V §PÂ_³t«×
+            // ï¿½pï¿½Gï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½V ï¿½Pï¿½_ï¿½tï¿½ï¿½
             if (inputMagnitude > 0.1f)
             {
                 if (isGuard)
@@ -261,7 +261,7 @@ public class TPContraller : MonoBehaviour
             {
                 moveSpeed = 0;
             }
-            // ¸õ
+            // ï¿½ï¿½
             if (isGrounded && Input.GetKeyDown(KeyCode.Space))
             {
                 DisableGuard();
@@ -281,7 +281,7 @@ public class TPContraller : MonoBehaviour
             _characterController.Move(velocity * Time.deltaTime);
             _animator.SetFloat("Speed", moveSpeed);
         }
-        //´Nºâ¤£¯à²¾°Ê ¤]¦³­«¤O§P©w
+        //ï¿½Nï¿½â¤£ï¿½à²¾ï¿½ï¿½ ï¿½]ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½Pï¿½w
         else
         {
             verticalVelocity += gravity * Time.deltaTime;
@@ -290,7 +290,7 @@ public class TPContraller : MonoBehaviour
             _characterController.Move(velocity * Time.deltaTime);
             _animator.SetFloat("Speed", moveSpeed);
         }
-        //§ğÀ»               
+        //ï¿½ï¿½ï¿½ï¿½               
         if (Input.GetKeyDown(KeyCode.Mouse0) && !isDashing)
         {
             DisableGuard();
@@ -332,6 +332,15 @@ public class TPContraller : MonoBehaviour
     }
     public void TakeDamage(float damage)
     {
-        _animator.SetTrigger("Hit");
+        // èª¿ç”¨ PlayerStatus çš„ TakeDamage æ–¹æ³•ä¾†è™•ç†å‚·å®³
+        if (_playerStatus != null)
+        {
+            _playerStatus.TakeDamage(damage);
+        }
+        else
+        {
+            // å¦‚æœæ²’æœ‰ PlayerStatus çµ„ä»¶ï¼Œè‡³å°‘è§¸ç™¼å‹•ç•«
+            _animator.SetTrigger("Hit");
+        }
     }
 }

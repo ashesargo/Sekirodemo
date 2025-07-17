@@ -305,62 +305,62 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    // 視覺化調試
-    void OnDrawGizmos()
-    {
-        // 繪製敵人避障範圍
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, enemyAvoidDistance);
+    //// 視覺化調試
+    //void OnDrawGizmos()
+    //{
+    //    // 繪製敵人避障範圍
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawWireSphere(transform.position, enemyAvoidDistance);
         
-        // 繪製攻擊範圍
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
+    //    // 繪製攻擊範圍
+    //    Gizmos.color = Color.yellow;
+    //    Gizmos.DrawWireSphere(transform.position, attackRange);
         
-        // 繪製視覺範圍
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, visionRange);
+    //    // 繪製視覺範圍
+    //    Gizmos.color = Color.blue;
+    //    Gizmos.DrawWireSphere(transform.position, visionRange);
         
-        // 繪製偵測立方體
-        if (showDetectionBox)
-        {
-            Vector3 boxCenter = transform.position + transform.forward * detectionBoxOffset + Vector3.up * detectionBoxYOffset;
+    //    // 繪製偵測立方體
+    //    if (showDetectionBox)
+    //    {
+    //        Vector3 boxCenter = transform.position + transform.forward * detectionBoxOffset + Vector3.up * detectionBoxYOffset;
             
-            // 根據是否檢測到障礙物改變顏色
-            Gizmos.color = isObstacleDetected ? Color.red : Color.green;
+    //        // 根據是否檢測到障礙物改變顏色
+    //        Gizmos.color = isObstacleDetected ? Color.red : Color.green;
             
-            // 繪製立方體邊線
-            Gizmos.matrix = Matrix4x4.TRS(boxCenter, transform.rotation, Vector3.one);
-            Gizmos.DrawWireCube(Vector3.zero, detectionBoxSize);
-            Gizmos.matrix = Matrix4x4.identity;
+    //        // 繪製立方體邊線
+    //        Gizmos.matrix = Matrix4x4.TRS(boxCenter, transform.rotation, Vector3.one);
+    //        Gizmos.DrawWireCube(Vector3.zero, detectionBoxSize);
+    //        Gizmos.matrix = Matrix4x4.identity;
             
-            // 繪製立方體中心點（調試用）
-            Gizmos.color = Color.white;
-            Gizmos.DrawWireSphere(boxCenter, 0.1f);
+    //        // 繪製立方體中心點（調試用）
+    //        Gizmos.color = Color.white;
+    //        Gizmos.DrawWireSphere(boxCenter, 0.1f);
             
-            // 繪製從敵人到立方體中心的線（調試用）
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawLine(transform.position, boxCenter);
+    //        // 繪製從敵人到立方體中心的線（調試用）
+    //        Gizmos.color = Color.cyan;
+    //        Gizmos.DrawLine(transform.position, boxCenter);
             
-            // 繪製撤退偵測立方體（橙色，基於背向玩家方向）
-            Vector3 retreatDirection = (transform.position - player.position).normalized;
-            retreatDirection.y = 0f;
-            Vector3 retreatBoxCenter = transform.position + retreatDirection * retreatBoxOffset + Vector3.up * retreatBoxYOffset;
-            Gizmos.color = new Color(1f, 0.5f, 0f, 1f); // 橙色
-            // 使用基於背向玩家方向的旋轉
-            Quaternion retreatBoxRotation = Quaternion.LookRotation(retreatDirection);
-            Gizmos.matrix = Matrix4x4.TRS(retreatBoxCenter, retreatBoxRotation, Vector3.one);
-            Gizmos.DrawWireCube(Vector3.zero, retreatBoxSize);
-            Gizmos.matrix = Matrix4x4.identity;
+    //        // 繪製撤退偵測立方體（橙色，基於背向玩家方向）
+    //        Vector3 retreatDirection = (transform.position - player.position).normalized;
+    //        retreatDirection.y = 0f;
+    //        Vector3 retreatBoxCenter = transform.position + retreatDirection * retreatBoxOffset + Vector3.up * retreatBoxYOffset;
+    //        Gizmos.color = new Color(1f, 0.5f, 0f, 1f); // 橙色
+    //        // 使用基於背向玩家方向的旋轉
+    //        Quaternion retreatBoxRotation = Quaternion.LookRotation(retreatDirection);
+    //        Gizmos.matrix = Matrix4x4.TRS(retreatBoxCenter, retreatBoxRotation, Vector3.one);
+    //        Gizmos.DrawWireCube(Vector3.zero, retreatBoxSize);
+    //        Gizmos.matrix = Matrix4x4.identity;
             
-            // 繪製撤退立方體中心點
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(retreatBoxCenter, 0.1f);
+    //        // 繪製撤退立方體中心點
+    //        Gizmos.color = Color.yellow;
+    //        Gizmos.DrawWireSphere(retreatBoxCenter, 0.1f);
             
-            // 繪製從敵人到撤退立方體中心的線
-            Gizmos.color = Color.magenta;
-            Gizmos.DrawLine(transform.position, retreatBoxCenter);
-        }
-    }
+    //        // 繪製從敵人到撤退立方體中心的線
+    //        Gizmos.color = Color.magenta;
+    //        Gizmos.DrawLine(transform.position, retreatBoxCenter);
+    //    }
+    //}
 
     // 撤退專用避障方法 - 使用後方立方體檢測
     public Vector3 RetreatObstacleAvoid()

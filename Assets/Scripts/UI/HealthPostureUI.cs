@@ -46,6 +46,8 @@ public class HealthPostureUI : MonoBehaviour
     // 設定 HealthPostureSystem 資料來源
     public void SetHealthPostureSystem(HealthPostureSystem healthPostureSystem)
     {
+        Debug.Log($"[HealthPostureUI] SetHealthPostureSystem 被調用，healthPostureSystem: {(healthPostureSystem != null ? "存在" : "null")}, 實例ID: {(healthPostureSystem != null ? healthPostureSystem.GetHashCode().ToString() : "null")}");
+        
         this.healthPostureSystem = healthPostureSystem;
 
         // 初始化 UI
@@ -53,10 +55,14 @@ public class HealthPostureUI : MonoBehaviour
         UpdatePostureBar();
 
         // 定義事件，當觸發時更新 UI
-        healthPostureSystem.OnHealthChanged += HealthPostureSystem_OnHealthChanged;
-        healthPostureSystem.OnPostureChanged += HealthPostureSystem_OnPostureChanged;
-        healthPostureSystem.OnDead += HealthPostureSystem_OnDead;
-        healthPostureSystem.OnPostureBroken += HealthPostureSystem_OnPostureBroken;
+        if (healthPostureSystem != null)
+        {
+            healthPostureSystem.OnHealthChanged += HealthPostureSystem_OnHealthChanged;
+            healthPostureSystem.OnPostureChanged += HealthPostureSystem_OnPostureChanged;
+            healthPostureSystem.OnDead += HealthPostureSystem_OnDead;
+            healthPostureSystem.OnPostureBroken += HealthPostureSystem_OnPostureBroken;
+            Debug.Log($"[HealthPostureUI] 事件已訂閱，初始生命值: {healthPostureSystem.GetHealthNormalized() * 100:F1}%");
+        }
     }
 
     // 當架勢條被擊破時的處理
@@ -74,12 +80,14 @@ public class HealthPostureUI : MonoBehaviour
     // 當架勢值改變時
     private void HealthPostureSystem_OnPostureChanged(object sender, System.EventArgs e)
     {
+        Debug.Log($"[HealthPostureUI] 架勢值改變事件觸發，當前架勢值: {healthPostureSystem.GetPostureNormalized() * 100:F1}%");
         UpdatePostureBar();
     }
 
     // 當生命值改變時
     private void HealthPostureSystem_OnHealthChanged(object sender, System.EventArgs e)
     {
+        Debug.Log($"[HealthPostureUI] 生命值改變事件觸發，當前生命值: {healthPostureSystem.GetHealthNormalized() * 100:F1}%, 實例ID: {healthPostureSystem.GetHashCode()}");
         UpdateHealthBar();
     }
 
@@ -87,14 +95,24 @@ public class HealthPostureUI : MonoBehaviour
     private void UpdateHealthBar()
     {
         float healthNormalized = healthPostureSystem.GetHealthNormalized();
-        healthBarImage.fillAmount = healthNormalized;
+        Debug.Log($"[HealthPostureUI] UpdateHealthBar - 生命值百分比: {healthNormalized * 100:F1}%, healthBarImage: {(healthBarImage != null ? "存在" : "null")}");
+        
+        if (healthBarImage != null)
+        {
+            healthBarImage.fillAmount = healthNormalized;
+            Debug.Log($"[HealthPostureUI] 血條 fillAmount 已設定為: {healthNormalized}");
+        }
+        else
+        {
+            Debug.LogError("[HealthPostureUI] healthBarImage 為 null！");
+        }
 
         // 如果是受傷（目前血量小於延遲血條），重置計時器
-        if (healthBarDamagedImage.fillAmount > healthBarImage.fillAmount)
+        if (healthBarDamagedImage != null && healthBarDamagedImage.fillAmount > healthBarImage.fillAmount)
         {
             healthBarDamagedFadeTimer = healthBarDamagedFadeTimerMax;
         }
-        else
+        else if (healthBarDamagedImage != null)
         {
             // 如果是回血，延遲血條直接跟上
             healthBarDamagedImage.fillAmount = healthBarImage.fillAmount;
