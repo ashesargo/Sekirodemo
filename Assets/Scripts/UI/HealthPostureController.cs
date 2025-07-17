@@ -12,6 +12,7 @@ public class HealthPostureController : MonoBehaviour
     private HealthPostureSystem healthPostureSystem;    // 引用生命值與架勢系統
     private Coroutine hideUICoroutine;  // 隱藏 UI 的協程
     private static HealthPostureController lastAttackedEnemy;  // 最後一個被攻擊的敵人
+    private bool colliderDisabled = false;  // 標記碰撞器是否已被關閉
 
     private void Awake()
     {
@@ -133,10 +134,35 @@ public class HealthPostureController : MonoBehaviour
         // 死亡時隱藏血條
         HideHealthBar();
         
-        // 關掉敵人 collider
-        GetComponent<Collider>().enabled = false;
+        // 不立即關閉碰撞器，等待武器特效完成後由WeaponEffect系統來處理
+        // 如果沒有武器特效系統，則使用延遲關閉作為備用方案
+        StartCoroutine(DisableColliderAfterEffect());
         
         // 播放死亡動畫
+    }
+
+    // 等待武器特效完成後關閉碰撞器
+    private IEnumerator DisableColliderAfterEffect()
+    {
+        // 等待武器特效完成（給予足夠時間讓特效觸發和播放）
+        yield return new WaitForSeconds(1.0f);
+        
+        // 關掉敵人 collider
+        DisableCollider();
+    }
+
+    // 立即關閉碰撞器（可被外部調用）
+    public void DisableCollider()
+    {
+        if (colliderDisabled) return; // 避免重複關閉
+        
+        Collider enemyCollider = GetComponent<Collider>();
+        if (enemyCollider != null && enemyCollider.enabled)
+        {
+            enemyCollider.enabled = false;
+            colliderDisabled = true;
+            Debug.Log($"{gameObject.name} 碰撞器已關閉");
+        }
     }
 
     // 架勢被打破
@@ -179,6 +205,14 @@ public class HealthPostureController : MonoBehaviour
         
         // 隱藏血條
         HideHealthBar();
+        
+        // 重置碰撞器狀態
+        colliderDisabled = false;
+        Collider enemyCollider = GetComponent<Collider>();
+        if (enemyCollider != null)
+        {
+            enemyCollider.enabled = true;
+        }
     }
 
     // 當物件被銷毀時清理
