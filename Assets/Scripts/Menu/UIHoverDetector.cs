@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+/// <summary>
+/// 檢測滑鼠懸停在 UI 元素上時顯示選擇圖示
+/// </summary>
 public class UIHoverDetector : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public void OnPointerEnter(PointerEventData eventData)

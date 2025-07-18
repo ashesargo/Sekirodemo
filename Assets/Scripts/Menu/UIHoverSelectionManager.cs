@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-// 控制選擇圖示根據滑鼠懸停在按鈕上時移動
+/// <summary>
+/// 控制選擇圖示根據滑鼠懸停在按鈕上時移動
+/// </summary>
 public class UIHoverSelectionManager : MonoBehaviour
 {
     public static UIHoverSelectionManager Instance;

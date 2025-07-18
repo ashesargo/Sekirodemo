@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// 主選單控制器
+/// </summary>
 public class MainMenuController : MonoBehaviour
 {
     [Header("UI Panels")]
@@ -12,7 +15,7 @@ public class MainMenuController : MonoBehaviour
 
     private bool isMainMenuActive = false;
 
-    private void Awake()
+    void Awake()
     {
         Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
         Screen.fullScreen = true;
@@ -20,14 +23,12 @@ public class MainMenuController : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("MainMenuController Start");
         // 初始化只顯示 Press Any Button 面板
         if (pressAnyButton != null && mainMenu != null)
         {
             pressAnyButton.SetActive(true);
             mainMenu.SetActive(false);
             settingsMenu.SetActive(false);
-            Debug.Log("UI Panels initialized");
         }
         else
         {
@@ -40,14 +41,12 @@ public class MainMenuController : MonoBehaviour
         // 從設定頁回主選單
         if (settingsMenu.activeSelf && Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
-            Debug.Log("Escape pressed, going back to main menu");
             ShowMainMenu();
         }
 
         // 如果主選單已啟動，不需要檢測輸入
         if (isMainMenuActive)
         {
-            Debug.Log("Main menu is already active");
             return;
         }
 
@@ -55,7 +54,6 @@ public class MainMenuController : MonoBehaviour
         if (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame ||
             Mouse.current != null && (Mouse.current.leftButton.wasPressedThisFrame || Mouse.current.rightButton.wasPressedThisFrame))
         {
-            Debug.Log("Input detected");
             ShowMainMenu();
         }
     }
@@ -63,10 +61,9 @@ public class MainMenuController : MonoBehaviour
     // 顯示主選單
     private void ShowMainMenu()
     {
-        Debug.Log("ShowMainMenu called");
         if (pressAnyButton == null || mainMenu == null)
         {
-            Debug.LogError("UI panels are null!");
+            Debug.LogError("UI 幹你娘！");
             return;
         }
 
@@ -74,7 +71,6 @@ public class MainMenuController : MonoBehaviour
         mainMenu.SetActive(true);
         settingsMenu.SetActive(false);
         isMainMenuActive = true;
-        Debug.Log("Main menu shown");
     }
 
     // 顯示設定頁
@@ -83,20 +79,17 @@ public class MainMenuController : MonoBehaviour
         settingsMenu.SetActive(true);
         mainMenu.SetActive(false);
         pressAnyButton.SetActive(false);
-        Debug.Log("Settings menu shown");
     }
 
     // 繼續遊戲
     public void OnContinue()
     {
-        Debug.Log("Continue Pressed");
         SceneManager.LoadScene("Demo Scene");
     }
 
     // 開始新遊戲
     public void OnNewGame()
     {
-        Debug.Log("NewGame Pressed");
         SceneManager.LoadScene("Demo Scene");
     }
 
@@ -109,13 +102,12 @@ public class MainMenuController : MonoBehaviour
     // 離開遊戲 (打包後才會執行)
     public void OnQuit()
     {
-        Debug.Log("Quit");
         Application.Quit();
     }
 
-    // 回到上一頁（無使用）
+    // 回到上一頁（目前無使用）
     public void OnBackPage()
     {
-        Debug.Log("BackPage");
+        
     }
 }

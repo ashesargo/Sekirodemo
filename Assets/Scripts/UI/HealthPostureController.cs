@@ -5,7 +5,7 @@ using System.Collections;
 // 生命值與架勢條控制器
 public class HealthPostureController : MonoBehaviour
 {
-    [SerializeField] private int maxHealth = 100;   // 最大生命值（預設值，會在 Awake 中自動設定）
+    [SerializeField] private int maxHealth = 100;   // 最大生命值
     [SerializeField] private int maxPosture = 100;  // 最大架勢值
     [SerializeField] private HealthPostureUI healthPostureUI;   // 生命值與架勢 UI 顯示
     [SerializeField] private GameObject deathUI;   // 死亡UI
@@ -15,7 +15,7 @@ public class HealthPostureController : MonoBehaviour
     private static HealthPostureController lastAttackedEnemy;  // 最後一個被攻擊的敵人
     private bool colliderDisabled = false;  // 標記碰撞器是否已被關閉
 
-    private void Awake()
+    void Awake()
     {
         // 自動檢測並設定最大生命值
         SetMaxHealthBasedOnComponent();
@@ -55,7 +55,7 @@ public class HealthPostureController : MonoBehaviour
     {
         healthPostureSystem.HealthDamage(amount);
         
-        // 同時增加架勢值（每次受到傷害增加10點架勢）
+        // 同時增加架勢值（每次受到傷害增加 10 點架勢）
         healthPostureSystem.PostureIncrease(10);
         
         // 顯示血條並設定為最後一個被攻擊的敵人
@@ -74,7 +74,7 @@ public class HealthPostureController : MonoBehaviour
     // 顯示血條
     private void ShowHealthBar()
     {
-        // 檢查血量是否小於等於0，如果是則不顯示血條
+        // 檢查血量是否小於等於 0，如果是則不顯示血條
         if (healthPostureSystem.GetHealthNormalized() <= 0)
         {
             return;
@@ -102,7 +102,7 @@ public class HealthPostureController : MonoBehaviour
             // 設定為最後一個被攻擊的敵人
             lastAttackedEnemy = this;
 
-            // 顯示血條UI
+            // 顯示血條 UI
             if (healthPostureUI != null)
             {
                 healthPostureUI.gameObject.SetActive(true);
@@ -168,13 +168,6 @@ public class HealthPostureController : MonoBehaviour
         }
     }
 
-    // 架勢恢復
-    private void Update()
-    {
-        // 移除這裡的架勢恢復，讓 HealthPostureUI 來處理
-        // healthPostureSystem.HandlePostureRecovery();
-    }
-
     // 死亡
     private void OnDead(object sender, System.EventArgs e)
     {
@@ -183,23 +176,19 @@ public class HealthPostureController : MonoBehaviour
         
         if (isPlayer)
         {
-            // 玩家死亡時顯示死亡UI
+            // 玩家死亡時顯示死亡 UI
             ShowDeathUI();
         }
         else
         {
             // 敵人死亡時隱藏血條
             HideHealthBar();
-            
-            // 不立即關閉碰撞器，等待武器特效完成後由WeaponEffect系統來處理
-            // 如果沒有武器特效系統，則使用延遲關閉作為備用方案
+            // 關閉碰撞器
             StartCoroutine(DisableColliderAfterEffect());
         }
-        
-        // 播放死亡動畫
     }
 
-    // 顯示死亡UI
+    // 顯示死亡 UI
     private void ShowDeathUI()
     {
         if (deathUI != null)
@@ -208,7 +197,7 @@ public class HealthPostureController : MonoBehaviour
         }
     }
 
-    // 隱藏死亡UI
+    // 隱藏死亡 UI
     public void HideDeathUI()
     {
         if (deathUI != null)
@@ -220,14 +209,14 @@ public class HealthPostureController : MonoBehaviour
     // 等待武器特效完成後關閉碰撞器
     private IEnumerator DisableColliderAfterEffect()
     {
-        // 等待武器特效完成（給予足夠時間讓特效觸發和播放）
-        yield return new WaitForSeconds(1.0f);
+        // 等待武器特效完成
+        yield return new WaitForSeconds(0.1f);
         
         // 關掉敵人 collider
         DisableCollider();
     }
 
-    // 立即關閉碰撞器（可被外部調用）
+    // 立即關閉碰撞器
     public void DisableCollider()
     {
         if (colliderDisabled) return; // 避免重複關閉

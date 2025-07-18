@@ -1,16 +1,19 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// 閃爍 UI 圖示
+/// </summary>
 [RequireComponent(typeof(CanvasGroup))]
 public class BlinkingUIIcon : MonoBehaviour
 {
-    [Header("閃爍設定")]
-    public float blinkSpeed = 1f;  // 閃爍速度（越大越快）
+    [Header("Blink Settings")]
+    public float blinkSpeed = 1f;  // 閃爍速度
     public float minAlpha = 0.1f;  // 最淡的透明度
     public float maxAlpha = 1f;    // 最亮的透明度
 
-    private CanvasGroup canvasGroup;
-    private float timer;
+    private CanvasGroup canvasGroup; //引用 CanvasGroup 組件
+    private float timer; //計時器
 
     void Awake()
     {
