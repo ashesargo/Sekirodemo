@@ -27,9 +27,13 @@ public class BossChaseState : IEnemyState
             enemy.SwitchState(new BossComboState());
             return;
         }
-        
-
-
+        // 新增：如果距離玩家太近，停止移動，避免推擠
+        float minDistance = enemy.attackRange;
+        if (Vector3.Distance(enemy.transform.position, enemy.player.position) <= minDistance)
+        {
+            enemy.velocity = Vector3.zero;
+            return;
+        }
         Vector3 seek = enemy.Seek(enemy.player.position);
         Vector3 obstacleAvoid = enemy.ObstacleAvoid(); // 前方避障（追擊專用）
         Vector3 enemyAvoid = enemy.EnemyAvoid(); // 敵人避障
@@ -41,6 +45,10 @@ public class BossChaseState : IEnemyState
         //    Debug.Log($"BossChaseState Debug - Seek: {seek}, 前方避障: {obstacleAvoid}, 敵人避障: {enemyAvoid}, 總力: {totalForce}");
         //}
         
+        if (enemy.player != null)
+        {
+            enemy.SmoothLookAt(enemy.player.position);
+        }
         enemy.Move(totalForce);
     }
 

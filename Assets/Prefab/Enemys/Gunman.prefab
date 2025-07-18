@@ -7178,6 +7178,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   showDebugInfo: 0
+  lookAtTurnSpeed: 2
+  minDistanceToPlayer: 10
   velocity: {x: 0, y: 0, z: 0}
   canAutoAttack: 0
 --- !u!114 &2099053201200837061
@@ -7194,7 +7196,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 8985917237467426635, guid: 57c781ea0ff0f754cad1c28f4c9d8d0b, type: 3}
   firePoint: {fileID: 4280088553051569232}
-  projectileSpeed: 20
+  projectileSpeed: 50
   projectileDamage: 10
   shootSound: {fileID: 0}
   reloadSound: {fileID: 0}

@@ -35,6 +35,11 @@ public class BossRangedAttackState : IEnemyState
         {
             enemy.SwitchState(new BossChaseState());
         }
+        // 新增：遠程攻擊時慢慢轉向玩家
+        if (enemy.player != null)
+        {
+            enemy.SmoothLookAt(enemy.player.position); // 使用 Inspector 可調整的 lookAtTurnSpeed
+        }
     }
 
     public void ExitState(EnemyAI enemy)

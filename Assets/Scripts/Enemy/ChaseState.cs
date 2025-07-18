@@ -28,7 +28,13 @@ public class ChaseState : IEnemyState
             }
             return;
         }
-
+        // 新增：如果距離玩家太近，停止移動，避免推擠
+        float minDistance = enemy.attackRange; // 或可加一個 buffer
+        if (Vector3.Distance(enemy.transform.position, enemy.player.position) <= minDistance)
+        {
+            enemy.velocity = Vector3.zero;
+            return;
+        }
         Vector3 seek = enemy.Seek(enemy.player.position);
         Vector3 obstacleAvoid = enemy.ObstacleAvoid(); // 前方避障（追擊專用）
         Vector3 enemyAvoid = enemy.EnemyAvoid(); // 敵人避障
@@ -38,6 +44,11 @@ public class ChaseState : IEnemyState
         if (enemy.showDebugInfo)
         {
             Debug.Log($"ChaseState Debug - Seek: {seek}, 前方避障: {obstacleAvoid}, 敵人避障: {enemyAvoid}, 總力: {totalForce}");
+        }
+        // 新增：追擊時慢慢轉向玩家
+        if (enemy.player != null)
+        {
+            enemy.SmoothLookAt(enemy.player.position); // 使用 Inspector 可調整的 lookAtTurnSpeed
         }
         
         //Debug.Log($"Seek force: {seek}, Avoid force: {avoid}, Enemy avoid: {enemyAvoid}, Total force: {totalForce}, Velocity: {enemy.velocity}");

@@ -8064,6 +8064,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   showDebugInfo: 0
+  lookAtTurnSpeed: 2
+  minDistanceToPlayer: 10
   velocity: {x: 0, y: 0, z: 0}
   canAutoAttack: 0
 --- !u!4 &8719892328623682782 stripped

@@ -33,12 +33,7 @@ public class AimState : IEnemyState
         // 面向玩家
         if (enemy.player != null)
         {
-            Vector3 lookDir = (enemy.player.position - enemy.transform.position);
-            lookDir.y = 0f;
-            if (lookDir.magnitude > 0.1f)
-            {
-                enemy.transform.forward = lookDir.normalized;
-            }
+            enemy.SmoothLookAt(enemy.player.position); // 使用 Inspector 可調整的 lookAtTurnSpeed
         }
         
         // 檢查玩家是否還在攻擊範圍內

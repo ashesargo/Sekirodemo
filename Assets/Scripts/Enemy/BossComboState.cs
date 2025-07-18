@@ -122,17 +122,10 @@ public class BossComboState : IEnemyState
         timer += Time.deltaTime;
         AnimatorStateInfo stateInfo = enemy.animator.GetCurrentAnimatorStateInfo(0);
         
-        // 讓Boss一直面向玩家
+        // 讓Boss一直面向玩家（改為慢慢轉向）
         if (enemy.player != null)
         {
-            Vector3 directionToPlayer = (enemy.player.position - enemy.transform.position).normalized;
-            directionToPlayer.y = 0; // 保持Y軸不變，只旋轉水平方向
-            
-            if (directionToPlayer != Vector3.zero)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
-                enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, targetRotation, Time.deltaTime * 5f);
-            }
+            enemy.SmoothLookAt(enemy.player.position); // 使用 Inspector 可調整的 lookAtTurnSpeed
         }
         
         // 檢測連擊動畫開始

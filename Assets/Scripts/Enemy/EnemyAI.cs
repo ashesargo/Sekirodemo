@@ -36,6 +36,10 @@ public class EnemyAI : MonoBehaviour
 
     [Header("調試選項")]
     public bool showDebugInfo = false;
+    [Header("轉向速度 (越小越慢)")]
+    public float lookAtTurnSpeed = 2f;
+    [Header("與玩家最小距離 (避免推擠)")]
+    public float minDistanceToPlayer = 1.2f;
 
     private IEnemyState currentState;
     [HideInInspector] public Vector3 velocity;
@@ -257,6 +261,24 @@ public class EnemyAI : MonoBehaviour
     public void Move(Vector3 force, bool lookAtPlayer = false)
     {
         force.y = 0f;
+        // 新增：與玩家保持最小距離，避免推擠
+        if (player != null)
+        {
+            float distToPlayer = Vector3.Distance(transform.position, player.position);
+            if (distToPlayer < minDistanceToPlayer)
+            {
+                velocity = Vector3.zero;
+                // 只做轉向，不移動
+                if (lookAtPlayer)
+                {
+                    Vector3 lookDir = (player.position - transform.position);
+                    lookDir.y = 0f;
+                    if (lookDir.magnitude > 0.1f)
+                        transform.forward = lookDir.normalized;
+                }
+                return;
+            }
+        }
         velocity += force * Time.deltaTime;
         velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
         velocity.y = 0f;
@@ -302,6 +324,20 @@ public class EnemyAI : MonoBehaviour
                     status.TakeDamage(damage);
                 }
             }
+        }
+    }
+
+    // 新增：平滑轉向玩家的方法
+    public void SmoothLookAt(Vector3 targetPos, float turnSpeed = -1f)
+    {
+        if (turnSpeed < 0f) turnSpeed = lookAtTurnSpeed;
+        Vector3 lookDir = targetPos - transform.position;
+        lookDir.y = 0f;
+        if (lookDir.magnitude > 0.1f)
+        {
+            Quaternion targetRot = Quaternion.LookRotation(lookDir.normalized);
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation, targetRot, turnSpeed * Time.deltaTime * 60f);
         }
     }
 

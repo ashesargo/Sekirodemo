@@ -29,6 +29,11 @@ public class BossIdleState : IEnemyState
             enemy.SwitchState(new BossChaseState());
         }
 
+        // 新增：待機時慢慢轉向玩家
+        if (enemy.player != null)
+        {
+            enemy.SmoothLookAt(enemy.player.position); // 使用 Inspector 可調整的 lookAtTurnSpeed
+        }
     }
 
     public void ExitState(EnemyAI enemy) 

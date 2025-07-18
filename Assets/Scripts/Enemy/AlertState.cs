@@ -16,6 +16,11 @@ public class AlertState : IEnemyState
     public void UpdateState(EnemyAI enemy)
     {
         timer += Time.deltaTime;
+        // 新增：警戒時慢慢轉向玩家
+        if (enemy.player != null)
+        {
+            enemy.SmoothLookAt(enemy.player.position); // 使用 Inspector 可調整的 lookAtTurnSpeed
+        }
         if (timer > alertTime)
         {
             if (enemy.IsInAttackRange())

@@ -43,7 +43,7 @@ public class Projectile : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         // 檢查是否命中目標層
-        if (((7 << other.gameObject.layer) & targetLayers) != 0)
+        if (((1 << other.gameObject.layer) & targetLayers) != 0)
         {
             if (other.CompareTag("Player"))
             {
@@ -53,6 +53,12 @@ public class Projectile : MonoBehaviour
                     status.TakeDamage(damage);
                     Debug.Log($"Projectile: 對玩家造成 {damage} 點傷害");
                 }
+            }
+            else if (other.CompareTag("Enemy"))
+            {
+                var enemy = other.GetComponent<EnemyTest>(); // 或 EnemyAI
+                if (enemy != null)
+                    enemy.TakeDamage((int)damage);
             }
             // 播放命中效果
             PlayHitEffect();
@@ -72,7 +78,7 @@ public class Projectile : MonoBehaviour
     void OnCollisionEnter(Collision collision)
     {
         // 檢查是否命中目標層
-        if (((7 << collision.gameObject.layer) & targetLayers) != 0)
+        if (((1 << collision.gameObject.layer) & targetLayers) != 0)
         {
             if (collision.gameObject.CompareTag("Player"))
             {
