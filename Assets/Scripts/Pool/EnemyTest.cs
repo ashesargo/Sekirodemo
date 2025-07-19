@@ -33,9 +33,8 @@ public class EnemyTest : MonoBehaviour
         // 使用 HealthPostureController 處理傷害
         if (healthController != null)
         {
-            healthController.TakeDamage(damage);
+            healthController.TakeDamage(damage,0);
         }
-
         // 檢查是否死亡
         if (GetCurrentHP() <= 0 && !isDead)
         {

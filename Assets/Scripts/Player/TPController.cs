@@ -20,64 +20,48 @@ public class TPContraller : MonoBehaviour
     public float jumpForce = 8f;
     private float verticalVelocity;
     [Header("Ground Check")]
-    public Transform groundCheck;             // �]�b�}��
-    public float groundDistance = 1f;       // �����Z��
-    public LayerMask Ground;              // �]�w���a���ϼh
+    public Transform groundCheck;
+    public float groundDistance = 1f;
+    public LayerMask Ground;
     private bool isGrounded;
-    //����
-    bool lastIsGround;
     int comboStep = 0;
     int currentStep = 0;
     bool canCombo = false;
     bool canMove = true;
-    //�Ĩ� �]�B
+    private float comboTimer = 0f;
+    private float comboWindow = 1f;
     [Header("Dash")]
     public float dashDis;
     private bool isDashing;
     private bool isRunning = false;
-    //������w
     [Header("Lock")]
     public Transform lockTarget;
     private bool isLocked = false;
     public float lockRange = 10.0f;
     public LayerMask enemyLayer;
     public TPCamera TPCamera;
-    //���m
     public bool isGuard;
     public bool parrySuccess;
-    //����combo
-    public void EnableCombo()
+    public void StartAttack()
     {
         currentStep = comboStep;
         canCombo = true;
-    }
-    public void DisableCombo()
-    {
-        if (currentStep < comboStep)
-        {
-            canCombo = false;
-        }
-        else
-        {
-            comboStep = 0;
-            _animator.SetInteger("comboStep", comboStep);
-            canMove = true;
-            canCombo = false;
-        }
-    }
-    //���������ಾ��
-    public void StartAttack()
-    {
+        comboTimer = comboWindow;
         canMove = false;
     }
     public void EndAttack()
     {
+        if (comboStep > currentStep) return;
+        ResetCombo();
+    }
+    public void ResetCombo()
+    {
         canMove = true;
         comboStep = 0;
         canCombo = false;
-        _animator.SetInteger("comboStep", comboStep);
+        comboTimer = 0f;
+        _animator.SetInteger("ComboStep", comboStep);
     }
-    //�Ĩ�
     IEnumerator Dash(Vector3 dashDirection)
     {
         isDashing = true;
@@ -105,7 +89,6 @@ public class TPContraller : MonoBehaviour
         isDashing = false;
         _animator.SetBool("isDashing", isDashing);
     }
-    //�M����w�ؼ�
     void FindLockTarget()
     {
         Collider[] targets = Physics.OverlapSphere(transform.position, lockRange, enemyLayer);
@@ -150,13 +133,20 @@ public class TPContraller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_playerGrapple.IsGrappling() || _playerStatus.isDeath==true) return;
+        Debug.Log(comboTimer);
+        if (_playerGrapple.IsGrappling() || _playerStatus.isDeath == true) return;
         TPCamera.isLock = isLocked;
         TPCamera.lockTarget = lockTarget;
-        //�O�_�b�a��   
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, Ground);
         _animator.SetBool("isGrounded", isGrounded);
-        //��w�P�w
+        if (comboTimer > 0)
+        {
+            comboTimer -= Time.deltaTime;
+            if (comboTimer <= 0)
+            {
+                ResetCombo();
+            }
+        }
         if (Input.GetKeyDown(KeyCode.Mouse2))
         {
             if (!isLocked)
@@ -171,11 +161,11 @@ public class TPContraller : MonoBehaviour
                 _animator.SetBool("Lock", isLocked);
             }
         }
-        //���Ⲿ��
-        //if (Input.GetKeyDown(KeyCode.Mouse1) && enemy.canParry)
-        //{
-        //    _animator.SetTrigger("Parry");
-        //}
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            _animator.SetTrigger("Parry");
+            parrySuccess = true;
+        }
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             EnableGurad();
@@ -184,7 +174,6 @@ public class TPContraller : MonoBehaviour
         {
             DisableGuard();
         }
-
         if (canMove)
         {
             float fH = Input.GetAxis("Horizontal");
@@ -194,7 +183,6 @@ public class TPContraller : MonoBehaviour
             Vector2 inputVector = new Vector2(fH, fV);
             float inputMagnitude = inputVector.magnitude;
             Vector3 moveDirection;
-            //�O�_��w ��V���P
             if (isLocked && lockTarget != null)
             {
                 Vector3 directionToTarget = lockTarget.position - transform.position;
@@ -220,7 +208,7 @@ public class TPContraller : MonoBehaviour
                 moveDirection = camTransform.right * fH + camTransform.forward * fV;
                 moveDirection.y = 0;
                 moveDirection.Normalize();
-                if (moveDirection.sqrMagnitude > 0.001f) // �T�O����V��J�~����
+                if (moveDirection.sqrMagnitude > 0.001f)
                 {
                     Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
                     transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotateSensitivity * Time.deltaTime);
@@ -241,7 +229,6 @@ public class TPContraller : MonoBehaviour
             {
                 isRunning = false;
             }
-            // �p�G����J��V �P�_�t��
             if (inputMagnitude > 0.1f)
             {
                 if (isGuard)
@@ -261,7 +248,6 @@ public class TPContraller : MonoBehaviour
             {
                 moveSpeed = 0;
             }
-            // ��
             if (isGrounded && Input.GetKeyDown(KeyCode.Space))
             {
                 DisableGuard();
@@ -281,7 +267,6 @@ public class TPContraller : MonoBehaviour
             _characterController.Move(velocity * Time.deltaTime);
             _animator.SetFloat("Speed", moveSpeed);
         }
-        //�N�⤣�ಾ�� �]�����O�P�w
         else
         {
             verticalVelocity += gravity * Time.deltaTime;
@@ -290,7 +275,6 @@ public class TPContraller : MonoBehaviour
             _characterController.Move(velocity * Time.deltaTime);
             _animator.SetFloat("Speed", moveSpeed);
         }
-        //����               
         if (Input.GetKeyDown(KeyCode.Mouse0) && !isDashing)
         {
             DisableGuard();
@@ -304,13 +288,13 @@ public class TPContraller : MonoBehaviour
             if (canCombo && comboStep < 4)
             {
                 comboStep++;
-                _animator.SetInteger("comboStep", comboStep);
+                _animator.SetInteger("ComboStep", comboStep);
                 canCombo = false;
             }
             else if (comboStep == 0)
             {
                 comboStep = 1;
-                _animator.SetInteger("comboStep", comboStep);
+                _animator.SetInteger("ComboStep", comboStep);
                 if (isLocked)
                 {
                     _animator.SetTrigger("LockAttack");
@@ -321,14 +305,6 @@ public class TPContraller : MonoBehaviour
                 }
             }
         }
-    }
-    private void LateUpdate()
-    {
-        if (lastIsGround != isGrounded)
-        {
-            EndAttack();
-        }
-        lastIsGround = isGrounded;
     }
     public void TakeDamage(float damage)
     {
