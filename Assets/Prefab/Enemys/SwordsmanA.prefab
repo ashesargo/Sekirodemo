@@ -5031,6 +5031,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 6797783300149108695, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6809045414351133359, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -6051,7 +6055,7 @@ MonoBehaviour:
     m_Bits: 512
   showDebugInfo: 0
   lookAtTurnSpeed: 2
-  minDistanceToPlayer: 10
+  minDistanceToPlayer: 5
   velocity: {x: 0, y: 0, z: 0}
   canAutoAttack: 0
 --- !u!95 &8253529524297296019 stripped
