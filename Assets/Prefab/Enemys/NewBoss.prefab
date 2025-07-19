@@ -464,6 +464,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 1172188994795236535, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
+      propertyPath: m_Radius
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 1183451581312068047, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -4944,7 +4948,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 0}
   visionRange: 100
-  attackRange: 15
+  attackRange: 10
   maxSpeed: 15
   avoidDistance: 20
   avoidStrength: 40
@@ -4980,7 +4984,7 @@ MonoBehaviour:
   - Combo3
   combo1Duration: 6
   combo2Duration: 6
-  combo3Duration: 3
+  combo3Duration: 6
 --- !u!137 &5630134567351512465 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 1316216258256692149, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
