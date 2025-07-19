@@ -2395,7 +2395,7 @@ PrefabInstance:
     - target: {fileID: 5542987232439597522, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: cf7cc011ca2d8694dadce830893315b9, type: 2}
+      objectReference: {fileID: 9100000, guid: 59745203f5adc4a4c8d88f2352530f56, type: 2}
     - target: {fileID: 5548597146713155424, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -4563,6 +4563,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1245062765284686098, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9095335841246021837}
+    - targetCorrespondingSourceObject: {fileID: 1245062765284686098, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -2384988033914571718}
   m_SourcePrefab: {fileID: 100100000, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
 --- !u!137 &167012479499398312 stripped
 SkinnedMeshRenderer:
@@ -4927,6 +4930,57 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isDead: 0
+--- !u!114 &-2384988033914571718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5557789131163203382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ede9019da687ddd46b1547c1fb033561, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 0}
+  visionRange: 100
+  attackRange: 15
+  maxSpeed: 15
+  avoidDistance: 20
+  avoidStrength: 40
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 512
+  retreatTime: 2
+  enemyAvoidDistance: 10
+  enemyAvoidStrength: 30
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  detectionBoxSize: {x: 5, y: 10, z: 10}
+  detectionBoxOffset: 5
+  detectionBoxYOffset: 5
+  showDetectionBox: 1
+  retreatBoxSize: {x: 5, y: 10, z: 10}
+  retreatBoxOffset: 5
+  retreatBoxYOffset: 5
+  retreatObstacleMask:
+    serializedVersion: 2
+    m_Bits: 576
+  showDebugInfo: 0
+  lookAtTurnSpeed: 2
+  minDistanceToPlayer: 1.2
+  velocity: {x: 0, y: 0, z: 0}
+  canAutoAttack: 1
+  currentComboCount: 0
+  maxComboCount: 3
+  comboAnimations:
+  - Combo1
+  - Combo2
+  - Combo3
+  combo1Duration: 6
+  combo2Duration: 6
+  combo3Duration: 3
 --- !u!137 &5630134567351512465 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 1316216258256692149, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
