@@ -32,7 +32,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: hook-2
+  m_Name: Hook-2
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -84,7 +84,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: GhostSamurai_APose_Attack02_1_ALL_Inplace
+  m_Name: Attack_1
   m_Speed: 1.2
   m_CycleOffset: 0
   m_Transitions:
@@ -137,7 +137,7 @@ AnimatorStateMachine:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: lock
+  m_Name: Lock
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: 7105904674997668641}
@@ -428,7 +428,7 @@ AnimatorStateMachine:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: jump
+  m_Name: Jump
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: -1952842659706241383}
@@ -509,7 +509,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: GhostSamurai_APose_Die08_Inplace
+  m_Name: Die
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -522,7 +522,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: c0017897346ac9c4f97eed8ca87da73b, type: 3}
+  m_Motion: {fileID: 7400000, guid: 5333d2443f83e144d88ccdb02f27e789, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -535,7 +535,7 @@ AnimatorStateMachine:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: attack
+  m_Name: Attack
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: -8414607551837783616}
@@ -608,7 +608,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: move
+  m_Name: Move
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -636,8 +636,8 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: dash
-  m_Speed: 2
+  m_Name: Dash
+  m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -7521028707095002482}
@@ -650,7 +650,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 8993902097722301239, guid: d3d0042d2e65c884eac00acb7bff932d, type: 3}
+  m_Motion: {fileID: 7400000, guid: 32c9326991c57e140818c8778610b1a6, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -812,7 +812,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: GhostSamurai_APose_Attack02_2_Inplace
+  m_Name: Attack_2
   m_Speed: 1.5
   m_CycleOffset: 0
   m_Transitions:
@@ -865,14 +865,14 @@ AnimatorStateMachine:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: guard
+  m_Name: Guard
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: -5963206618849241755}
-    m_Position: {x: 330, y: 200, z: 0}
+    m_Position: {x: 260, y: 110, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2106241431196017179}
-    m_Position: {x: 230, y: 130, z: 0}
+    m_Position: {x: 260, y: 160, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions:
@@ -918,8 +918,8 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: dash
-  m_Speed: 1.5
+  m_Name: Dash
+  m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 4864957416627790242}
@@ -933,7 +933,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: a6dbfbffe0b490043b2faa496145ff3b, type: 2}
+  m_Motion: {fileID: 7400000, guid: 32c9326991c57e140818c8778610b1a6, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -1041,7 +1041,7 @@ AnimatorStateMachine:
     m_Position: {x: 10, y: 10, z: 0}
   - serializedVersion: 1
     m_StateMachine: {fileID: -8358723132179118931}
-    m_Position: {x: 10, y: 160, z: 0}
+    m_Position: {x: 10, y: 150, z: 0}
   - serializedVersion: 1
     m_StateMachine: {fileID: 3705935351624485497}
     m_Position: {x: -230, y: -110, z: 0}
@@ -1070,7 +1070,7 @@ AnimatorStateMachine:
     - {fileID: -6220574456154419272}
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: -210, y: -40, z: 0}
-  m_EntryPosition: {x: -210, y: 170, z: 0}
+  m_EntryPosition: {x: -210, y: 150, z: 0}
   m_ExitPosition: {x: 800, y: 120, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
   m_DefaultState: {fileID: 2663779295831777560}
@@ -1108,71 +1108,71 @@ BlendTree:
   m_Name: Blend Tree
   m_Childs:
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 510a1d0a4b8be8e40837219128dc5413, type: 2}
+    m_Motion: {fileID: 7400000, guid: 66d7aa4bb6b158140a782e7f5efb8be7, type: 2}
     m_Threshold: 0
     m_Position: {x: 0, y: 1}
-    m_TimeScale: 1
+    m_TimeScale: 1.2
     m_CycleOffset: 0
     m_DirectBlendParameter: Speed
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: b162e51ccb869ad4db6a9d39a6cf12a3, type: 2}
+    m_Motion: {fileID: 7400000, guid: c5cde15ec154a34438700f0db9f172ae, type: 2}
     m_Threshold: 0.125
     m_Position: {x: 1, y: 1}
-    m_TimeScale: 1
+    m_TimeScale: 1.2
     m_CycleOffset: 0
     m_DirectBlendParameter: Speed
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 576ee1a88a09ae5479497f43b00bf0e0, type: 2}
+    m_Motion: {fileID: 7400000, guid: c375d11e33bfeb24687ee6b152cc247b, type: 2}
     m_Threshold: 0.25
     m_Position: {x: 1, y: 0}
-    m_TimeScale: 1
+    m_TimeScale: 1.2
     m_CycleOffset: 0
     m_DirectBlendParameter: Speed
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: d51f578a08adb1246b1405b2d121656e, type: 2}
+    m_Motion: {fileID: 7400000, guid: c9553766ff504e541bdc09b24f1c5218, type: 2}
     m_Threshold: 0.375
     m_Position: {x: 1, y: -1}
-    m_TimeScale: 1
+    m_TimeScale: 1.2
     m_CycleOffset: 0
     m_DirectBlendParameter: Speed
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: bd47c32ced7a2624594a04126f48de44, type: 2}
+    m_Motion: {fileID: 7400000, guid: cd5d072df9c8d4948bb714eb3e1e8e47, type: 2}
     m_Threshold: 0.5
     m_Position: {x: 0, y: -1}
-    m_TimeScale: 1
+    m_TimeScale: 1.2
     m_CycleOffset: 0
     m_DirectBlendParameter: Speed
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 5181b809e7a9dcf479d388dbab79a2b5, type: 2}
+    m_Motion: {fileID: 7400000, guid: abd638e7cf8999d438b1faf504958644, type: 2}
     m_Threshold: 0.625
     m_Position: {x: -1, y: -1}
-    m_TimeScale: 1
+    m_TimeScale: 1.2
     m_CycleOffset: 0
     m_DirectBlendParameter: Speed
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 44c0445f54fca92439079e6c4560734b, type: 2}
+    m_Motion: {fileID: 7400000, guid: d458c0fbc4838504c8adc6b0951ab2ce, type: 2}
     m_Threshold: 0.75
     m_Position: {x: -1, y: 0}
-    m_TimeScale: 1
+    m_TimeScale: 1.2
     m_CycleOffset: 0
     m_DirectBlendParameter: Speed
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: ce675c0aa3eef6846ad1a079873d2b07, type: 2}
+    m_Motion: {fileID: 7400000, guid: f1257c56bc1cef24eb17c3622582765d, type: 2}
     m_Threshold: 0.875
     m_Position: {x: -1, y: 1}
-    m_TimeScale: 1
+    m_TimeScale: 1.2
     m_CycleOffset: 0
     m_DirectBlendParameter: Speed
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 4b1a07182b1007749a183f972289e927, type: 2}
+    m_Motion: {fileID: 7400000, guid: 0e0452c9020c62841854ffd9aba3329c, type: 2}
     m_Threshold: 1
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
@@ -1243,7 +1243,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ARPG_Samurai_Guard_B
+  m_Name: Guard
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -1257,7 +1257,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 537454c67cbbc2c4582547ddb35d7701, type: 2}
+  m_Motion: {fileID: 7400000, guid: c149e09d150a5464cb9e32ee96939982, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -1322,7 +1322,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: GhostSamurai_APose_Attack02_3_Inplace
+  m_Name: Attack_3
   m_Speed: 1.5
   m_CycleOffset: 0
   m_Transitions:
@@ -1436,7 +1436,7 @@ AnimatorStateMachine:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: attack
+  m_Name: Attack
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: -6695340224682424265}
@@ -1626,7 +1626,7 @@ AnimatorController:
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}
   - serializedVersion: 5
-    m_Name: guard
+    m_Name: Guard
     m_StateMachine: {fileID: -4182164243271400052}
     m_Mask: {fileID: 31900000, guid: 844e894b8feb1ea44a6a0b0c80532db3, type: 2}
     m_Motions: []
@@ -1658,15 +1658,15 @@ BlendTree:
   m_Name: Blend Tree
   m_Childs:
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 510a1d0a4b8be8e40837219128dc5413, type: 2}
+    m_Motion: {fileID: 7400002, guid: 1f4f6dee251d99746adc358f0846d00c, type: 3}
     m_Threshold: 30
     m_Position: {x: 25, y: 2}
-    m_TimeScale: 1
+    m_TimeScale: 1.2
     m_CycleOffset: 0
     m_DirectBlendParameter: Speed
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 54080c59d0a0e3c45b9c5c036348d21a, type: 2}
+    m_Motion: {fileID: 7400000, guid: e94e05aa8b90c554b9a27f8e66b4e20c, type: 2}
     m_Threshold: 50
     m_Position: {x: 50, y: 0}
     m_TimeScale: 1.2
@@ -1714,7 +1714,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ARPG_Samurai_Sprint_IPC
+  m_Name: Run
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -1729,7 +1729,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 54080c59d0a0e3c45b9c5c036348d21a, type: 2}
+  m_Motion: {fileID: 7400000, guid: e94e05aa8b90c554b9a27f8e66b4e20c, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -1795,11 +1795,11 @@ AnimatorStateMachine:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: dash
+  m_Name: Dash
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: -5976908189512214680}
-    m_Position: {x: 390, y: 50, z: 0}
+    m_Position: {x: 240, y: 120, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -1808,7 +1808,7 @@ AnimatorStateMachine:
   m_AnyStatePosition: {x: 50, y: 20, z: 0}
   m_EntryPosition: {x: 50, y: 120, z: 0}
   m_ExitPosition: {x: 800, y: 120, z: 0}
-  m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
+  m_ParentStateMachinePosition: {x: 480, y: 120, z: 0}
   m_DefaultState: {fileID: -5976908189512214680}
 --- !u!1102 &1885477771776694766
 AnimatorState:
@@ -1817,8 +1817,8 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: GhostSamurai_APose_Hit_F_Inplace
-  m_Speed: 1
+  m_Name: Hit
+  m_Speed: 1.2
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -3215856391898849504}
@@ -1913,7 +1913,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: GhostSamurai_APose_Attack02_4_Inplace
+  m_Name: Attack_4
   m_Speed: 1.5
   m_CycleOffset: 0
   m_Transitions:
@@ -2111,7 +2111,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: jump
+  m_Name: Jump
   m_Speed: 1.2
   m_CycleOffset: 0
   m_Transitions:
@@ -2521,7 +2521,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: lock walk
+  m_Name: LockWalk
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
