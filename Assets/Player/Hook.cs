@@ -62,15 +62,6 @@ public class PlayerGrapple : MonoBehaviour
             grappleRope.startWidth = ropeWidth;
             grappleRope.endWidth = ropeWidth * 0.8f;
             grappleRope.positionCount = 0;
-            if (ropeMaterial != null)
-            {
-                grappleRope.material = ropeMaterial;
-            }
-            else
-            {
-                grappleRope.material = new Material(Shader.Find("Standard"));
-                grappleRope.material.color = Color.white;
-            }
         }
         // 檢查 grappleLayer 是否有效
         string layerName = LayerMask.LayerToName(Mathf.FloorToInt(Mathf.Log(grappleLayer.value, 2)));
@@ -358,7 +349,6 @@ public class PlayerGrapple : MonoBehaviour
             UpdateRopeWithSag(ropeStartPos, ropeEndPos, sagAmount, currentSegments);
             yield return null;
         }
-
         isExtendingRope = false;
     }
 
@@ -380,20 +370,10 @@ public class PlayerGrapple : MonoBehaviour
             grappleRope.SetPosition(i, point);
         }
     }
-
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, grappleRange);
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, maxGrappleDistance);
-    }
-
     public bool IsGrappling()
     {
         return isGrappling;
     }
-
     public void DisableGrapple()
     {
         if (grappleRope != null)
@@ -401,7 +381,6 @@ public class PlayerGrapple : MonoBehaviour
             grappleRope.enabled = false;
             grappleRope.positionCount = 0;
         }
-        isGrappling = false;
     }
 
     // 新增的 UI 圖示管理方法

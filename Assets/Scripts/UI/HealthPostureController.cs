@@ -1,10 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 // 生命值與架勢條控制器
 public class HealthPostureController : MonoBehaviour
 {
+    public int live = 2;   // 復活次數
     [SerializeField] private int maxHealth = 100;   // 最大生命值
     [SerializeField] private int maxPosture = 100;  // 最大架勢值
     [SerializeField] private HealthPostureUI healthPostureUI;   // 生命值與架勢 UI 顯示
@@ -14,12 +16,13 @@ public class HealthPostureController : MonoBehaviour
     private Coroutine hideUICoroutine;  // 隱藏 UI 的協程
     private static HealthPostureController lastAttackedEnemy;  // 最後一個被攻擊的敵人
     private bool colliderDisabled = false;  // 標記碰撞器是否已被關閉
+    private bool isPlayerDead = false;  // 玩家是否已死亡
 
     void Awake()
     {
         // 自動檢測並設定最大生命值
         SetMaxHealthBasedOnComponent();
-        
+
         // 初始化生命值與架勢系統
         healthPostureSystem = new HealthPostureSystem(maxHealth, maxPosture);
 
@@ -32,6 +35,29 @@ public class HealthPostureController : MonoBehaviour
         // 訂閱事件
         healthPostureSystem.OnDead += OnDead;
         healthPostureSystem.OnPostureBroken += OnPostureBroken;
+    }
+
+    void Update()
+    {
+        // 檢查是否為玩家且已死亡
+        bool isPlayer = GetComponent<PlayerStatus>() != null;
+        if (isPlayer && isPlayerDead)
+        {
+            // 檢測滑鼠左鍵點擊
+            if (Input.GetMouseButtonDown(0))
+            {
+                // 檢查是否還有復活次數
+                if (live > 0)
+                {
+                    ResurrectPlayer();
+                }
+                else
+                {
+                    // 沒有復活次數了，回到主選單
+                    ReturnToMainMenu();
+                }
+            }
+        }
     }
 
     // 根據組件類型自動設定最大生命值
@@ -51,13 +77,13 @@ public class HealthPostureController : MonoBehaviour
     }
 
     // 受到傷害
-    public void TakeDamage(int amount)
+    public void TakeDamage(int amount, int hitState)
     {
         healthPostureSystem.HealthDamage(amount);
-        
+
         // 同時增加架勢值（每次受到傷害增加 10 點架勢）
         healthPostureSystem.PostureIncrease(10);
-        
+
         // 顯示血條並設定為最後一個被攻擊的敵人
         ShowHealthBar();
     }
@@ -66,7 +92,7 @@ public class HealthPostureController : MonoBehaviour
     public void AddPosture(int amount)
     {
         healthPostureSystem.PostureIncrease(amount);
-        
+
         // 顯示血條並設定為最後一個被攻擊的敵人
         ShowHealthBar();
     }
@@ -160,7 +186,7 @@ public class HealthPostureController : MonoBehaviour
     private IEnumerator HideHealthBarAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        
+
         // 只有當這個敵人仍然是最後一個被攻擊的敵人時才隱藏
         if (lastAttackedEnemy == this)
         {
@@ -173,11 +199,13 @@ public class HealthPostureController : MonoBehaviour
     {
         // 檢查是否為玩家
         bool isPlayer = GetComponent<PlayerStatus>() != null;
-        
+
         if (isPlayer)
         {
-            // 玩家死亡時顯示死亡 UI
-            ShowDeathUI();
+            // 設定玩家死亡狀態
+            isPlayerDead = true;
+            // 玩家死亡時延後一秒顯示死亡 UI
+            StartCoroutine(ShowDeathUIAfterDelay(1f));
         }
         else
         {
@@ -186,6 +214,13 @@ public class HealthPostureController : MonoBehaviour
             // 關閉碰撞器
             StartCoroutine(DisableColliderAfterEffect());
         }
+    }
+
+    // 延遲顯示死亡 UI 的協程
+    private IEnumerator ShowDeathUIAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        ShowDeathUI();
     }
 
     // 顯示死亡 UI
@@ -206,12 +241,42 @@ public class HealthPostureController : MonoBehaviour
         }
     }
 
+    // 復活玩家
+    private void ResurrectPlayer()
+    {
+        // 減少一個復活次數
+        live--;
+
+        // 重置生命值系統
+        ResetHealth();
+
+        // 隱藏死亡UI
+        HideDeathUI();
+
+        // 重置死亡狀態
+        isPlayerDead = false;
+
+        // 重新開啟玩家控制器
+        PlayerStatus playerStatus = GetComponent<PlayerStatus>();
+        if (playerStatus != null)
+        {
+            playerStatus.ResetHealth();
+        }
+    }
+
+    // 回到主選單
+    private void ReturnToMainMenu()
+    {
+        Debug.Log("遊戲結束 - 回到主選單");
+        SceneManager.LoadScene("Main Menu");
+    }
+
     // 等待武器特效完成後關閉碰撞器
     private IEnumerator DisableColliderAfterEffect()
     {
         // 等待武器特效完成
         yield return new WaitForSeconds(0.1f);
-        
+
         // 關掉敵人 collider
         DisableCollider();
     }
@@ -220,9 +285,10 @@ public class HealthPostureController : MonoBehaviour
     public void DisableCollider()
     {
         if (colliderDisabled) return; // 避免重複關閉
-        
+
+        // 關閉敵人碰撞器
         Collider enemyCollider = GetComponent<Collider>();
-        if (enemyCollider != null && enemyCollider.enabled)
+        if (enemyCollider != null && enemyCollider.enabled) // 如果敵人碰撞器存在且啟用
         {
             enemyCollider.enabled = false;
             colliderDisabled = true;
@@ -252,22 +318,33 @@ public class HealthPostureController : MonoBehaviour
     // 重置生命值系統
     public void ResetHealth()
     {
-        // 重新創建生命值系統
-        healthPostureSystem = new HealthPostureSystem(maxHealth, maxPosture);
-        
-        // 重新設定 UI
-        if (healthPostureUI != null)
+        // 檢查是否為玩家
+        bool isPlayer = GetComponent<PlayerStatus>() != null;
+
+        if (isPlayer)
         {
-            healthPostureUI.SetHealthPostureSystem(healthPostureSystem);
+            // 重新創建生命值系統
+            healthPostureSystem = new HealthPostureSystem(maxHealth, maxPosture);
+
+            // 重新設定 UI
+            if (healthPostureUI != null)
+            {
+                healthPostureUI.SetHealthPostureSystem(healthPostureSystem);
+            }
+
+            // 重新訂閱事件
+            healthPostureSystem.OnDead += OnDead;
+            healthPostureSystem.OnPostureBroken += OnPostureBroken;
+
+            // 隱藏血條
+            HideHealthBar();
         }
-        
-        // 重新訂閱事件
-        healthPostureSystem.OnDead += OnDead;
-        healthPostureSystem.OnPostureBroken += OnPostureBroken;
-        
-        // 隱藏血條
-        HideHealthBar();
-        
+        else
+        {
+            // 隱藏血條
+            HideHealthBar();
+        }
+
         // 重置碰撞器狀態
         colliderDisabled = false;
         Collider enemyCollider = GetComponent<Collider>();

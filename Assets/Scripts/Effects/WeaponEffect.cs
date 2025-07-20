@@ -71,8 +71,7 @@ public class WeaponEffect : MonoBehaviour
         isDetecting = false;
         hitCollidersThisAttack.Clear(); // 清空碰撞體記錄
         isAttackActive = false; // 標記攻擊結束
-        validAttackTargets.Clear(); // 清空有效目標列表
-        
+        validAttackTargets.Clear(); // 清空有效目標列表        
         // 開始監控特效完成
         StartCoroutine(MonitorEffectsCompletion());
     }
