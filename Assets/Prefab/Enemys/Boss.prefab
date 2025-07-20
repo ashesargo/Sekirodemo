@@ -7376,7 +7376,7 @@ MonoBehaviour:
     m_Bits: 512
   showDebugInfo: 0
   lookAtTurnSpeed: 2
-  minDistanceToPlayer: 10
+  minDistanceToPlayer: 5
   velocity: {x: 0, y: 0, z: 0}
   canAutoAttack: 1
   currentComboCount: 0
