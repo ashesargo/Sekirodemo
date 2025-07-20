@@ -14597,7 +14597,7 @@ GameObject:
   - component: {fileID: 8960966298374740845}
   - component: {fileID: -4115170394499741269}
   m_Layer: 0
-  m_Name: WFX_E
+  m_Name: Parry
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
