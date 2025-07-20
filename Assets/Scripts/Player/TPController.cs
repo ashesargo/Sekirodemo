@@ -161,11 +161,11 @@ public class TPContraller : MonoBehaviour
                 _animator.SetBool("Lock", isLocked);
             }
         }
-        if (Input.GetKeyDown(KeyCode.Mouse1))
-        {
-            _animator.SetTrigger("Parry");
-            parrySuccess = true;
-        }
+        // if (Input.GetKeyDown(KeyCode.Mouse1))
+        // {
+        //     _animator.SetTrigger("Parry");
+        //     parrySuccess = true;
+        // }
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             EnableGurad();

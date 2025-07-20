@@ -9,7 +9,7 @@ public class PlayerStatus : MonoBehaviour
     public bool isDeath = false;
     private HealthPostureController healthController;  // 引用生命值控制器
     TPContraller _TPContraller;
-    private int hitState;
+    public int hitState;
     enum HitState
     {
         Hit = 0,
@@ -34,7 +34,7 @@ public class PlayerStatus : MonoBehaviour
     {
         if (isDeath) return; // 死亡後不再受傷
         if (_TPContraller.parrySuccess) { hitState = 2; damage = 0; }
-        else if (_TPContraller.isGuard) { hitState = 1; damage = 0; }
+        if (_TPContraller.isGuard) { hitState = 1; damage = 0; }
         else hitState = 0;
         // 使用 HealthPostureController 處理傷害
         if (healthController != null)
@@ -52,7 +52,7 @@ public class PlayerStatus : MonoBehaviour
         {
             // 受傷但未死亡
             _animator.SetTrigger("Hit");
-        }
+        }   
     }
 
     // 獲取當前生命值

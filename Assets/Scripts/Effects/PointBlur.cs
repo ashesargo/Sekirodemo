@@ -22,6 +22,7 @@ public class PointBlur : MonoBehaviour
 
     [Header("Player Settings")]
     public TPContraller tpController; // 引用玩家控制器
+    public PlayerStatus playerStatus; // 引用玩家狀態
     public Collider weaponCollider; // 武器 Collider
     public LayerMask detectionLayer = -1; // 碰撞檢測層級
 
@@ -37,10 +38,11 @@ public class PointBlur : MonoBehaviour
         InitializeMaterial();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         UpdateMaterialParameters();
         CheckParrySuccess();
+        CheckGuardState();
     }
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
@@ -100,6 +102,22 @@ public class PointBlur : MonoBehaviour
             }
             
             lastParrySuccess = tpController.parrySuccess; // 更新上一次的格擋狀態
+        }
+    }
+
+    // 檢查防禦狀態
+    private void CheckGuardState()
+    {
+        Debug.Log("AAA");
+        if (tpController != null)
+        {
+            Debug.Log("BBB");
+            if (tpController.isGuard && playerStatus.hitState == 1)
+            {
+                Debug.Log("CCC");
+                TriggerBlurEffect();
+            }
+            playerStatus.hitState = 0;
         }
     }
 
