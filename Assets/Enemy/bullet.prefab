@@ -148,11 +148,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 10
   lifetime: 10
-<<<<<<< HEAD
   speed: 150
-=======
-  speed: 120
->>>>>>> enemy
   hitEffect: {fileID: 0}
   hitSound: {fileID: 0}
   targetLayers:

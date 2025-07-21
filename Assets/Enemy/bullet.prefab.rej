@@ -1,10 +1,13 @@
 diff a/Assets/Enemy/bullet.prefab b/Assets/Enemy/bullet.prefab	(rejected hunks)
-@@ -148,7 +148,7 @@
+@@ -148,7 +148,11 @@
    m_EditorClassIdentifier: 
    damage: 10
    lifetime: 10
--  speed: 50
-+  speed: 150
++<<<<<<< HEAD
+   speed: 150
++=======
++  speed: 120
++>>>>>>> enemy
    hitEffect: {fileID: 0}
    hitSound: {fileID: 0}
    targetLayers:
