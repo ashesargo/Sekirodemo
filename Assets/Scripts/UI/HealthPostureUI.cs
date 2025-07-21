@@ -14,6 +14,10 @@ public class HealthPostureUI : MonoBehaviour
     private float healthBarDamagedFadeTimer; // 受損血條延遲的計時器
     private float previousPostureNormalized; // 記錄前一次的架勢值
 
+    // 架勢條自動隱藏相關
+    private const float postureBarHideDelay = 5f; // 架勢條隱藏延遲時間
+    private Coroutine hidePostureBarCoroutine; // 隱藏架勢條的協程
+    private bool isPostureIncreasing = false; // 架勢是否正在增加
 
     [Header("UI 組件")]
     [SerializeField] private Image healthBarImage; // 血條 Image
@@ -48,10 +52,10 @@ public class HealthPostureUI : MonoBehaviour
     {
         this.healthPostureSystem = healthPostureSystem;
 
-        // 確保架勢條在初始化時是顯示的
+        // 初始化時隱藏架勢條
         if (postureBarGameObject != null)
         {
-            postureBarGameObject.SetActive(true);
+            postureBarGameObject.SetActive(false);
         }
 
         // 初始化 UI
@@ -71,6 +75,8 @@ public class HealthPostureUI : MonoBehaviour
     // 當架勢條被擊破時的處理
     private void HealthPostureSystem_OnPostureBroken(object sender, System.EventArgs e)
     {
+        // 架勢被打破時顯示架勢條
+        ShowPostureBar();
     }
 
     // 當角色死亡時
@@ -117,8 +123,15 @@ public class HealthPostureUI : MonoBehaviour
     {
         float postureNormalized = healthPostureSystem.GetPostureNormalized();
 
-        // 檢查架勢條是否在減少
-        bool isPostureDecreasing = postureNormalized < previousPostureNormalized;
+        // 檢查架勢條是否在增加
+        bool isPostureIncreasing = postureNormalized > previousPostureNormalized;
+
+        // 如果架勢值增加，顯示架勢條並重置隱藏計時器
+        if (isPostureIncreasing && postureNormalized > 0f)
+        {
+            ShowPostureBar();
+            StartPostureBarHideTimer();
+        }
 
         // 根據架勢值的比例，設定架勢條的寬度
         postureBarRectTransform.sizeDelta = new Vector2(postureNormalized * postureBarWidth, postureBarRectTransform.sizeDelta.y);
@@ -133,7 +146,7 @@ public class HealthPostureUI : MonoBehaviour
         }
 
         // 當架式條大於一半，架式條增加時，架式條高光半透明顯示
-        if (postureNormalized > 0.5f && postureNormalized < 1f && !isPostureDecreasing)
+        if (postureNormalized > 0.5f && postureNormalized < 1f && isPostureIncreasing)
         {
             postureBarHighlightGameObject.SetActive(true);
 
@@ -148,26 +161,52 @@ public class HealthPostureUI : MonoBehaviour
         }
 
         // 架勢條減少時隱藏高亮特效
-        if (isPostureDecreasing)
+        if (!isPostureIncreasing)
         {
             postureBarHighlightGameObject.SetActive(false);
         }
 
-        // 只有在架勢值為 0 且不是因為架勢被打破時才隱藏架勢條
-        // 移除自動隱藏空架勢條的邏輯，讓架勢條始終顯示
-        // if (postureNormalized == 0f)
-        // {
-        //     postureBarGameObject.SetActive(false);
-        // }
+        // 更新前一次的架勢值
+        previousPostureNormalized = postureNormalized;
+    }
 
-        // 如果架勢值大於 0，顯示架勢條
-        if (postureNormalized > 0f)
+    // 顯示架勢條
+    private void ShowPostureBar()
+    {
+        if (postureBarGameObject != null)
         {
             postureBarGameObject.SetActive(true);
         }
+    }
 
-        // 更新前一次的架勢值
-        previousPostureNormalized = postureNormalized;
+    // 隱藏架勢條
+    private void HidePostureBar()
+    {
+        if (postureBarGameObject != null)
+        {
+            postureBarGameObject.SetActive(false);
+        }
+    }
+
+    // 開始架勢條隱藏計時器
+    private void StartPostureBarHideTimer()
+    {
+        // 停止之前的隱藏協程
+        if (hidePostureBarCoroutine != null)
+        {
+            StopCoroutine(hidePostureBarCoroutine);
+        }
+
+        // 開始新的隱藏協程
+        hidePostureBarCoroutine = StartCoroutine(HidePostureBarAfterDelay(postureBarHideDelay));
+    }
+
+    // 延遲隱藏架勢條的協程
+    private IEnumerator HidePostureBarAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        HidePostureBar();
+        hidePostureBarCoroutine = null;
     }
 
     // 延遲隱藏架勢條高光
