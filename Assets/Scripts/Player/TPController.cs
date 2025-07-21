@@ -24,10 +24,12 @@ public class TPContraller : MonoBehaviour
     public float groundDistance = 1f;
     public LayerMask Ground;
     private bool isGrounded;
+
     int comboStep = 0;
     int currentStep = 0;
     bool canCombo = false;
     bool canMove = true;
+    bool hit = false;
     private float comboTimer = 0f;
     private float comboWindow = 1f;
     [Header("Dash")]
@@ -40,6 +42,7 @@ public class TPContraller : MonoBehaviour
     public float lockRange = 10.0f;
     public LayerMask enemyLayer;
     public TPCamera TPCamera;
+
     public bool isGuard;
     public bool parrySuccess;
     public void StartAttack()
@@ -47,7 +50,6 @@ public class TPContraller : MonoBehaviour
         currentStep = comboStep;
         canCombo = true;
         comboTimer = comboWindow;
-        canMove = false;
     }
     public void EndAttack()
     {
@@ -56,7 +58,6 @@ public class TPContraller : MonoBehaviour
     }
     public void ResetCombo()
     {
-        canMove = true;
         comboStep = 0;
         canCombo = false;
         comboTimer = 0f;
@@ -105,13 +106,13 @@ public class TPContraller : MonoBehaviour
     //Guard
     void EnableGurad()
     {
-        _animator.SetBool("Guard", true);
         isGuard = true;
+        _animator.SetBool("Guard", isGuard);        
     }
     void DisableGuard()
     {
-        _animator.SetBool("Guard", false);
         isGuard = false;
+        _animator.SetBool("Guard", isGuard);
     }
 
     // Start is called before the first frame update
@@ -126,6 +127,15 @@ public class TPContraller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+        if (stateInfo.IsTag("Attack")|| stateInfo.IsTag("Hit"))
+        {
+            canMove = false;
+        }
+        else
+        {
+            canMove = true;
+        }
         if (_playerGrapple.IsGrappling() || _playerStatus.isDeath == true) return;
         TPCamera.isLock = isLocked;
         TPCamera.lockTarget = lockTarget;
