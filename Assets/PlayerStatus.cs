@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerStatus : MonoBehaviour
@@ -9,11 +7,11 @@ public class PlayerStatus : MonoBehaviour
     public bool isDeath = false;
     private HealthPostureController healthController;  // 引用生命值控制器
     TPContraller _TPContraller;
-    public int hitState;
-    enum HitState
+    public HitState currentHitState;
+    public enum HitState
     {
         Hit = 0,
-        Def = 1,
+        Guard = 1,
         Parry = 2,
     }
 
@@ -33,15 +31,14 @@ public class PlayerStatus : MonoBehaviour
     public void TakeDamage(float damage)
     {
         if (isDeath) return; // 死亡後不再受傷
-        if (_TPContraller.parrySuccess) { hitState = 2; damage = 0; }
-        if (_TPContraller.isGuard) { hitState = 1; damage = 0; }
-        else hitState = 0;
+        if (_TPContraller.parrySuccess) { currentHitState = HitState.Parry; damage = 0; }
+        else if (_TPContraller.isGuard) { currentHitState = HitState.Guard; damage = 0; }
+        else currentHitState = HitState.Hit;
         // 使用 HealthPostureController 處理傷害
         if (healthController != null)
         {
-            healthController.TakeDamage(Mathf.RoundToInt(damage), hitState);
+            healthController.TakeDamage(Mathf.RoundToInt(damage), currentHitState);
         }
-
         // 檢查是否死亡
         if (GetCurrentHP() <= 0 && !isDeath)
         {
@@ -50,9 +47,14 @@ public class PlayerStatus : MonoBehaviour
         }
         else if (GetCurrentHP() > 0)
         {
-            // 受傷但未死亡
-            _animator.SetTrigger("Hit");
-        }   
+            if (currentHitState == HitState.Parry)
+            {
+                int parry = UnityEngine.Random.Range(0, 3);
+                _animator.SetTrigger("Parry" + parry);
+            }
+            else if (currentHitState == HitState.Guard) _animator.SetTrigger("GuardHit");
+            else _animator.SetTrigger("Hit");
+        }
     }
 
     // 獲取當前生命值
@@ -103,7 +105,7 @@ public class PlayerStatus : MonoBehaviour
         {
             _TPContraller.enabled = false;
         }
-        
+
         // 播放失衡動畫
         if (_animator != null)
         {
