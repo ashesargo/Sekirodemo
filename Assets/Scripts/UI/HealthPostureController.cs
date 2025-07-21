@@ -332,9 +332,9 @@ public class HealthPostureController : MonoBehaviour
         // 禁用架勢增加
         canIncreasePosture = false;
         // 架勢條緩慢歸零
-        StartCoroutine(RestorePostureAfterDelay(0.1f));
+        StartCoroutine(RestorePostureAfterDelay(0.01f));
         // 3 秒後恢復操控
-        StartCoroutine(RestoreControlAfterDelay(3f));
+        StartCoroutine(RestoreControlAfterDelay(1f));
     }
 
     // 獲取當前生命值百分比
@@ -424,7 +424,7 @@ public class HealthPostureController : MonoBehaviour
         yield return new WaitForSeconds(delay);
         
         // 開始緩慢回復架勢值到 0
-        StartCoroutine(GraduallyRestorePosture(3f)); // 3秒內緩慢回復到 0
+        StartCoroutine(GraduallyRestorePosture(1f)); // 3秒內緩慢回復到 0
         
         // 重新啟用架勢增加
         canIncreasePosture = true;
