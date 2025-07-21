@@ -68,14 +68,7 @@ public class TPContraller : MonoBehaviour
         canMove = false;
         _animator.SetBool("isDashing", isDashing);
         DisableGuard();
-        if (isLocked)
-        {
-            _animator.SetTrigger("LockDash");
-        }
-        else
-        {
-            _animator.SetTrigger("Dash");
-        }
+        _animator.SetTrigger("Dash");
         transform.rotation = Quaternion.LookRotation(dashDirection);
         float dashTime = 0.2f;
         float elapsed = 0f;
@@ -251,14 +244,7 @@ public class TPContraller : MonoBehaviour
             {
                 DisableGuard();
                 verticalVelocity = jumpForce;
-                if (isLocked)
-                {
-                    _animator.SetTrigger("LockJump");
-                }
-                else
-                {
-                    _animator.SetTrigger("Jump");
-                }
+                _animator.SetTrigger("Jump");
             }
             verticalVelocity += gravity * Time.deltaTime;
             Vector3 velocity = moveSpeed * moveDirection;
@@ -294,14 +280,7 @@ public class TPContraller : MonoBehaviour
             {
                 comboStep = 1;
                 _animator.SetInteger("ComboStep", comboStep);
-                if (isLocked)
-                {
-                    _animator.SetTrigger("LockAttack");
-                }
-                else
-                {
-                    _animator.SetTrigger("Attack");
-                }
+                _animator.SetTrigger("Attack");
             }
         }
     }
