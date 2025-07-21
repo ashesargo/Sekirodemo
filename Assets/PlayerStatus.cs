@@ -94,4 +94,30 @@ public class PlayerStatus : MonoBehaviour
         }
         isDeath = false;
     }
+
+    // 移除玩家控制（架勢被打破時）
+    public void RemoveControl()
+    {
+        // 禁用玩家控制器
+        if (_TPContraller != null)
+        {
+            _TPContraller.enabled = false;
+        }
+        
+        // 播放失衡動畫
+        if (_animator != null)
+        {
+            _animator.SetTrigger("Stagger");
+        }
+    }
+
+    // 恢復玩家控制
+    public void RestoreControl()
+    {
+        // 重新啟用玩家控制器
+        if (_TPContraller != null)
+        {
+            _TPContraller.enabled = true;
+        }
+    }
 }

@@ -127,4 +127,29 @@ public class HealthPostureSystem
             postureRecoveryTimer = 1.7f;
         }
     }
+
+    // 重置架勢值到 0
+    public void ResetPosture()
+    {
+        postureAmount = 0;
+        
+        // 觸發架勢值改變事件
+        OnPostureChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    // 設定架勢值（用於緩慢回復）
+    public void SetPostureValue(int value)
+    {
+        postureAmount = Mathf.Clamp(value, 0, postureAmountMax);
+        
+        // 觸發架勢值改變事件
+        OnPostureChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    // 設定標準化架勢值（0-1）
+    public void SetPostureNormalized(float normalizedValue)
+    {
+        int value = Mathf.RoundToInt(normalizedValue * postureAmountMax);
+        SetPostureValue(value);
+    }
 }

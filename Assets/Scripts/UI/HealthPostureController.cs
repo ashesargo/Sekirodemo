@@ -6,7 +6,7 @@ using System.Collections;
 // 生命值與架勢條控制器
 public class HealthPostureController : MonoBehaviour
 {
-    public int live = 2;   // 復活次數
+    public int live = 1;   // 復活次數
     [SerializeField] private int maxHealth = 100;   // 最大生命值
     [SerializeField] private int maxPosture = 100;  // 最大架勢值
     [SerializeField] private HealthPostureUI healthPostureUI;   // 生命值與架勢 UI 顯示
@@ -17,6 +17,7 @@ public class HealthPostureController : MonoBehaviour
     private static HealthPostureController lastAttackedEnemy;  // 最後一個被攻擊的敵人
     private bool colliderDisabled = false;  // 標記碰撞器是否已被關閉
     private bool isPlayerDead = false;  // 玩家是否已死亡
+    private bool canIncreasePosture = true;  // 是否可以增加架勢值
 
     void Awake()
     {
@@ -81,8 +82,11 @@ public class HealthPostureController : MonoBehaviour
     {
         healthPostureSystem.HealthDamage(amount);
 
-        // 同時增加架勢值（每次受到傷害增加 10 點架勢）
-        healthPostureSystem.PostureIncrease(10);
+        // 檢查是否可以增加架勢值
+        if (canIncreasePosture)
+        {
+            healthPostureSystem.PostureIncrease(20);
+        }
 
         // 顯示血條並設定為最後一個被攻擊的敵人
         ShowHealthBar();
@@ -91,6 +95,12 @@ public class HealthPostureController : MonoBehaviour
     // 增加架勢
     public void AddPosture(int amount)
     {
+        // 檢查是否可以增加架勢值
+        if (!canIncreasePosture)
+        {
+            return; // 如果架勢被打破，暫時不能增加架勢值
+        }
+
         healthPostureSystem.PostureIncrease(amount);
 
         // 顯示血條並設定為最後一個被攻擊的敵人
@@ -216,6 +226,26 @@ public class HealthPostureController : MonoBehaviour
         }
     }
 
+    // 失衡
+    private void OnUnbalance(object sender, System.EventArgs e)
+    {
+        // 移除玩家操控
+        PlayerStatus playerStatus = GetComponent<PlayerStatus>();
+        if (playerStatus != null)
+        {
+            playerStatus.RemoveControl();
+        }
+        
+        // 移除敵人操控
+        EnemyTest enemyTest = GetComponent<EnemyTest>();
+        if (enemyTest != null)
+        {
+            enemyTest.RemoveControl();
+        }
+        
+        // 播放失衡動畫
+    }
+
     // 延遲顯示死亡 UI 的協程
     private IEnumerator ShowDeathUIAfterDelay(float delay)
     {
@@ -298,9 +328,14 @@ public class HealthPostureController : MonoBehaviour
     // 架勢被打破
     private void OnPostureBroken(object sender, System.EventArgs e)
     {
-        // 呼叫 OnDead 事件
-        OnDead(sender, e);
-        // 播放死亡動畫
+        // 呼叫 OnUnbalance 事件
+        OnUnbalance(sender, e);
+        // 禁用架勢增加
+        canIncreasePosture = false;
+        // 架勢條緩慢歸零
+        StartCoroutine(RestorePostureAfterDelay(0.1f));
+        // 3 秒後恢復操控
+        StartCoroutine(RestoreControlAfterDelay(3f));
     }
 
     // 獲取當前生命值百分比
@@ -361,6 +396,73 @@ public class HealthPostureController : MonoBehaviour
         if (lastAttackedEnemy == this)
         {
             lastAttackedEnemy = null;
+        }
+    }
+
+    // 延遲恢復控制的協程
+    private IEnumerator RestoreControlAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        
+        // 恢復玩家操控
+        PlayerStatus playerStatus = GetComponent<PlayerStatus>();
+        if (playerStatus != null)
+        {
+            playerStatus.RestoreControl();
+        }
+        
+        // 恢復敵人操控
+        EnemyTest enemyTest = GetComponent<EnemyTest>();
+        if (enemyTest != null)
+        {
+            enemyTest.RestoreControl();
+        }
+    }
+
+    // 延遲恢復架勢的協程
+    private IEnumerator RestorePostureAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        
+        // 開始緩慢回復架勢值到 0
+        StartCoroutine(GraduallyRestorePosture(3f)); // 3秒內緩慢回復到 0
+        
+        // 重新啟用架勢增加
+        canIncreasePosture = true;
+    }
+
+    // 緩慢回復架勢值的協程
+    private IEnumerator GraduallyRestorePosture(float duration)
+    {
+        if (healthPostureSystem == null) yield break;
+        
+        float startPosture = healthPostureSystem.GetPostureNormalized();
+        float elapsedTime = 0f;
+        
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float progress = elapsedTime / duration;
+            
+            // 使用平滑的插值函數
+            float currentPosture = Mathf.Lerp(startPosture, 0f, progress);
+            
+            // 設定架勢值（需要添加一個方法來直接設定架勢值）
+            SetPostureValue(currentPosture);
+            
+            yield return null;
+        }
+        
+        // 確保最終值為 0
+        SetPostureValue(0f);
+    }
+
+    // 設定架勢值的方法
+    private void SetPostureValue(float normalizedValue)
+    {
+        if (healthPostureSystem != null)
+        {
+            healthPostureSystem.SetPostureNormalized(normalizedValue);
         }
     }
 }

@@ -48,6 +48,12 @@ public class HealthPostureUI : MonoBehaviour
     {
         this.healthPostureSystem = healthPostureSystem;
 
+        // 確保架勢條在初始化時是顯示的
+        if (postureBarGameObject != null)
+        {
+            postureBarGameObject.SetActive(true);
+        }
+
         // 初始化 UI
         UpdateHealthBar();
         UpdatePostureBar();
@@ -147,11 +153,12 @@ public class HealthPostureUI : MonoBehaviour
             postureBarHighlightGameObject.SetActive(false);
         }
 
-        // 隱藏空架勢條
-        if (postureNormalized == 0f)
-        {
-            postureBarGameObject.SetActive(false);
-        }
+        // 只有在架勢值為 0 且不是因為架勢被打破時才隱藏架勢條
+        // 移除自動隱藏空架勢條的邏輯，讓架勢條始終顯示
+        // if (postureNormalized == 0f)
+        // {
+        //     postureBarGameObject.SetActive(false);
+        // }
 
         // 如果架勢值大於 0，顯示架勢條
         if (postureNormalized > 0f)

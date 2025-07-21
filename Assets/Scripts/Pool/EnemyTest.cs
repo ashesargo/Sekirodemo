@@ -76,5 +76,33 @@ public class EnemyTest : MonoBehaviour
             objectPool.ReturnPooledObject(gameObject);
         }
     }
+
+    // 移除敵人控制（架勢被打破時）
+    public void RemoveControl()
+    {
+        // 禁用敵人 AI
+        EnemyAI ai = GetComponent<EnemyAI>();
+        if (ai != null)
+        {
+            ai.enabled = false;
+        }
+        
+        // 播放失衡動畫
+        if (_animator != null)
+        {
+            _animator.SetTrigger("Stagger");
+        }
+    }
+
+    // 恢復敵人控制
+    public void RestoreControl()
+    {
+        // 重新啟用敵人 AI
+        EnemyAI ai = GetComponent<EnemyAI>();
+        if (ai != null)
+        {
+            ai.enabled = true;
+        }
+    }
 }
 
