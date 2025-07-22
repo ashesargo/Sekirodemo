@@ -28972,10 +28972,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponCollider: {fileID: 897234438494386866}
+  weaponRange: 0.2
   environmentLayer:
     serializedVersion: 2
     m_Bits: 2147484232
-  defaultSparkPrefab: {fileID: 0}
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 0
   layerEffectMappings:
   - layerMask:
       serializedVersion: 2
@@ -28989,7 +28992,7 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 64
     effectPrefab: {fileID: 6572068886274405076, guid: 9bdb6b5c5a5605d44a16488ea3c6aaba, type: 3}
-  weaponRange: 0.2
+  defaultSparkPrefab: {fileID: 0}
 --- !u!114 &1526596839366080372
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29058,8 +29061,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54b8fe615e7e6f64588134b7821cdd6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHp: 100
   isDeath: 0
+  currentHitState: 0
 --- !u!4 &7492753023716862852 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8550051735096251754, guid: 6469acb63f9308948931637bccafa65a, type: 3}

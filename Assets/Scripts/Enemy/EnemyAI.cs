@@ -45,6 +45,7 @@ public class EnemyAI : MonoBehaviour
     [HideInInspector] public Vector3 velocity;
     public bool canAutoAttack = true;
     private bool isObstacleDetected = false; // 是否檢測到障礙物
+    public bool canBeParried = false;
 
     public IEnemyState CurrentState => currentState;
 
@@ -339,6 +340,19 @@ public class EnemyAI : MonoBehaviour
             transform.rotation = Quaternion.RotateTowards(
                 transform.rotation, targetRot, turnSpeed * Time.deltaTime * 60f);
         }
+    }
+
+    // 動畫事件呼叫
+    public void ParryWindowStart()
+    {
+        canBeParried = true;
+        // 這時可以加特效、音效
+    }
+
+    public void ParryWindowEnd()
+    {
+        canBeParried = false;
+        // 這時可以關閉特效
     }
 
     //// 視覺化調試
