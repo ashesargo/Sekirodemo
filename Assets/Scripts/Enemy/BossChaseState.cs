@@ -20,6 +20,8 @@ public class BossChaseState : IEnemyState
 
     public void UpdateState(EnemyAI enemy)
     {
+        float distanceToPlayer = Vector3.Distance(enemy.transform.position, enemy.player.position);
+        Debug.Log($"[BossChaseState] 距離玩家: {distanceToPlayer:F2}, 攻擊範圍: {enemy.attackRange}, IsInAttackRange: {enemy.IsInAttackRange()}");
         // 檢查是否在攻擊範圍內
         if (enemy.IsInAttackRange())
         {
@@ -27,13 +29,36 @@ public class BossChaseState : IEnemyState
             enemy.SwitchState(new BossComboState());
             return;
         }
-        // 新增：如果距離玩家太近，停止移動，避免推擠
         float minDistance = enemy.attackRange;
-        if (Vector3.Distance(enemy.transform.position, enemy.player.position) <= minDistance)
+        if (distanceToPlayer <= minDistance)
         {
             enemy.velocity = Vector3.zero;
             return;
         }
+        // 只有在玩家非常遠時才考慮遠程攻擊或Rush
+        if (distanceToPlayer > 40f)
+        {
+            int idx = Random.Range(0, 3);
+            if (idx == 0)
+            {
+                Debug.Log("BossChaseState: 玩家非常遠，切換到 Range Attack1");
+                enemy.SwitchState(new BossRangedAttackState(1));
+                return;
+            }
+            else if (idx == 1)
+            {
+                Debug.Log("BossChaseState: 玩家非常遠，切換到 Range Attack2");
+                enemy.SwitchState(new BossRangedAttackState(2));
+                return;
+            }
+            else
+            {
+                Debug.Log("BossChaseState: 玩家非常遠，切換到 Rush");
+                enemy.SwitchState(new BossRushState());
+                return;
+            }
+        }
+        // 其餘情況都追擊
         Vector3 seek = enemy.Seek(enemy.player.position);
         Vector3 obstacleAvoid = enemy.ObstacleAvoid(); // 前方避障（追擊專用）
         Vector3 enemyAvoid = enemy.EnemyAvoid(); // 敵人避障

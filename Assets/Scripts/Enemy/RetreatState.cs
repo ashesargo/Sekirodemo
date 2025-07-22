@@ -4,20 +4,23 @@ public class RetreatState : IEnemyState
 {
     private float timer = 0f;
     private Vector3 retreatDir;
+    private string retreatAnim = "Retreat";
 
     public void EnterState(EnemyAI enemy)
     {
         Debug.Log("RetreatState: 進入後退狀態");
-        // 如果沒有 Retreat 動畫，使用 Idle 動畫代替
-        if (enemy.animator.HasState(0, Animator.StringToHash("Retreat")))
+        // 隨機選擇撤退動畫
+        string[] retreatAnims = { "Retreat", "RetreatR", "RetreatL" };
+        int idx = Random.Range(0, retreatAnims.Length);
+        retreatAnim = retreatAnims[idx];
+        if (enemy.animator.HasState(0, Animator.StringToHash(retreatAnim)))
         {
-            enemy.animator.Play("Retreat");
+            enemy.animator.Play(retreatAnim);
         }
         else
         {
             enemy.animator.Play("Idle");
         }
-        
         timer = 0f;
         
         // 計算背向玩家的方向

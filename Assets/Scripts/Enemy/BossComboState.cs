@@ -62,26 +62,21 @@ public class BossComboState : IEnemyState
         switch (comboName)
         {
             case "Combo1":
-                // Combo1: 先播放Combo1，然後是6個子動畫
                 comboSequence = new string[] { 
-                    "Combo1", "Combo1_1", "Combo1_2", "Combo1_3", 
-                    "Combo1_4", "Combo1_5", "Combo1_6" 
+                    "Combo1", "Combo1_1", "Combo1_2", "Combo1_3" 
                 };
                 break;
             case "Combo2":
-                // Combo2: 先播放Combo2，然後是子動畫序列
                 comboSequence = new string[] { 
-                    "Combo2", "Combo2_1", "Combo2_2", "Combo2_3" 
+                    "Combo2" 
                 };
                 break;
             case "Combo3":
-                // Combo3: 先播放Combo3，然後是子動畫序列
                 comboSequence = new string[] { 
-                    "Combo3", "Combo3_1", "Combo3_2", "Combo3_3" 
+                    "Combo3", "bowstart", "bowburst", "bowburst2", "bowburst end" 
                 };
                 break;
             default:
-                // 如果沒有找到對應的序列，使用單一動畫
                 if (enemy.animator.HasState(0, Animator.StringToHash(comboName)))
                 {
                     comboSequence = new string[] { comboName };
@@ -92,7 +87,19 @@ public class BossComboState : IEnemyState
                 }
                 break;
         }
-        
+
+        // 隨機插入Jump Attack1或Jump Attack2
+        if (comboName == "Combo1" || comboName == "Combo2" || comboName == "Combo3")
+        {
+            string[] jumpAttacks = { "Jump Attack1", "Jump Attack2" };
+            string jumpAnim = jumpAttacks[Random.Range(0, jumpAttacks.Length)];
+            int insertPos = Random.Range(1, comboSequence.Length + 1); // 避免插在最前面
+            var list = new System.Collections.Generic.List<string>(comboSequence);
+            list.Insert(insertPos, jumpAnim);
+            comboSequence = list.ToArray();
+            Debug.Log($"BossComboState: 隨機在{comboName}插入{jumpAnim}於位置{insertPos}");
+        }
+
         // 檢查動畫是否存在，如果不存在則使用Attack
         for (int i = 0; i < comboSequence.Length; i++)
         {
@@ -102,7 +109,7 @@ public class BossComboState : IEnemyState
                 comboSequence[i] = "Attack";
             }
         }
-        
+
         Debug.Log($"BossComboState: 設定連擊序列 {comboName}, 動畫數量: {comboSequence.Length}");
     }
     
@@ -155,18 +162,24 @@ public class BossComboState : IEnemyState
                 }
                 else
                 {
-                    // 所有動畫都播放完成，進入撤退狀態
-                    Debug.Log($"BossComboState: 所有連擊動畫播放完成 ({comboSequence.Length} 個動畫)，進入撤退狀態");
-                    
+                    // 所有動畫都播放完成，決定是否插入Jump Attack
+                    Debug.Log($"BossComboState: 所有連擊動畫播放完成 ({comboSequence.Length} 個動畫)");
                     // 增加連擊計數
                     BossAI bossAI = enemy.GetComponent<BossAI>();
                     if (bossAI != null)
                     {
                         bossAI.IncrementComboCount();
                     }
-                    
-                    // 切換到撤退狀態
-                    enemy.SwitchState(new RetreatState());
+                    // 隨機決定是否插入Jump Attack
+                    if (Random.value < 0.5f) // 50%機率
+                    {
+                        Debug.Log("BossComboState: 隨機插入Jump Attack");
+                        enemy.SwitchState(new BossJumpAttackState());
+                    }
+                    else
+                    {
+                        enemy.SwitchState(new RetreatState());
+                    }
                     return;
                 }
             }

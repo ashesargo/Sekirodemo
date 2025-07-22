@@ -11,7 +11,7 @@ public class BossRushState : IEnemyState
     public void EnterState(EnemyAI enemy)
     {
         Debug.Log("BossRushState: 進入突進狀態");
-        enemy.animator.SetTrigger("Rush"); // Animator需有Rush Trigger
+        enemy.animator.Play("Rush"); // 直接播放Rush動畫
         hasRushed = false;
         timer = 0f;
         enemy.Stop();

@@ -133,7 +133,7 @@ public class TPContraller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(comboTimer);
+        //Debug.Log(comboTimer);
         if (_playerGrapple.IsGrappling() || _playerStatus.isDeath == true) return;
         TPCamera.isLock = isLocked;
         TPCamera.lockTarget = lockTarget;
