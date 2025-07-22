@@ -18,6 +18,8 @@ public class HealthPostureController : MonoBehaviour
     private bool colliderDisabled = false;  // 標記碰撞器是否已被關閉
     private bool isPlayerDead = false;  // 玩家是否已死亡
     private bool canIncreasePosture = true;  // 是否可以增加架勢值
+    private bool canRevive = false; // 是否可復活
+    private Coroutine deathCountdownCoroutine; // 死亡倒數協程
 
     void Awake()
     {
@@ -44,17 +46,15 @@ public class HealthPostureController : MonoBehaviour
         bool isPlayer = GetComponent<PlayerStatus>() != null;
         if (isPlayer && isPlayerDead)
         {
-            // 檢測滑鼠左鍵點擊
-            if (Input.GetMouseButtonDown(0))
+            // 只有可復活時才可操作
+            if (canRevive && Input.GetMouseButtonDown(0))
             {
-                // 檢查是否還有復活次數
                 if (live > 0)
                 {
                     ResurrectPlayer();
                 }
                 else
                 {
-                    // 沒有復活次數了，回到主選單
                     ReturnToMainMenu();
                 }
             }
@@ -250,6 +250,13 @@ public class HealthPostureController : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         ShowDeathUI();
+        // 玩家死亡UI顯示後啟動倒數
+        if (GetComponent<PlayerStatus>() != null)
+        {
+            if (deathCountdownCoroutine != null)
+                StopCoroutine(deathCountdownCoroutine);
+            deathCountdownCoroutine = StartCoroutine(DeathReviveCountdown());
+        }
     }
 
     // 顯示死亡 UI
@@ -258,6 +265,18 @@ public class HealthPostureController : MonoBehaviour
         if (deathUI != null)
         {
             deathUI.SetActive(true);
+            StartCoroutine(StartDeathUIAnimationNextFrame());
+            canRevive = true;
+        }
+    }
+
+    private IEnumerator StartDeathUIAnimationNextFrame()
+    {
+        yield return null; // 等待一幀，確保物件已啟用
+        DeathUI deathUIScript = deathUI.GetComponent<DeathUI>();
+        if (deathUIScript != null)
+        {
+            deathUIScript.StartDeathAnimation();
         }
     }
 
@@ -266,7 +285,21 @@ public class HealthPostureController : MonoBehaviour
     {
         if (deathUI != null)
         {
+            // 獲取DeathUI腳本並停止動畫
+            DeathUI deathUIScript = deathUI.GetComponent<DeathUI>();
+            if (deathUIScript != null)
+            {
+                deathUIScript.StopAnimation();
+                deathUIScript.ResetUI();
+            }
+            
             deathUI.SetActive(false);
+        }
+        canRevive = false;
+        if (deathCountdownCoroutine != null)
+        {
+            StopCoroutine(deathCountdownCoroutine);
+            deathCountdownCoroutine = null;
         }
     }
 
@@ -333,7 +366,7 @@ public class HealthPostureController : MonoBehaviour
         canIncreasePosture = false;
         // 架勢條緩慢歸零
         StartCoroutine(RestorePostureAfterDelay(0.01f));
-        // 3 秒後恢復操控
+        // 1 秒後恢復操控
         StartCoroutine(RestoreControlAfterDelay(1f));
     }
 
@@ -463,5 +496,28 @@ public class HealthPostureController : MonoBehaviour
         {
             healthPostureSystem.SetPostureNormalized(normalizedValue);
         }
+    }
+
+    private IEnumerator DeathReviveCountdown()
+    {
+        canRevive = true;
+        float timer = 10f;
+        while (timer > 0f)
+        {
+            if (!isPlayerDead) yield break; // 已復活則結束
+            timer -= Time.deltaTime;
+            yield return null;
+        }
+        // 10秒到，鎖定復活
+        canRevive = false;
+        // 閃紅光
+        DeathUI deathUIScript = deathUI.GetComponent<DeathUI>();
+        if (deathUIScript != null)
+        {
+            deathUIScript.StartRedFlash();
+        }
+        // 5秒後回主選單
+        yield return new WaitForSeconds(5f);
+        ReturnToMainMenu();
     }
 }
