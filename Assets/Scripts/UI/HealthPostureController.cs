@@ -78,7 +78,7 @@ public class HealthPostureController : MonoBehaviour
     }
 
     // 受到傷害
-    public void TakeDamage(int amount, int hitState)
+    public void TakeDamage(int amount, PlayerStatus.HitState hitState)
     {
         healthPostureSystem.HealthDamage(amount);
 
@@ -87,7 +87,6 @@ public class HealthPostureController : MonoBehaviour
         {
             healthPostureSystem.PostureIncrease(20);
         }
-
         // 顯示血條並設定為最後一個被攻擊的敵人
         ShowHealthBar();
     }

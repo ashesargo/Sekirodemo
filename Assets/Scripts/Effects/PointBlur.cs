@@ -113,11 +113,11 @@ public class PointBlur : MonoBehaviour
     {
         if (tpController != null)
         {
-            if (tpController.isGuard && playerStatus.hitState == 1)
+            if (tpController.isGuard && playerStatus.currentHitState == PlayerStatus.HitState.Guard)
             {
                 TriggerGuardEffect();
             }
-            playerStatus.hitState = 0;
+            playerStatus.currentHitState = PlayerStatus.HitState.Hit;
         }
     }
 
