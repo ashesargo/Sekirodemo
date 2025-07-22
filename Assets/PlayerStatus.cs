@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerStatus : MonoBehaviour
 {
@@ -49,8 +49,9 @@ public class PlayerStatus : MonoBehaviour
         {
             if (currentHitState == HitState.Parry)
             {
-                int parry = UnityEngine.Random.Range(0, 3);
+                int parry = UnityEngine.Random.Range(1, 4);
                 _animator.SetTrigger("Parry" + parry);
+                _TPContraller.parrySuccess = false;
             }
             else if (currentHitState == HitState.Guard) _animator.SetTrigger("GuardHit");
             else _animator.SetTrigger("Hit");
