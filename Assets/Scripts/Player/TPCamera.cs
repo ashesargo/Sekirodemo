@@ -2,30 +2,57 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// TPCamera：第三人稱攝影機控制腳本，支援一般跟隨與鎖定目標模式
 public class TPCamera : MonoBehaviour
 {
+    // 跟隨點（攝影機會跟隨此點）
     public Transform mFollowPoint;
+    // 跟隨點的參考（通常為玩家）
     public Transform mFollowPointRef;
 
+    // 攝影機與跟隨點的距離
     public float mFollowDistance;
     public float mMinFollowDistance;
     public float mMaxFollowDistance;
 
+    // 垂直旋轉角度
     private float mVerticalDegree;
+    // 垂直旋轉上限
     public float mVerticalLimitUp;
+    // 垂直旋轉下限
     public float mVerticalLimitDown;
 
+    // 水平旋轉向量
     private Vector3 mHorizontalVector;
+    // 滑鼠旋轉靈敏度
     public float mMouseRotateSensitivity = 1.0f;
+    // 攝影機跟隨速度
     public float followSpeed = 10.0f;
+    // 攝影機平滑移動用的速度暫存
     private Vector3 mCurrentVel = Vector3.zero;
+    // 檢查碰撞的圖層
     public LayerMask mCheckLayer;
+    // 前一幀是否為鎖定狀態
     private bool wasLock;
-    [Header("��w")]
+    [Header("鎖定設定")]
+    // 是否鎖定目標
     public bool isLock;
+    // 鎖定的目標
     public Transform lockTarget;
+    // 鎖定時攝影機高度
     public float lockCameraHeight = 1.5f;
-    // Start is called before the first frame update
+    // 鎖定圖示的 Prefab
+    public GameObject lockOnIconPrefab; // 指到 LockOnIcon.prefab
+    // 當前顯示的鎖定圖示
+    private GameObject currentLockOnIcon;
+    // 上一次鎖定的目標
+    private Transform lastLockTarget = null;
+    // UI Canvas（需在 Inspector 指定）
+    public Canvas uiCanvas; // 在 Inspector 拖入你的 Canvas
+    // 超過此距離自動解除鎖定
+    public float lockOffDistance = 15.0f;
+    
+    // 初始化攝影機位置與方向
     void Awake()
     {
         mFollowPoint.position = mFollowPointRef.position;
@@ -36,15 +63,19 @@ public class TPCamera : MonoBehaviour
         mHorizontalVector.y = 0.0f;
         mHorizontalVector.Normalize();
     }
+    
+    // 更新攝影機位置與旋轉
     public void UpdateCameraTransform()
     {
         if (!isLock)
         {
+            // 一般模式：根據滑鼠移動旋轉攝影機
             float fMX = Input.GetAxis("Mouse X");
             float fMY = Input.GetAxis("Mouse Y");
             mHorizontalVector = Quaternion.AngleAxis(fMX * mMouseRotateSensitivity, Vector3.up) * mHorizontalVector;
             Vector3 rotationAxis = Vector3.Cross(mHorizontalVector, Vector3.up);
             mVerticalDegree -= fMY * mMouseRotateSensitivity;
+            // 限制垂直旋轉角度
             if (mVerticalDegree < -mVerticalLimitUp)
             {
                 mVerticalDegree = -mVerticalLimitUp;
@@ -55,10 +86,12 @@ public class TPCamera : MonoBehaviour
             }
             Vector3 vFinalDir = Quaternion.AngleAxis(mVerticalDegree, rotationAxis) * mHorizontalVector;
             vFinalDir.Normalize();
+            // 跟隨點平滑移動
             mFollowPoint.position = Vector3.Lerp(mFollowPoint.position, mFollowPointRef.position, followSpeed * Time.deltaTime);
             Vector3 vFinalPosition = mFollowPoint.position + vFinalDir * mFollowDistance;
             Vector3 vDir = mFollowPoint.position - vFinalPosition;
             vDir.Normalize();
+            // 檢查攝影機與角色間是否有障礙物
             RaycastHit rh;
             Ray r = new Ray(mFollowPoint.position, -vDir);
 
@@ -66,29 +99,31 @@ public class TPCamera : MonoBehaviour
             {
                 vFinalPosition = mFollowPoint.position - vDir * (rh.distance - 0.1f);
             }
+            // 攝影機平滑移動到目標位置
             transform.position = Vector3.Lerp(transform.position, vFinalPosition, 1.0f);
             vDir = mFollowPoint.position - transform.position;
+            // 攝影機朝向角色
             transform.forward = vDir;
         }
         else if (lockTarget != null)
         {
-            // ���Ƹ��H����
+            // 鎖定模式：攝影機會對準目標
             mFollowPoint.position = Vector3.Lerp(mFollowPoint.position, mFollowPointRef.position, followSpeed * Time.deltaTime);
 
-            // ���o����P�ؼФ��������I
-            Vector3 centerBetween = (mFollowPoint.position + lockTarget.position) * 0.5f;
-            centerBetween.y += lockCameraHeight; // �[���סA����v���ݡu���I�W��v
+            // 計算角色與目標的1/3分點，讓鏡頭更靠近自己
+            Vector3 centerBetween = mFollowPoint.position * (2.0f / 3.0f) + lockTarget.position * (1.0f / 3.0f);
+            centerBetween.y += lockCameraHeight;  // 增加高度，讓鏡頭在目標上方
 
-            // �p��q����줤�I����V�]����Y�^
+            // 計算水平方向（忽略Y軸）
             Vector3 lockDirection = centerBetween - mFollowPoint.position;
             lockDirection.y = 0;
             lockDirection.Normalize();
 
-            // �p����v�����Ӧb����m
+            // 計算攝影機最終位置（加上高度後往後拉）
             Vector3 offset = Vector3.up * lockCameraHeight;
             Vector3 vFinalPosition = mFollowPoint.position + offset - lockDirection * mFollowDistance;
 
-            // �׻��ˬd
+            // 檢查攝影機與角色間是否有障礙物
             Vector3 vDir = mFollowPoint.position - vFinalPosition;
             vDir.Normalize();
             RaycastHit rh;
@@ -99,30 +134,145 @@ public class TPCamera : MonoBehaviour
                 vFinalPosition = mFollowPoint.position - vDir * (rh.distance - 0.1f);
             }
 
-            // ���Ʋ�����v��
+            // 攝影機平滑移動到目標位置
             transform.position = Vector3.Lerp(transform.position, vFinalPosition, Time.deltaTime * followSpeed);
 
-            // ��v���¦V�G�ݦV����P�ĤH���������I�W��
+            // 攝影機朝向角色與目標的中點
             transform.forward = (centerBetween - transform.position).normalized;
         }
     }
-    // Update is called once per frame
+    
+    // 更新鎖定圖示（LockOn Icon）
+    public void UpdateLockOnIcon()
+    {
+        Debug.Log($"isLock: {isLock}, lockTarget: {lockTarget}, lastLockTarget: {lastLockTarget}");
+        if (isLock && lockTarget != null)
+        {
+            if (lockTarget != lastLockTarget)
+            {
+                // 移除舊的 ICON
+                if (currentLockOnIcon != null)
+                    Destroy(currentLockOnIcon);
+
+                // 生成新的 ICON
+                if (lockOnIconPrefab == null)
+                {
+                    Debug.LogError("lockOnIconPrefab 尚未指定！");
+                    return;
+                }
+                if (uiCanvas == null)
+                {
+                    Debug.LogError("uiCanvas 尚未指定！");
+                    return;
+                }
+                GameObject icon = Instantiate(lockOnIconPrefab);
+                icon.transform.SetParent(uiCanvas.transform, false);
+                var follow = icon.GetComponent<LockOnIconFollow>();
+                if (follow == null)
+                {
+                    Debug.LogError("LockOnIconFollow 腳本沒掛在 Prefab 上！");
+                    return;
+                }
+                // 嘗試取得敵人身上的 SpawnPoint 作為鎖定點
+                Transform iconTarget = lockTarget.Find("SpawnPoint");
+                if (iconTarget == null)
+                {
+                    iconTarget = lockTarget;
+                }
+                // 設定跟隨目標
+                follow.target = iconTarget;
+                currentLockOnIcon = icon;
+                lastLockTarget = lockTarget;
+            }
+        }
+        else
+        {
+            // 非鎖定狀態或無目標時，移除 ICON
+            if (currentLockOnIcon != null)
+            {
+                Destroy(currentLockOnIcon);
+                currentLockOnIcon = null;
+                lastLockTarget = null;
+            }
+        }
+    }
+    
+    // 嘗試自動鎖定最近的敵人（假設敵人有 "Enemy" tag）
+    public void TryLockNearestEnemy()
+    {
+        float minDist = float.MaxValue;
+        Transform nearest = null;
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        foreach (var enemy in enemies)
+        {
+            float dist = Vector3.Distance(mFollowPointRef.position, enemy.transform.position);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                nearest = enemy.transform;
+            }
+        }
+        if (nearest != null)
+        {
+            lockTarget = nearest;
+            isLock = true;
+        }
+    }
+    
+    // 每幀更新（建議用 LateUpdate 以確保角色移動後再更新攝影機）
     void LateUpdate()
     {
-        //�P�B��v����m�ѨM ��v����l�Ʈɲ��ʰ��D
+        // 按下 Tab 鍵自動鎖定最近敵人
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            TryLockNearestEnemy();
+        }
+        // 每幀重設跟隨點位置
         mFollowPoint.position = mFollowPointRef.position;
 
+        // 若鎖定中且有目標，檢查距離是否超過閾值
+        if (isLock && lockTarget != null)
+        {
+            float dist = Vector3.Distance(mFollowPointRef.position, lockTarget.position);
+            if (dist > lockOffDistance)
+            {
+                isLock = false;
+                lockTarget = null;
+            }
+        }
+
+        // 鎖定狀態切換時重設攝影機
         if (wasLock != isLock)
         {
-            mFollowPoint.position = mFollowPointRef.position;
-            mFollowPoint.rotation = mFollowPointRef.rotation;
-            transform.position = mFollowPoint.position - mFollowDistance * mFollowPoint.forward;
-            Vector3 vDir = transform.position - mFollowPoint.position;
-            mHorizontalVector = vDir;
-            mHorizontalVector.y = 0.0f;
-            mHorizontalVector.Normalize();
+            // 只在進入鎖定時重設，解除鎖定時不重設攝影機位置，保留原本指向
+            if (isLock)
+            {
+                mFollowPoint.position = mFollowPointRef.position;
+                mFollowPoint.rotation = mFollowPointRef.rotation;
+                transform.position = mFollowPoint.position - mFollowDistance * mFollowPoint.forward;
+                Vector3 vDir = transform.position - mFollowPoint.position;
+                mHorizontalVector = vDir;
+                mHorizontalVector.y = 0.0f;
+                mHorizontalVector.Normalize();
+            }
+            else // 解除鎖定時，將當前攝影機 forward 轉換回 mHorizontalVector 與 mVerticalDegree
+            {
+                // 計算新的 mHorizontalVector（投影到 XZ 平面並正規化）
+                Vector3 camDir = (transform.position - mFollowPoint.position).normalized;
+                mHorizontalVector = camDir;
+                mHorizontalVector.y = 0.0f;
+                mHorizontalVector.Normalize();
+                // 計算 mVerticalDegree
+                Vector3 rotationAxis = Vector3.Cross(mHorizontalVector, Vector3.up);
+                float angle = Vector3.SignedAngle(mHorizontalVector, camDir, rotationAxis);
+                mVerticalDegree = angle;
+            }
         }
+        // 更新攝影機位置與旋轉
         UpdateCameraTransform();
+        // 記錄本幀鎖定狀態
         wasLock = isLock;
+        // 更新鎖定圖示
+        UpdateLockOnIcon(); // 新增這行
     }
 }
