@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// 道具管理器 - 管理道具的生成和配置
+// 隻狼風格道具管理器
 public class ItemManager : MonoBehaviour
 {
     [System.Serializable]
@@ -32,15 +32,14 @@ public class ItemManager : MonoBehaviour
     public int defaultSteelSugarCount = 2;
     public int defaultHealingGourdCount = 5;
     
+    // 私有變數
     private float spawnTimer = 0f;
     private List<GameObject> spawnedItems = new List<GameObject>();
     
     void Start()
     {
-        // 初始化預設道具配置
         InitializeDefaultItemConfigs();
         
-        // 如果啟用自動生成，開始生成道具
         if (autoSpawnItems)
         {
             SpawnInitialItems();
@@ -60,37 +59,31 @@ public class ItemManager : MonoBehaviour
     {
         if (itemConfigs.Count == 0)
         {
-            // 藥丸配置
-            ItemConfig medicinePill = new ItemConfig
+            itemConfigs.Add(new ItemConfig
             {
                 itemType = ItemType.MedicinePill,
                 itemName = "藥丸",
                 effectValue = 5f,
                 duration = 10f,
                 description = "緩慢恢復生命值，持續10秒"
-            };
-            itemConfigs.Add(medicinePill);
+            });
             
-            // 剛幹糖配置
-            ItemConfig steelSugar = new ItemConfig
+            itemConfigs.Add(new ItemConfig
             {
                 itemType = ItemType.SteelSugar,
                 effectValue = 0.5f,
                 duration = 15f,
                 description = "減少敵人攻擊增長的架勢槽，持續15秒"
-            };
-            itemConfigs.Add(steelSugar);
+            });
             
-            // 傷藥葫蘆配置
-            ItemConfig healingGourd = new ItemConfig
+            itemConfigs.Add(new ItemConfig
             {
                 itemType = ItemType.HealingGourd,
                 itemName = "傷藥葫蘆",
                 effectValue = 30f,
                 duration = 0f,
                 description = "立即恢復30點生命值"
-            };
-            itemConfigs.Add(healingGourd);
+            });
         }
     }
     
@@ -99,7 +92,6 @@ public class ItemManager : MonoBehaviour
     {
         if (itemSpawnPoints == null || itemSpawnPoints.Length == 0) return;
         
-        // 在每個生成點隨機生成道具
         foreach (Transform spawnPoint in itemSpawnPoints)
         {
             if (spawnPoint != null)
@@ -117,11 +109,8 @@ public class ItemManager : MonoBehaviour
         if (spawnTimer >= spawnInterval)
         {
             spawnTimer = 0f;
-            
-            // 清理已拾取的道具
             CleanupSpawnedItems();
             
-            // 生成新道具
             if (itemSpawnPoints != null && itemSpawnPoints.Length > 0)
             {
                 Transform randomSpawnPoint = itemSpawnPoints[Random.Range(0, itemSpawnPoints.Length)];
@@ -138,28 +127,8 @@ public class ItemManager : MonoBehaviour
     {
         if (itemPickupPrefab == null) return null;
         
-        // 隨機選擇道具類型
         ItemType randomType = (ItemType)Random.Range(0, System.Enum.GetValues(typeof(ItemType)).Length);
-        
-        // 生成道具
-        GameObject itemObj = Instantiate(itemPickupPrefab, position, Quaternion.identity);
-        ItemPickup itemPickup = itemObj.GetComponent<ItemPickup>();
-        
-        if (itemPickup != null)
-        {
-            // 設定道具屬性
-            ItemConfig config = GetItemConfig(randomType);
-            if (config != null)
-            {
-                itemPickup.SetItemType(randomType);
-                itemPickup.SetItemQuantity(1);
-                itemPickup.SetEffectValue(config.effectValue);
-                itemPickup.SetDuration(config.duration);
-            }
-        }
-        
-        spawnedItems.Add(itemObj);
-        return itemObj;
+        return SpawnItem(randomType, position, 1);
     }
     
     // 生成指定類型的道具
@@ -203,58 +172,33 @@ public class ItemManager : MonoBehaviour
     {
         List<Item> defaultItems = new List<Item>();
         
-        // 添加藥丸
-        ItemConfig medicinePillConfig = GetItemConfig(ItemType.MedicinePill);
-        if (medicinePillConfig != null)
-        {
-            defaultItems.Add(new Item(
-                medicinePillConfig.itemName,
-                ItemType.MedicinePill,
-                defaultMedicinePillCount,
-                medicinePillConfig.effectValue,
-                medicinePillConfig.duration,
-                medicinePillConfig.description
-            ));
-        }
-        
-        // 添加剛幹糖
-        ItemConfig steelSugarConfig = GetItemConfig(ItemType.SteelSugar);
-        if (steelSugarConfig != null)
-        {
-            defaultItems.Add(new Item(
-                steelSugarConfig.itemName,
-                ItemType.SteelSugar,
-                defaultSteelSugarCount,
-                steelSugarConfig.effectValue,
-                steelSugarConfig.duration,
-                steelSugarConfig.description
-            ));
-        }
-        
-        // 添加傷藥葫蘆
-        ItemConfig healingGourdConfig = GetItemConfig(ItemType.HealingGourd);
-        if (healingGourdConfig != null)
-        {
-            defaultItems.Add(new Item(
-                healingGourdConfig.itemName,
-                ItemType.HealingGourd,
-                defaultHealingGourdCount,
-                healingGourdConfig.effectValue,
-                healingGourdConfig.duration,
-                healingGourdConfig.description
-            ));
-        }
+        AddDefaultItem(defaultItems, ItemType.MedicinePill, defaultMedicinePillCount);
+        AddDefaultItem(defaultItems, ItemType.SteelSugar, defaultSteelSugarCount);
+        AddDefaultItem(defaultItems, ItemType.HealingGourd, defaultHealingGourdCount);
         
         return defaultItems;
     }
     
-    // 設定道具生成點
-    public void SetSpawnPoints(Transform[] spawnPoints)
+    // 添加預設道具
+    void AddDefaultItem(List<Item> defaultItems, ItemType itemType, int count)
     {
-        itemSpawnPoints = spawnPoints;
+        ItemConfig config = GetItemConfig(itemType);
+        if (config != null)
+        {
+            defaultItems.Add(new Item(
+                config.itemName,
+                itemType,
+                count,
+                config.effectValue,
+                config.duration,
+                config.description
+            ));
+        }
     }
     
-    // 添加道具生成點
+    // 公共方法
+    public void SetSpawnPoints(Transform[] spawnPoints) => itemSpawnPoints = spawnPoints;
+    
     public void AddSpawnPoint(Transform spawnPoint)
     {
         if (itemSpawnPoints == null)
@@ -266,7 +210,6 @@ public class ItemManager : MonoBehaviour
         itemSpawnPoints[itemSpawnPoints.Length - 1] = spawnPoint;
     }
     
-    // 移除道具生成點
     public void RemoveSpawnPoint(Transform spawnPoint)
     {
         if (itemSpawnPoints == null) return;
@@ -276,7 +219,6 @@ public class ItemManager : MonoBehaviour
         itemSpawnPoints = newSpawnPoints.ToArray();
     }
     
-    // 清理所有生成的道具
     public void ClearAllSpawnedItems()
     {
         foreach (GameObject item in spawnedItems)
@@ -289,15 +231,6 @@ public class ItemManager : MonoBehaviour
         spawnedItems.Clear();
     }
     
-    // 暫停道具生成
-    public void PauseItemSpawning()
-    {
-        autoSpawnItems = false;
-    }
-    
-    // 恢復道具生成
-    public void ResumeItemSpawning()
-    {
-        autoSpawnItems = true;
-    }
+    public void PauseItemSpawning() => autoSpawnItems = false;
+    public void ResumeItemSpawning() => autoSpawnItems = true;
 } 

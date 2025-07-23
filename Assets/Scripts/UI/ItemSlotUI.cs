@@ -2,25 +2,28 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-// 道具槽UI組件
+// 隻狼風格道具槽UI
 public class ItemSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("UI 組件")]
-    public Image itemIcon;           // 道具圖示
-    public Text quantityText;        // 數量文字
-    public Text hotkeyText;          // 快捷鍵文字
-    public Image backgroundImage;    // 背景圖片
-    public Image cooldownImage;      // 冷卻圖片
+    public Image itemIcon;
+    public Text quantityText;
+    public Text hotkeyText;
+    public Image backgroundImage;
+    public Image cooldownImage;
     
     [Header("顏色設定")]
     public Color normalColor = Color.white;
     public Color hoverColor = Color.yellow;
     public Color emptyColor = Color.gray;
     public Color cooldownColor = new Color(0, 0, 0, 0.5f);
+    public Color selectedColor = Color.green;
     
+    // 私有變數
     private ItemType itemType;
     private string hotkey;
     private bool isOnCooldown = false;
+    private bool isSelected = false;
     private float cooldownTime = 0f;
     private float maxCooldownTime = 0f;
     
@@ -37,7 +40,6 @@ public class ItemSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     
     void Update()
     {
-        // 更新冷卻顯示
         UpdateCooldown();
     }
     
@@ -68,7 +70,6 @@ public class ItemSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             quantityText.text = quantity > 0 ? quantity.ToString() : "0";
         }
         
-        // 根據數量更新顏色
         UpdateSlotColor(quantity);
     }
     
@@ -80,6 +81,10 @@ public class ItemSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             if (quantity <= 0)
             {
                 backgroundImage.color = emptyColor;
+            }
+            else if (isSelected)
+            {
+                backgroundImage.color = selectedColor;
             }
             else
             {
@@ -141,18 +146,14 @@ public class ItemSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             backgroundImage.color = hoverColor;
         }
         
-        // 顯示道具描述
         ShowItemDescription();
     }
     
     // 滑鼠離開事件
     public void OnPointerExit(PointerEventData eventData)
     {
-        // 恢復正常顏色
         int quantity = itemSystem != null ? itemSystem.GetItemQuantity(itemType) : 0;
         UpdateSlotColor(quantity);
-        
-        // 清除道具描述
         ClearItemDescription();
     }
     
@@ -212,15 +213,13 @@ public class ItemSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         
         if (itemSystem != null)
         {
-            bool success = itemSystem.UseItemByType(itemType);
+            bool success = itemSystem.UseItem(GetItemByType());
             
             if (success)
             {
-                // 開始冷卻（根據道具類型設定不同的冷卻時間）
                 float cooldownDuration = GetCooldownDuration();
                 StartCooldown(cooldownDuration);
                 
-                // 更新數量
                 int newQuantity = itemSystem.GetItemQuantity(itemType);
                 UpdateQuantity(newQuantity);
             }
@@ -231,20 +230,44 @@ public class ItemSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         return false;
     }
     
+    // 獲取道具
+    Item GetItemByType()
+    {
+        return itemSystem != null ? itemSystem.GetItemByType(itemType) : null;
+    }
+    
     // 獲取冷卻時間
     float GetCooldownDuration()
     {
         switch (itemType)
         {
             case ItemType.MedicinePill:
-                return 15f; // 藥丸冷卻15秒
+                return 15f;
             case ItemType.SteelSugar:
-                return 20f; // 剛幹糖冷卻20秒
+                return 20f;
             case ItemType.HealingGourd:
-                return 5f;  // 傷藥葫蘆冷卻5秒
+                return 5f;
             default:
                 return 10f;
         }
+    }
+    
+    // 設定選中狀態
+    public void SetSelected(bool selected)
+    {
+        isSelected = selected;
+        
+        if (itemSystem != null)
+        {
+            int quantity = itemSystem.GetItemQuantity(itemType);
+            UpdateSlotColor(quantity);
+        }
+    }
+    
+    // 獲取選中狀態
+    public bool IsSelected()
+    {
+        return isSelected;
     }
     
     // 設定道具圖示

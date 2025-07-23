@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// 道具拾取類別
+// 隻狼風格道具拾取
 public class ItemPickup : MonoBehaviour
 {
     [Header("道具設定")]
@@ -11,7 +11,6 @@ public class ItemPickup : MonoBehaviour
     
     [Header("拾取設定")]
     public float pickupRange = 2f;
-    public LayerMask playerLayer = 1;
     public bool destroyOnPickup = true;
     public bool respawnable = false;
     public float respawnTime = 30f;
@@ -25,8 +24,8 @@ public class ItemPickup : MonoBehaviour
     
     [Header("UI 提示")]
     public GameObject pickupPrompt;
-    public string promptText = "按 E 拾取";
     
+    // 私有變數
     private ItemSystem playerItemSystem;
     private Transform playerTransform;
     private bool isPlayerInRange = false;
@@ -36,43 +35,40 @@ public class ItemPickup : MonoBehaviour
     
     void Start()
     {
-        originalPosition = transform.position;
-        audioSource = GetComponent<AudioSource>();
-        
-        // 如果沒有AudioSource，添加一個
-        if (audioSource == null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>();
-        }
-        
-        // 隱藏拾取提示
-        if (pickupPrompt != null)
-        {
-            pickupPrompt.SetActive(false);
-        }
+        InitializePickup();
     }
     
     void Update()
     {
         if (isPickedUp) return;
         
-        // 旋轉和浮動效果
         UpdateVisualEffects();
-        
-        // 檢查玩家是否在拾取範圍內
         CheckPlayerInRange();
-        
-        // 處理拾取輸入
         HandlePickupInput();
+    }
+    
+    // 初始化拾取系統
+    void InitializePickup()
+    {
+        originalPosition = transform.position;
+        audioSource = GetComponent<AudioSource>();
+        
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+        
+        if (pickupPrompt != null)
+        {
+            pickupPrompt.SetActive(false);
+        }
     }
     
     // 更新視覺效果
     void UpdateVisualEffects()
     {
-        // 旋轉效果
         transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
         
-        // 浮動效果
         float newY = originalPosition.y + Mathf.Sin(Time.time * bobSpeed) * bobHeight;
         transform.position = new Vector3(transform.position.x, newY, transform.position.z);
     }
@@ -82,7 +78,6 @@ public class ItemPickup : MonoBehaviour
     {
         if (playerTransform == null)
         {
-            // 尋找玩家
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             if (player != null)
             {
@@ -97,7 +92,6 @@ public class ItemPickup : MonoBehaviour
             bool wasInRange = isPlayerInRange;
             isPlayerInRange = distance <= pickupRange;
             
-            // 如果狀態改變，更新UI提示
             if (wasInRange != isPlayerInRange)
             {
                 UpdatePickupPrompt();
@@ -119,38 +113,28 @@ public class ItemPickup : MonoBehaviour
     {
         if (isPickedUp || playerItemSystem == null) return;
         
-        // 創建道具
         Item item = new Item(GetItemName(), itemType, itemQuantity, effectValue, duration, GetItemDescription());
-        
-        // 添加到玩家背包
         playerItemSystem.AddItem(item);
         
-        // 播放拾取效果
         PlayPickupEffects();
-        
-        // 標記為已拾取
         isPickedUp = true;
         
-        // 隱藏拾取提示
         if (pickupPrompt != null)
         {
             pickupPrompt.SetActive(false);
         }
         
-        // 處理拾取後的行為
         HandlePostPickup();
     }
     
     // 播放拾取效果
     void PlayPickupEffects()
     {
-        // 播放音效
         if (audioSource != null && pickupSound != null)
         {
             audioSource.PlayOneShot(pickupSound);
         }
         
-        // 播放特效
         if (pickupEffect != null)
         {
             Instantiate(pickupEffect, transform.position, Quaternion.identity);
@@ -164,18 +148,15 @@ public class ItemPickup : MonoBehaviour
         {
             if (respawnable)
             {
-                // 延遲重生
                 Invoke(nameof(RespawnItem), respawnTime);
             }
             else
             {
-                // 直接銷毀
                 Destroy(gameObject);
             }
         }
         else
         {
-            // 隱藏物件但不銷毀
             gameObject.SetActive(false);
             
             if (respawnable)
@@ -241,27 +222,9 @@ public class ItemPickup : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, pickupRange);
     }
     
-    // 設定道具類型
-    public void SetItemType(ItemType type)
-    {
-        itemType = type;
-    }
-    
-    // 設定道具數量
-    public void SetItemQuantity(int quantity)
-    {
-        itemQuantity = quantity;
-    }
-    
-    // 設定效果值
-    public void SetEffectValue(float value)
-    {
-        effectValue = value;
-    }
-    
-    // 設定持續時間
-    public void SetDuration(float dur)
-    {
-        duration = dur;
-    }
+    // 公共設定方法
+    public void SetItemType(ItemType type) => itemType = type;
+    public void SetItemQuantity(int quantity) => itemQuantity = quantity;
+    public void SetEffectValue(float value) => effectValue = value;
+    public void SetDuration(float dur) => duration = dur;
 } 

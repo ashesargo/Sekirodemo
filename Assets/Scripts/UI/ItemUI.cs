@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 道具UI系統
+// 隻狼風格道具UI系統
 public class ItemUI : MonoBehaviour
 {
     [Header("UI 組件")]
-    public GameObject itemSlotPrefab;  // 道具槽預製體
-    public Transform itemContainer;    // 道具容器
-    public Text itemDescriptionText;   // 道具描述文字
-    public Image itemIconImage;        // 道具圖示
+    public GameObject itemSlotPrefab;
+    public Transform itemContainer;
+    public Text itemDescriptionText;
+    public Image itemIconImage;
     
     [Header("道具圖示")]
     public Sprite medicinePillIcon;
@@ -18,18 +18,43 @@ public class ItemUI : MonoBehaviour
     public Sprite healingGourdIcon;
     
     [Header("效果顯示")]
-    public GameObject medicinePillEffect;  // 藥丸效果UI
-    public GameObject steelSugarEffect;    // 剛幹糖效果UI
-    public Image medicinePillEffectBar;    // 藥丸效果進度條
-    public Image steelSugarEffectBar;      // 剛幹糖效果進度條
+    public GameObject medicinePillEffect;
+    public GameObject steelSugarEffect;
+    public Image medicinePillEffectBar;
+    public Image steelSugarEffectBar;
     
+    [Header("當前選中道具顯示")]
+    public Image currentItemIcon;
+    public Text currentItemName;
+    public Text currentItemQuantity;
+    public GameObject selectionHighlight;
+    
+    [Header("隻狼風格UI")]
+    public GameObject sekiroStyleUI;
+    public Image itemUseProgressBar;
+    public GameObject itemUseAnimation;
+    public AudioClip itemUseSound;
+    
+    // 私有變數
     private ItemSystem itemSystem;
     private List<ItemSlotUI> itemSlots = new List<ItemSlotUI>();
     private Dictionary<ItemType, Sprite> itemIcons;
     
     void Start()
     {
-        // 獲取道具系統
+        InitializeSystem();
+    }
+    
+    void Update()
+    {
+        UpdateEffectBars();
+        UpdateItemDescription();
+        UpdateCurrentItemDisplay();
+    }
+    
+    // 初始化系統
+    void InitializeSystem()
+    {
         itemSystem = FindObjectOfType<ItemSystem>();
         if (itemSystem == null)
         {
@@ -37,25 +62,9 @@ public class ItemUI : MonoBehaviour
             return;
         }
         
-        // 初始化道具圖示字典
         InitializeItemIcons();
-        
-        // 訂閱道具系統事件
-        itemSystem.OnItemUsed += OnItemUsed;
-        itemSystem.OnItemAdded += OnItemAdded;
-        itemSystem.OnItemRemoved += OnItemRemoved;
-        
-        // 初始化UI
+        SubscribeToEvents();
         InitializeItemUI();
-    }
-    
-    void Update()
-    {
-        // 更新效果進度條
-        UpdateEffectBars();
-        
-        // 更新道具描述
-        UpdateItemDescription();
     }
     
     // 初始化道具圖示
@@ -69,22 +78,32 @@ public class ItemUI : MonoBehaviour
         };
     }
     
+    // 訂閱事件
+    void SubscribeToEvents()
+    {
+        itemSystem.OnItemUsed += OnItemUsed;
+        itemSystem.OnItemAdded += OnItemAdded;
+        itemSystem.OnItemRemoved += OnItemRemoved;
+        itemSystem.OnItemSwitched += OnItemSwitched;
+    }
+    
     // 初始化道具UI
     void InitializeItemUI()
     {
-        // 清除現有道具槽
         ClearItemSlots();
-        
-        // 為每種道具類型創建道具槽
-        CreateItemSlot(ItemType.MedicinePill, "1");
-        CreateItemSlot(ItemType.SteelSugar, "2");
-        CreateItemSlot(ItemType.HealingGourd, "3");
-        
-        // 更新道具數量
+        CreateItemSlots();
         UpdateAllItemQuantities();
     }
     
     // 創建道具槽
+    void CreateItemSlots()
+    {
+        CreateItemSlot(ItemType.MedicinePill, "1");
+        CreateItemSlot(ItemType.SteelSugar, "2");
+        CreateItemSlot(ItemType.HealingGourd, "3");
+    }
+    
+    // 創建單個道具槽
     void CreateItemSlot(ItemType itemType, string hotkey)
     {
         if (itemSlotPrefab == null || itemContainer == null) return;
@@ -135,54 +154,136 @@ public class ItemUI : MonoBehaviour
     void UpdateEffectBars()
     {
         // 這裡可以添加效果進度條的更新邏輯
-        // 需要從 ItemSystem 獲取當前效果的剩餘時間
     }
     
     // 更新道具描述
     void UpdateItemDescription()
     {
         // 根據滑鼠懸停的道具顯示描述
-        // 這裡可以添加滑鼠懸停檢測邏輯
     }
     
-    // 道具使用事件處理
-    void OnItemUsed(Item item)
+    // 更新當前選中道具顯示
+    void UpdateCurrentItemDisplay()
     {
-        // 更新道具數量
-        UpdateAllItemQuantities();
+        if (itemSystem == null) return;
         
-        // 顯示使用效果
-        ShowItemUseEffect(item.itemType);
+        Item currentItem = itemSystem.GetCurrentSelectedItem();
+        UpdateItemSlotSelection();
+        UpdateCurrentItemInfo(currentItem);
+    }
+    
+    // 更新道具槽選中狀態
+    void UpdateItemSlotSelection()
+    {
+        if (itemSystem == null) return;
         
-        // 更新道具描述
-        if (itemDescriptionText != null)
+        Item currentItem = itemSystem.GetCurrentSelectedItem();
+        
+        foreach (ItemSlotUI slot in itemSlots)
         {
-            itemDescriptionText.text = $"使用了 {item.itemName}";
-            StartCoroutine(ClearDescriptionAfterDelay(2f));
+            if (slot != null)
+            {
+                bool isSelected = (currentItem != null && slot.ItemType == currentItem.itemType);
+                slot.SetSelected(isSelected);
+            }
         }
     }
     
-    // 道具添加事件處理
+    // 更新當前道具信息
+    void UpdateCurrentItemInfo(Item currentItem)
+    {
+        if (currentItem != null)
+        {
+            UpdateCurrentItemUI(currentItem);
+        }
+        else
+        {
+            ClearCurrentItemUI();
+        }
+    }
+    
+    // 更新當前道具UI
+    void UpdateCurrentItemUI(Item item)
+    {
+        if (currentItemIcon != null)
+        {
+            Sprite icon = GetItemIcon(item.itemType);
+            if (icon != null)
+            {
+                currentItemIcon.sprite = icon;
+                currentItemIcon.gameObject.SetActive(true);
+            }
+        }
+        
+        if (currentItemName != null)
+        {
+            currentItemName.text = item.itemName;
+        }
+        
+        if (currentItemQuantity != null)
+        {
+            currentItemQuantity.text = $"x{item.quantity}";
+        }
+        
+        if (selectionHighlight != null)
+        {
+            selectionHighlight.SetActive(true);
+        }
+    }
+    
+    // 清除當前道具UI
+    void ClearCurrentItemUI()
+    {
+        if (currentItemIcon != null)
+        {
+            currentItemIcon.gameObject.SetActive(false);
+        }
+        
+        if (currentItemName != null)
+        {
+            currentItemName.text = "無道具";
+        }
+        
+        if (currentItemQuantity != null)
+        {
+            currentItemQuantity.text = "";
+        }
+        
+        if (selectionHighlight != null)
+        {
+            selectionHighlight.SetActive(false);
+        }
+    }
+    
+    // 事件處理方法
+    void OnItemUsed(Item item)
+    {
+        UpdateAllItemQuantities();
+        ShowItemUseEffect(item.itemType);
+        StartCoroutine(PlaySekiroItemUseAnimation());
+        ShowTemporaryMessage($"使用了 {item.itemName}", 2f);
+    }
+    
     void OnItemAdded(Item item)
     {
         UpdateAllItemQuantities();
-        
-        if (itemDescriptionText != null)
-        {
-            itemDescriptionText.text = $"獲得了 {item.itemName} x{item.quantity}";
-            StartCoroutine(ClearDescriptionAfterDelay(2f));
-        }
+        ShowTemporaryMessage($"獲得了 {item.itemName} x{item.quantity}", 2f);
     }
     
-    // 道具移除事件處理
     void OnItemRemoved(Item item)
     {
         UpdateAllItemQuantities();
+        ShowTemporaryMessage($"{item.itemName} 已用完", 2f);
+    }
+    
+    void OnItemSwitched(Item item)
+    {
+        UpdateCurrentItemDisplay();
+        UpdateAllItemQuantities();
         
-        if (itemDescriptionText != null)
+        if (item != null)
         {
-            itemDescriptionText.text = $"{item.itemName} 已用完";
-            StartCoroutine(ClearDescriptionAfterDelay(2f));
+            ShowTemporaryMessage($"切換到 {item.itemName}", 1f);
         }
     }
     
@@ -192,19 +293,10 @@ public class ItemUI : MonoBehaviour
         switch (itemType)
         {
             case ItemType.MedicinePill:
-                if (medicinePillEffect != null)
-                {
-                    StartCoroutine(ShowEffectTemporarily(medicinePillEffect, 2f));
-                }
+                ShowEffectTemporarily(medicinePillEffect, 2f);
                 break;
             case ItemType.SteelSugar:
-                if (steelSugarEffect != null)
-                {
-                    StartCoroutine(ShowEffectTemporarily(steelSugarEffect, 2f));
-                }
-                break;
-            case ItemType.HealingGourd:
-                // 傷藥葫蘆的立即效果
+                ShowEffectTemporarily(steelSugarEffect, 2f);
                 break;
         }
     }
@@ -212,9 +304,64 @@ public class ItemUI : MonoBehaviour
     // 暫時顯示效果
     IEnumerator ShowEffectTemporarily(GameObject effect, float duration)
     {
-        effect.SetActive(true);
-        yield return new WaitForSeconds(duration);
-        effect.SetActive(false);
+        if (effect != null)
+        {
+            effect.SetActive(true);
+            yield return new WaitForSeconds(duration);
+            effect.SetActive(false);
+        }
+    }
+    
+    // 播放隻狼風格道具使用動畫
+    IEnumerator PlaySekiroItemUseAnimation()
+    {
+        if (itemUseAnimation != null)
+        {
+            itemUseAnimation.SetActive(true);
+        }
+        
+        if (itemUseProgressBar != null)
+        {
+            float duration = 1.5f;
+            float elapsed = 0f;
+            
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float progress = elapsed / duration;
+                itemUseProgressBar.fillAmount = progress;
+                yield return null;
+            }
+            
+            itemUseProgressBar.fillAmount = 1f;
+        }
+        
+        if (itemUseSound != null)
+        {
+            AudioSource.PlayClipAtPoint(itemUseSound, Camera.main.transform.position);
+        }
+        
+        yield return new WaitForSeconds(0.5f);
+        
+        if (itemUseAnimation != null)
+        {
+            itemUseAnimation.SetActive(false);
+        }
+        
+        if (itemUseProgressBar != null)
+        {
+            itemUseProgressBar.fillAmount = 0f;
+        }
+    }
+    
+    // 顯示臨時消息
+    void ShowTemporaryMessage(string message, float duration)
+    {
+        if (itemDescriptionText != null)
+        {
+            itemDescriptionText.text = message;
+            StartCoroutine(ClearDescriptionAfterDelay(duration));
+        }
     }
     
     // 延遲清除描述
@@ -227,7 +374,7 @@ public class ItemUI : MonoBehaviour
         }
     }
     
-    // 設定道具描述
+    // 公共方法
     public void SetItemDescription(string description)
     {
         if (itemDescriptionText != null)
@@ -236,7 +383,6 @@ public class ItemUI : MonoBehaviour
         }
     }
     
-    // 清除道具描述
     public void ClearItemDescription()
     {
         if (itemDescriptionText != null)
