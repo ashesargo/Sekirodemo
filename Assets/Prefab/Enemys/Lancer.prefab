@@ -200,6 +200,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 302012905597857245, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: attackRadius
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 311876432991580890, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -3788,6 +3792,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 3096965204288466699, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: weaponCollider
+      value: 
+      objectReference: {fileID: 905128411136321190}
     - target: {fileID: 3098556963569235404, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -8072,6 +8080,7 @@ MonoBehaviour:
   minDistanceToPlayer: 5
   velocity: {x: 0, y: 0, z: 0}
   canAutoAttack: 0
+  canBeParried: 0
 --- !u!4 &8719892328623682782 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6022667746007867940, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
@@ -8269,8 +8278,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4749354469079687155, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 905128411136321190}
   m_SourcePrefab: {fileID: 100100000, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
+--- !u!1 &2601229347952428254 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4749354469079687155, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
+  m_PrefabInstance: {fileID: 7345499594734574381}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &905128411136321190
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2601229347952428254}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.059335858, y: 0.4259638, z: 0.032724902}
+  m_Center: {x: -0.000003585592, y: -2.389755e-14, z: -0.000000001862646}
 --- !u!4 &7096210163640794310 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: cd2469bc307504746b088dcaa481ee63, type: 3}

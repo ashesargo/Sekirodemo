@@ -30,6 +30,7 @@ public class PlayerStatus : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        if (isDeath) return; // 死亡後不再受傷
         AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
         if (stateInfo.IsTag("Parry"))
         {

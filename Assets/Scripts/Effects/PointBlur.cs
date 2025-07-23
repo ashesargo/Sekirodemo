@@ -179,12 +179,6 @@ public class PointBlur : MonoBehaviour
         }
     }
 
-    // 觸發徑向模糊效果（保留原有方法以向後兼容）
-    private void TriggerBlurEffect()
-    {
-        TriggerParryEffect(); // 默認使用格擋成功特效
-    }
-
     // 渲染徑向模糊效果
     private void RenderBlurEffect(RenderTexture source, RenderTexture destination)
     {

@@ -10491,7 +10491,6 @@ GameObject:
   - component: {fileID: 6022667745179923526}
   - component: {fileID: 6022667745179923547}
   - component: {fileID: 6022667745179923544}
-  - component: {fileID: 6022667745179923545}
   m_Layer: 6
   m_Name: Katana_Collider
   m_TagString: Untagged
@@ -10564,29 +10563,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &6022667745179923545
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6022667745179923527}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6022667746007867941
 GameObject:
   m_ObjectHideFlags: 0
@@ -12320,6 +12296,7 @@ GameObject:
   - component: {fileID: 5157647425813147406}
   - component: {fileID: 1740071847312567996}
   - component: {fileID: 6797783300149108695}
+  - component: {fileID: 3096965204288466699}
   m_Layer: 0
   m_Name: ModularSamurai
   m_TagString: Untagged
@@ -12392,9 +12369,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc4a331891b227646be9562dc854b866, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  live: 1
   maxHealth: 100
   maxPosture: 100
   healthPostureUI: {fileID: 4393573506154213519}
+  deathUI: {fileID: 0}
 --- !u!114 &1740071847312567996
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12440,6 +12419,40 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &3096965204288466699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6869600998273829490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94b8ea4020dd34a50b6dc3eedd829f25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponCollider: {fileID: 0}
+  weaponRange: 1
+  environmentLayer:
+    serializedVersion: 2
+    m_Bits: 2147484168
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  layerEffectMappings:
+  - layerMask:
+      serializedVersion: 2
+      m_Bits: 128
+    effectPrefab: {fileID: 6572068886274405076, guid: c0cd25a7ab1284a4891d063f149df3e8, type: 3}
+  - layerMask:
+      serializedVersion: 2
+      m_Bits: 520
+    effectPrefab: {fileID: 6572068886274405076, guid: f73ed91945e52446780ed004b5b36939, type: 3}
+  - layerMask:
+      serializedVersion: 2
+      m_Bits: 2147483648
+    effectPrefab: {fileID: 100000, guid: 41237087d7460214597a9d29565006ba, type: 3}
+  defaultSparkPrefab: {fileID: 0}
 --- !u!1 &6990316013176573253
 GameObject:
   m_ObjectHideFlags: 0

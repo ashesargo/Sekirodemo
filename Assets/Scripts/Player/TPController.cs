@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Audio;
 
 public class TPContraller : MonoBehaviour
 {
@@ -168,7 +169,7 @@ public class TPContraller : MonoBehaviour
                 _animator.SetBool("Lock", isLocked);
             }
         }
-        if (Input.GetKeyDown(KeyCode.Mouse1) && !parrySuccess)
+        if (Input.GetKeyDown(KeyCode.Mouse1) )
         {
             Collider[] hits = Physics.OverlapSphere(transform.position, attackRadius, targetLayer);
             foreach (var hit in hits)
@@ -182,7 +183,7 @@ public class TPContraller : MonoBehaviour
                     parrySuccess = enemyAI.canBeParried;
                     if (parrySuccess)
                     {
-                        int parry = UnityEngine.Random.Range(1, 4);
+                        int parry = UnityEngine.Random.Range(1, 3);
                         _animator.SetTrigger("Parry" + parry);
                     }
                 }
