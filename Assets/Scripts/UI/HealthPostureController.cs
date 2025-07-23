@@ -85,7 +85,17 @@ public class HealthPostureController : MonoBehaviour
         // 檢查是否可以增加架勢值
         if (canIncreasePosture)
         {
-            healthPostureSystem.PostureIncrease(20);
+            // 檢查是否有剛幹糖效果
+            float postureReductionRate = 1f;
+            ItemSystem itemSystem = GetComponent<ItemSystem>();
+            if (itemSystem != null)
+            {
+                postureReductionRate = itemSystem.GetPostureReductionRate();
+            }
+            
+            // 根據剛幹糖效果調整架勢增加量
+            int adjustedPostureAmount = Mathf.RoundToInt(20 * postureReductionRate);
+            healthPostureSystem.PostureIncrease(adjustedPostureAmount);
         }
         // 顯示血條並設定為最後一個被攻擊的敵人
         ShowHealthBar();
@@ -495,6 +505,15 @@ public class HealthPostureController : MonoBehaviour
         if (healthPostureSystem != null)
         {
             healthPostureSystem.SetPostureNormalized(normalizedValue);
+        }
+    }
+
+    // 治療生命值
+    public void HealHealth(int healAmount)
+    {
+        if (healthPostureSystem != null)
+        {
+            healthPostureSystem.HealthHeal(healAmount);
         }
     }
 
