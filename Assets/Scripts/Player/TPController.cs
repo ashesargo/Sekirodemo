@@ -168,7 +168,7 @@ public class TPContraller : MonoBehaviour
                 _animator.SetBool("Lock", isLocked);
             }
         }
-        if (Input.GetKeyDown(KeyCode.Mouse1))
+        if (Input.GetKeyDown(KeyCode.Mouse1) && !parrySuccess)
         {
             Collider[] hits = Physics.OverlapSphere(transform.position, attackRadius, targetLayer);
             foreach (var hit in hits)
@@ -180,6 +180,11 @@ public class TPContraller : MonoBehaviour
                 {
                     enemyAI = hit.GetComponent<EnemyAI>();
                     parrySuccess = enemyAI.canBeParried;
+                    if (parrySuccess)
+                    {
+                        int parry = UnityEngine.Random.Range(1, 4);
+                        _animator.SetTrigger("Parry" + parry);
+                    }
                 }
             }
             if (!parrySuccess)
@@ -187,7 +192,7 @@ public class TPContraller : MonoBehaviour
                 EnableGurad();
             }
         }
-        if (Input.GetKeyUp(KeyCode.Mouse1))
+        if (Input.GetKeyUp(KeyCode.Mouse1) && isGuard)
         {
             DisableGuard();
         }
