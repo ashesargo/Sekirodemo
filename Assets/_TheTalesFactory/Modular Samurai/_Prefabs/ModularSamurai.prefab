@@ -12435,7 +12435,7 @@ MonoBehaviour:
   weaponRange: 1
   environmentLayer:
     serializedVersion: 2
-    m_Bits: 2147484168
+    m_Bits: 0
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -12444,14 +12444,6 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 128
     effectPrefab: {fileID: 6572068886274405076, guid: c0cd25a7ab1284a4891d063f149df3e8, type: 3}
-  - layerMask:
-      serializedVersion: 2
-      m_Bits: 520
-    effectPrefab: {fileID: 6572068886274405076, guid: f73ed91945e52446780ed004b5b36939, type: 3}
-  - layerMask:
-      serializedVersion: 2
-      m_Bits: 2147483648
-    effectPrefab: {fileID: 100000, guid: 41237087d7460214597a9d29565006ba, type: 3}
   defaultSparkPrefab: {fileID: 0}
 --- !u!1 &6990316013176573253
 GameObject:
@@ -15358,6 +15350,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5087036526555882798}
     m_Modifications:
+    - target: {fileID: 2207849619669449425, guid: ebcd474a684f8c0458e832cbbe95e649, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2207849619669449425, guid: ebcd474a684f8c0458e832cbbe95e649, type: 3}
+      propertyPath: m_Color.b
+      value: 0.06666667
+      objectReference: {fileID: 0}
+    - target: {fileID: 2207849619669449425, guid: ebcd474a684f8c0458e832cbbe95e649, type: 3}
+      propertyPath: m_Color.g
+      value: 0.05490196
+      objectReference: {fileID: 0}
+    - target: {fileID: 2207849619669449425, guid: ebcd474a684f8c0458e832cbbe95e649, type: 3}
+      propertyPath: m_Color.r
+      value: 0.69803923
+      objectReference: {fileID: 0}
     - target: {fileID: 2748173040116489867, guid: ebcd474a684f8c0458e832cbbe95e649, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -15505,6 +15513,18 @@ PrefabInstance:
     - target: {fileID: 5873006741225926160, guid: ebcd474a684f8c0458e832cbbe95e649, type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7904254982727720224, guid: ebcd474a684f8c0458e832cbbe95e649, type: 3}
+      propertyPath: m_Color.b
+      value: 0.06666667
+      objectReference: {fileID: 0}
+    - target: {fileID: 7904254982727720224, guid: ebcd474a684f8c0458e832cbbe95e649, type: 3}
+      propertyPath: m_Color.g
+      value: 0.05490196
+      objectReference: {fileID: 0}
+    - target: {fileID: 7904254982727720224, guid: ebcd474a684f8c0458e832cbbe95e649, type: 3}
+      propertyPath: m_Color.r
+      value: 0.69803923
       objectReference: {fileID: 0}
     - target: {fileID: 8483898652354860829, guid: ebcd474a684f8c0458e832cbbe95e649, type: 3}
       propertyPath: m_Name
