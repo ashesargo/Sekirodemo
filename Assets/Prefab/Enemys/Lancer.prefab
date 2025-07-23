@@ -8043,6 +8043,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 2912090041193765960}
+  rb: {fileID: 0}
   visionRange: 100
   attackRange: 20
   maxSpeed: 10

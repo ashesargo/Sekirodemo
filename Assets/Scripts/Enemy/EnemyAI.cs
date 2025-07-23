@@ -5,6 +5,7 @@ public class EnemyAI : MonoBehaviour
     public static Transform CachedPlayer; // 靜態快取
     public Transform player { get { return CachedPlayer; } }
     public Animator animator;
+    public Rigidbody rb; // 新增Rigidbody引用
 
     public float visionRange = 1000f;
     public float attackRange = 2f;
@@ -51,6 +52,7 @@ public class EnemyAI : MonoBehaviour
     void Awake()
     {
         animator = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody>(); // 取得Rigidbody
         // 只在第一次時尋找並快取
         if (CachedPlayer == null)
         {
@@ -258,17 +260,43 @@ public class EnemyAI : MonoBehaviour
         return avoid;
     }
 
+    // 狀態切換時由各狀態決定是否啟用Root Motion
+    public void SetRootMotion(bool useRootMotion)
+    {
+        if (animator != null)
+            animator.applyRootMotion = useRootMotion;
+    }
+
+    // Root Motion推動Rigidbody（如有）
+    void OnAnimatorMove()
+    {
+        if (animator.applyRootMotion)
+        {
+            if (rb != null)
+            {
+                rb.MovePosition(animator.rootPosition);
+                rb.MoveRotation(animator.rootRotation);
+            }
+            else
+            {
+                transform.position = animator.rootPosition;
+                transform.rotation = animator.rootRotation;
+            }
+        }
+    }
+
+    // 追擊、Idle等狀態下仍可用Move（不啟用Root Motion）
     public void Move(Vector3 force, bool lookAtPlayer = false)
     {
+        if (animator != null && animator.applyRootMotion)
+            return; // 啟用Root Motion時不由程式移動
         force.y = 0f;
-        // 新增：與玩家保持最小距離，避免推擠
         if (player != null)
         {
             float distToPlayer = Vector3.Distance(transform.position, player.position);
             if (distToPlayer < minDistanceToPlayer)
             {
                 velocity = Vector3.zero;
-                // 只做轉向，不移動
                 if (lookAtPlayer)
                 {
                     Vector3 lookDir = (player.position - transform.position);

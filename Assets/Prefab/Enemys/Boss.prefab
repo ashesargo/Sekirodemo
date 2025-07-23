@@ -7350,6 +7350,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 8255613398275737794}
+  rb: {fileID: 0}
   visionRange: 100
   attackRange: 15
   maxSpeed: 20
@@ -7381,6 +7382,10 @@ MonoBehaviour:
   canAutoAttack: 1
   currentComboCount: 0
   maxComboCount: 3
+  hasDoneIntroCombo: 0
+  hasJustRangedOrRushed: 0
+  pendingIntroComboStep: -1
+  pendingJumpAttack: 0
   comboAnimations:
   - Combo1
   - Combo2

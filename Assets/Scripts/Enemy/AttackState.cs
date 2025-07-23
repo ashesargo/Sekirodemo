@@ -11,7 +11,8 @@ public class AttackState : IEnemyState
     {
         Debug.Log("AttackState: 進入攻擊狀態");
         enemy.Stop();
-        enemy.animator.SetTrigger("Attack");
+        enemy.animator.ResetTrigger("Attack"); // 先重置Trigger
+        enemy.animator.SetTrigger("Attack");   // 再設置Trigger
         hasAttacked = false;
         moveTimer = 0f;
         enemy.canAutoAttack = false;

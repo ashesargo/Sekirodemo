@@ -3,43 +3,36 @@ using UnityEngine;
 public class BossJumpAttackState : IEnemyState
 {
     private string jumpAnim = "Jump Attack1";
-    private bool hasStarted = false;
-    private float timer = 0f;
-    private float maxJumpTime = 3f;
 
     public void EnterState(EnemyAI enemy)
     {
+        enemy.SetRootMotion(true);
         string[] jumpAnims = { "Jump Attack1", "Jump Attack2" };
         jumpAnim = jumpAnims[Random.Range(0, jumpAnims.Length)];
         Debug.Log($"BossJumpAttackState: 進入 {jumpAnim}");
         enemy.animator.Play(jumpAnim);
-        hasStarted = false;
-        timer = 0f;
         enemy.Stop();
     }
 
     public void UpdateState(EnemyAI enemy)
     {
-        timer += Time.deltaTime;
         AnimatorStateInfo stateInfo = enemy.animator.GetCurrentAnimatorStateInfo(0);
-        if (!hasStarted && stateInfo.IsName(jumpAnim) && stateInfo.normalizedTime > 0.1f)
+        // 攻擊期間持續追蹤玩家
+        if (enemy.player != null)
         {
-            hasStarted = true;
-            // 這裡可加特效、攻擊判定等
+            enemy.SmoothLookAt(enemy.player.position, turnSpeed: 8f);
         }
-        if ((hasStarted && stateInfo.IsName(jumpAnim) && stateInfo.normalizedTime >= 1.0f) || timer > maxJumpTime)
+        // 只要動畫已經自動Transition到Idle（或ComboEnd等），就切換狀態
+        if (stateInfo.IsName("Idle"))
         {
             Debug.Log($"BossJumpAttackState: {jumpAnim} 結束，切換到撤退");
             enemy.SwitchState(new RetreatState());
-        }
-        if (enemy.player != null)
-        {
-            enemy.SmoothLookAt(enemy.player.position);
         }
     }
 
     public void ExitState(EnemyAI enemy)
     {
+        enemy.SetRootMotion(false);
         Debug.Log($"BossJumpAttackState: 退出 {jumpAnim}");
         enemy.Stop();
     }

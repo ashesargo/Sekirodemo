@@ -7153,6 +7153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 5877804063483958700}
+  rb: {fileID: 0}
   visionRange: 100
   attackRange: 80
   maxSpeed: 10

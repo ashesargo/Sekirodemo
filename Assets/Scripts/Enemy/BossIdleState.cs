@@ -19,14 +19,33 @@ public class BossIdleState : IEnemyState
             return;
         }
 
-        // 檢查距離
         float distance = Vector3.Distance(enemy.transform.position, enemy.player.position);
         bool canSee = enemy.CanSeePlayer();
-        
+
         if (canSee)
         {
-            Debug.Log("BossIdleState: Boss發現玩家，直接進入追擊狀態");
-            enemy.SwitchState(new BossChaseState());
+            var bossAI = enemy.GetComponent<BossAI>();
+            if (bossAI != null && !bossAI.hasDoneIntroCombo)
+            {
+                // 只有距離夠近才進入Combo，否則先追擊
+                if (distance < enemy.attackRange)
+                {
+                    Debug.Log("BossIdleState: Boss第一次靠近玩家，進入開場Combo");
+                    enemy.SwitchState(new BossIntroComboState());
+                }
+                else
+                {
+                    Debug.Log("BossIdleState: Boss發現玩家，先追擊");
+                    bossAI.pendingIntroComboStep = -1;
+                    bossAI.pendingJumpAttack = false;
+                    enemy.SwitchState(new BossChaseState());
+                }
+            }
+            else
+            {
+                Debug.Log("BossIdleState: Boss發現玩家，直接進入追擊狀態");
+                enemy.SwitchState(new BossChaseState());
+            }
         }
 
         // 新增：待機時慢慢轉向玩家
