@@ -6,6 +6,11 @@ public class BossAI : EnemyAI
     public int currentComboCount = 0; // 當前連擊次數
     public int maxComboCount = 3; // 最大連擊次數
     
+    public bool hasDoneIntroCombo = false; // 是否已完成開場Combo
+    public bool hasJustRangedOrRushed = false; // 是否剛做過遠程或突進
+    public int pendingIntroComboStep = -1; // -1表示沒有待續的開場Combo
+    public bool pendingJumpAttack = false; // 是否有待執行的JumpAttack
+    
     [Header("Boss 攻擊動畫")]
     public string[] comboAnimations = { "Combo1", "Combo2", "Combo3" };
     

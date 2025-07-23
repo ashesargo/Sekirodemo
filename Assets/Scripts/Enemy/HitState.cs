@@ -4,6 +4,8 @@ public class HitState : IEnemyState
 {
     private float timer = 0f;
     private float maxHitTime = 1.5f; // 最多等待1.5秒，避免卡死
+    private bool isParry = false;
+    private string parryAnim = "";
 
     public void EnterState(EnemyAI enemy)
     {
@@ -11,7 +13,23 @@ public class HitState : IEnemyState
         if (enemyTest != null && enemyTest.isDead)
             return; // 死亡時不再進入 Hit
         Debug.Log($"[HitState] EnterState: {enemy.name}");
-        enemy.animator.SetTrigger("Hit");
+
+        // Boss隨機Parry動畫
+        BossAI bossAI = enemy.GetComponent<BossAI>();
+        if (bossAI != null)
+        {
+            string[] parryAnims = { "Parry", "Parry2" };
+            int idx = Random.Range(0, parryAnims.Length);
+            parryAnim = parryAnims[idx];
+            isParry = true;
+            enemy.animator.Play(parryAnim);
+            Debug.Log($"[HitState] Boss隨機Parry動畫: {parryAnim}");
+        }
+        else
+        {
+            enemy.animator.SetTrigger("Hit");
+            isParry = false;
+        }
         timer = 0f;
         enemy.canAutoAttack = false; // 受傷時禁用自動攻擊
     }
@@ -26,7 +44,16 @@ public class HitState : IEnemyState
         var enemyTest = enemy.GetComponent<EnemyTest>();
         int hp = enemyTest != null ? enemyTest.GetCurrentHP() : 1;
 
-        if ((stateInfo.IsName("Hit") && stateInfo.normalizedTime >= 1.0f) || timer > maxHitTime)
+        // 判斷動畫結束或超時
+        bool animEnd = false;
+        if (isParry && (stateInfo.IsName(parryAnim) && stateInfo.normalizedTime >= 1.0f))
+            animEnd = true;
+        if (!isParry && (stateInfo.IsName("Hit") && stateInfo.normalizedTime >= 1.0f))
+            animEnd = true;
+        if (timer > maxHitTime)
+            animEnd = true;
+
+        if (animEnd)
         {
             if (hp <= 0)
             {
@@ -37,15 +64,11 @@ public class HitState : IEnemyState
             {
                 Debug.Log($"[HitState] 動畫結束或超時，切換狀態: {enemy.name}");
                 enemy.canAutoAttack = true; // 受傷結束後重新啟用自動攻擊
-                
                 // 檢查是否為Boss
                 BossAI bossAI = enemy.GetComponent<BossAI>();
                 if (bossAI != null)
                 {
-                    // Boss受傷後重置連擊計數
                     bossAI.ResetComboCount();
-                    
-                    // Boss受傷後直接進入追擊狀態，不回到Idle
                     Debug.Log("HitState: Boss受傷後直接進入追擊狀態");
                     enemy.SwitchState(new BossChaseState());
                 }

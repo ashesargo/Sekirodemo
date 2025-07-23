@@ -133,6 +133,7 @@ public class TPContraller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+<<<<<<< HEAD
         AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
         if (stateInfo.IsTag("Attack") || stateInfo.IsTag("Hit"))
         {
@@ -142,6 +143,9 @@ public class TPContraller : MonoBehaviour
         {
             canMove = true;
         }
+=======
+        //Debug.Log(comboTimer);
+>>>>>>> enemy
         if (_playerGrapple.IsGrappling() || _playerStatus.isDeath == true) return;
         TPCamera.isLock = isLocked;
         TPCamera.lockTarget = lockTarget;
