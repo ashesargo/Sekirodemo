@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -12,75 +14,64 @@ public class TPContraller : MonoBehaviour
     public float rotateSensitivity;
     private Animator _animator;
     private CharacterController _characterController;
+    PlayerGrapple _playerGrapple;
+    PlayerStatus _playerStatus;
     public float gravity = -9.81f;
     public float jumpForce = 8f;
     private float verticalVelocity;
     [Header("Ground Check")]
-    public Transform groundCheck;             // ³]¦b¸}©³
-    public float groundDistance = 1f;       // °»´ú¶ZÂ÷
-    public LayerMask Ground;              // ³]©w¬°¦a­±¹Ï¼h
+    public Transform groundCheck;
+    public float groundDistance = 1f;
+    public LayerMask Ground;
     private bool isGrounded;
-    //§ðÀ»
+
     int comboStep = 0;
     int currentStep = 0;
     bool canCombo = false;
     bool canMove = true;
-    //½Ä¨ë ¶]¨B
+    bool hit = false;
+    private float comboTimer = 0f;
+    private float comboWindow = 1f;
     [Header("Dash")]
-    public float dashDis ;
+    public float dashDis;
     private bool isDashing;
-    private bool isRunning = false;    
-    //µø¨¤Âê©w
+    private bool isRunning = false;
     [Header("Lock")]
     public Transform lockTarget;
     private bool isLocked = false;
     public float lockRange = 10.0f;
-    public LayerMask enemy;
+    public LayerMask enemyLayer;
     public TPCamera TPCamera;
-    public void EnableCombo()
-    {
-        currentStep = comboStep ;
-        canCombo = true ;
-    }
-    public void DisableCombo()
-    {
-        if (currentStep < comboStep)
-        {
-            canCombo = false;
-        }
-        else
-        {
-            comboStep = 0;
-            _animator.SetInteger("comboStep", comboStep);
-            canMove = true;
-            canCombo = false;
-        }
-    }
+
+    public bool isGuard;
+    public bool parrySuccess;
     public void StartAttack()
     {
-        canMove = false;
+        currentStep = comboStep;
+        canCombo = true;
+        comboTimer = comboWindow;
     }
     public void EndAttack()
     {
-        canMove = true;
+        if (comboStep > currentStep) return;
+        ResetCombo();
+    }
+    public void ResetCombo()
+    {
         comboStep = 0;
-        _animator.SetInteger("comboStep", comboStep);
+        canCombo = false;
+        comboTimer = 0f;
+        _animator.SetInteger("ComboStep", comboStep);
     }
     IEnumerator Dash(Vector3 dashDirection)
     {
         isDashing = true;
         canMove = false;
         _animator.SetBool("isDashing", isDashing);
-        if (isLocked)
-        {
-            _animator.SetTrigger("LockDash");
-        }
-        else
-        {
-            _animator.SetTrigger("Dash");
-        }
+        DisableGuard();
+        _animator.SetTrigger("Dash");
         transform.rotation = Quaternion.LookRotation(dashDirection);
-        float dashTime = 0.2f;                      
+        float dashTime = 0.2f;
         float elapsed = 0f;
         while (elapsed < dashTime)
         {
@@ -91,11 +82,10 @@ public class TPContraller : MonoBehaviour
         canMove = true;
         isDashing = false;
         _animator.SetBool("isDashing", isDashing);
-
     }
     void FindLockTarget()
     {
-        Collider[] targets = Physics.OverlapSphere(transform.position, lockRange, enemy);
+        Collider[] targets = Physics.OverlapSphere(transform.position, lockRange, enemyLayer);
         float closestDistance = Mathf.Infinity;
         Transform closestTarget = null;
         foreach (Collider col in targets)
@@ -113,24 +103,53 @@ public class TPContraller : MonoBehaviour
             isLocked = true;
         }
     }
+    //Guard
+    void EnableGurad()
+    {
+        isGuard = true;
+        _animator.SetBool("Guard", isGuard);        
+    }
+    void DisableGuard()
+    {
+        isGuard = false;
+        _animator.SetBool("Guard", isGuard);
+    }
 
     // Start is called before the first frame update
     void Start()
     {
         _animator = GetComponent<Animator>();
-        _characterController = GetComponent<CharacterController>();       
+        _characterController = GetComponent<CharacterController>();
+        _playerGrapple = GetComponent<PlayerGrapple>();
+        _playerStatus = GetComponent<PlayerStatus>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+        if (stateInfo.IsTag("Attack")|| stateInfo.IsTag("Hit"))
+        {
+            canMove = false;
+        }
+        else
+        {
+            canMove = true;
+        }
+        if (_playerGrapple.IsGrappling() || _playerStatus.isDeath == true) return;
         TPCamera.isLock = isLocked;
         TPCamera.lockTarget = lockTarget;
-        //¬O§_¦b¦a­±   
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, Ground);
         _animator.SetBool("isGrounded", isGrounded);
-        //Âê©w§P©w
-        if(Input.GetKeyDown(KeyCode.Mouse2))
+        if (comboTimer > 0)
+        {
+            comboTimer -= Time.deltaTime;
+            if (comboTimer <= 0)
+            {
+                ResetCombo();
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.Mouse2))
         {
             if (!isLocked)
             {
@@ -144,17 +163,28 @@ public class TPContraller : MonoBehaviour
                 _animator.SetBool("Lock", isLocked);
             }
         }
-        //¨¤¦â²¾°Ê
+        // if (Input.GetKeyDown(KeyCode.Mouse1))
+        // {
+        //     _animator.SetTrigger("Parry");
+        //     parrySuccess = true;
+        // }
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            EnableGurad();
+        }
+        if (Input.GetKeyUp(KeyCode.Mouse1))
+        {
+            DisableGuard();
+        }
         if (canMove)
-        {            
+        {
             float fH = Input.GetAxis("Horizontal");
             float fV = Input.GetAxis("Vertical");
             _animator.SetFloat("Horizontal", fH);
             _animator.SetFloat("Vertical", fV);
             Vector2 inputVector = new Vector2(fH, fV);
             float inputMagnitude = inputVector.magnitude;
-            Vector3 moveDirection ;
-            //¬O§_Âê©w ¤è¦V¤£¦P
+            Vector3 moveDirection;
             if (isLocked && lockTarget != null)
             {
                 Vector3 directionToTarget = lockTarget.position - transform.position;
@@ -163,7 +193,7 @@ public class TPContraller : MonoBehaviour
                 Vector3 lockRight = Vector3.Cross(Vector3.up, lockForward);
                 moveDirection = lockRight * fH + lockForward * fV;
                 moveDirection.Normalize();
-                if( !isDashing && !isRunning)
+                if (!isDashing && !isRunning)
                 {
                     transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(lockForward), rotateSensitivity * Time.deltaTime);
                 }
@@ -172,7 +202,7 @@ public class TPContraller : MonoBehaviour
                     Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
                     transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotateSensitivity * Time.deltaTime);
                 }
-            }        
+            }
             else
             {
                 Transform camTransform = tpCamera.transform;
@@ -180,19 +210,19 @@ public class TPContraller : MonoBehaviour
                 moveDirection = camTransform.right * fH + camTransform.forward * fV;
                 moveDirection.y = 0;
                 moveDirection.Normalize();
-                if (moveDirection.sqrMagnitude > 0.001f) // ½T«O¦³¤è¦V¿é¤J¤~±ÛÂà
+                if (moveDirection.sqrMagnitude > 0.001f)
                 {
-                Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotateSensitivity * Time.deltaTime);
+                    Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+                    transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotateSensitivity * Time.deltaTime);
                 }
             }
-            // Dash ¤Î ¶]¨B
-            if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing && !isLocked)
+            // Dash ï¿½ï¿½ ï¿½]ï¿½B
+            if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing && !isLocked && canMove)
             {
                 StartCoroutine(Dash(transform.forward));
                 isRunning = true;
             }
-            else if (Input.GetKeyDown(KeyCode.LeftShift) &&  lockTarget != null)
+            else if (Input.GetKeyDown(KeyCode.LeftShift) && lockTarget != null && !isDashing && isLocked && canMove)
             {
                 StartCoroutine(Dash(moveDirection));
                 isRunning = true;
@@ -201,46 +231,48 @@ public class TPContraller : MonoBehaviour
             {
                 isRunning = false;
             }
-            // ¦pªG¦³¿é¤J¤è¦V §PÂ_³t«×
             if (inputMagnitude > 0.1f)
-            {                
-                moveSpeed = isRunning ? speed * 1.5f : speed; 
+            {
+                if (isGuard)
+                {
+                    moveSpeed = speed * 0.6f;
+                }
+                else if (isRunning)
+                {
+                    moveSpeed = speed * 2f;
+                }
+                else
+                {
+                    moveSpeed = speed;
+                }
             }
             else
             {
                 moveSpeed = 0;
             }
-            // ¸õ
-            if ( isGrounded && Input.GetKeyDown(KeyCode.Space))
+            if (isGrounded && Input.GetKeyDown(KeyCode.Space))
             {
+                DisableGuard();
                 verticalVelocity = jumpForce;
-                if (isLocked)
-                {
-                    _animator.SetTrigger("LockJump");
-                }
-                else
-                {
-                    _animator.SetTrigger("Jump");
-                }
-            }            
+                _animator.SetTrigger("Jump");
+            }
             verticalVelocity += gravity * Time.deltaTime;
-            Vector3 velocity = moveSpeed  * moveDirection;
-            velocity.y = verticalVelocity;            
+            Vector3 velocity = moveSpeed * moveDirection;
+            velocity.y = Mathf.Max(verticalVelocity, -100);
             _characterController.Move(velocity * Time.deltaTime);
             _animator.SetFloat("Speed", moveSpeed);
         }
-        //´Nºâ¤£¯à²¾°Ê ¤]¦³­«¤O§P©w
         else
         {
             verticalVelocity += gravity * Time.deltaTime;
-            Vector3 velocity =  Vector3.zero ;
-            velocity.y = verticalVelocity;
+            Vector3 velocity = Vector3.zero;
+            velocity.y = Mathf.Max(verticalVelocity, -100);
             _characterController.Move(velocity * Time.deltaTime);
             _animator.SetFloat("Speed", moveSpeed);
         }
-        //§ðÀ»               
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetKeyDown(KeyCode.Mouse0) && !isDashing)
         {
+            DisableGuard();
             if (isLocked)
             {
                 Vector3 directionToTarget = lockTarget.position - transform.position;
@@ -251,23 +283,28 @@ public class TPContraller : MonoBehaviour
             if (canCombo && comboStep < 4)
             {
                 comboStep++;
-                _animator.SetInteger("comboStep", comboStep);
+                _animator.SetInteger("ComboStep", comboStep);
                 canCombo = false;
             }
             else if (comboStep == 0)
             {
                 comboStep = 1;
-                _animator.SetInteger("comboStep", comboStep);
-                if (isLocked)
-                {
-                    _animator.SetTrigger("LockAttack");
-                }
-                else
-                {
-                    _animator.SetTrigger("Attack");
-                }               
+                _animator.SetInteger("ComboStep", comboStep);
+                _animator.SetTrigger("Attack");
             }
-
-        }  
+        }
+    }
+    public void TakeDamage(float damage)
+    {
+        // èª¿ç”¨ PlayerStatus çš„ TakeDamage æ–¹æ³•ä¾†è™•ç†å‚·å®³
+        if (_playerStatus != null)
+        {
+            _playerStatus.TakeDamage(damage);
+        }
+        else
+        {
+            // å¦‚æžœæ²’æœ‰ PlayerStatus çµ„ä»¶ï¼Œè‡³å°‘è§¸ç™¼å‹•ç•«
+            _animator.SetTrigger("Hit");
+        }
     }
 }

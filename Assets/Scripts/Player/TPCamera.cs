@@ -21,12 +21,12 @@ public class TPCamera : MonoBehaviour
     private Vector3 mCurrentVel = Vector3.zero;
     public LayerMask mCheckLayer;
     private bool wasLock;
-    [Header( "鎖定")]
-    public bool isLock ;
+    [Header("鎖定")]
+    public bool isLock;
     public Transform lockTarget;
-    public float lockCameraHeight = 1.5f ; 
+    public float lockCameraHeight = 1.5f;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         mFollowPoint.position = mFollowPointRef.position;
         mFollowPoint.rotation = mFollowPointRef.rotation;
@@ -58,49 +58,61 @@ public class TPCamera : MonoBehaviour
             mFollowPoint.position = Vector3.Lerp(mFollowPoint.position, mFollowPointRef.position, followSpeed * Time.deltaTime);
             Vector3 vFinalPosition = mFollowPoint.position + vFinalDir * mFollowDistance;
             Vector3 vDir = mFollowPoint.position - vFinalPosition;
-
             vDir.Normalize();
-            //RaycastHit rh;
-            //Ray r = new Ray(mFollowPoint.position, -vDir);
+            RaycastHit rh;
+            Ray r = new Ray(mFollowPoint.position, -vDir);
 
-            //if(Physics.SphereCast(r, 0.1f, out rh, mFollowDistance, mCheckLayer))
-            //{
-            //    vFinalPosition = mFollowPoint.position - vDir * (rh.distance - 0.1f);
-            //}
-
-            //if(Physics.Linecast(mLookAtPoint.position, vFinalPosition, out rh, mCheckLayer))
-            //{
-            //    //if(rh.distance < 2.0f)
-            //    //{ddd
-
-            //    //}
-            //    Vector3 vHit = rh.point + vDir * 0.1f;
-            //    vFinalPosition = vHit;
-            //} 
+            if (Physics.SphereCast(r, 0.1f, out rh, mFollowDistance, mCheckLayer))
+            {
+                vFinalPosition = mFollowPoint.position - vDir * (rh.distance - 0.1f);
+            }
             transform.position = Vector3.Lerp(transform.position, vFinalPosition, 1.0f);
-            // transform.position = Vector3.SmoothDamp(transform.position, vFinalPosition, ref mCurrentVel, 0.01f, 10.0f);
-            //transform.position = vFinalPosition;
             vDir = mFollowPoint.position - transform.position;
             transform.forward = vDir;
         }
-        else if (lockTarget!= null)
+        else if (lockTarget != null)
         {
+            // 平滑跟隨角色
             mFollowPoint.position = Vector3.Lerp(mFollowPoint.position, mFollowPointRef.position, followSpeed * Time.deltaTime);
-            Vector3 lockDirection = lockTarget.position - mFollowPoint.position;
-            lockDirection.y = 0; 
+
+            // 取得角色與目標之間的中點
+            Vector3 centerBetween = (mFollowPoint.position + lockTarget.position) * 0.5f;
+            centerBetween.y += lockCameraHeight; // 加高度，讓攝影機看「中點上方」
+
+            // 計算從角色到中點的方向（忽略Y）
+            Vector3 lockDirection = centerBetween - mFollowPoint.position;
+            lockDirection.y = 0;
             lockDirection.Normalize();
-            Vector3 vFinalDir = lockDirection;
-            Vector3 offset = Vector3.up * lockCameraHeight; 
-            Vector3 vFinalPosition = mFollowPoint.position + offset - vFinalDir * mFollowDistance;
+
+            // 計算攝影機應該在的位置
+            Vector3 offset = Vector3.up * lockCameraHeight;
+            Vector3 vFinalPosition = mFollowPoint.position + offset - lockDirection * mFollowDistance;
+
+            // 避障檢查
+            Vector3 vDir = mFollowPoint.position - vFinalPosition;
+            vDir.Normalize();
+            RaycastHit rh;
+            Ray r = new Ray(mFollowPoint.position, -vDir);
+
+            if (Physics.SphereCast(r, 0.1f, out rh, mFollowDistance, mCheckLayer))
+            {
+                vFinalPosition = mFollowPoint.position - vDir * (rh.distance - 0.1f);
+            }
+
+            // 平滑移動攝影機
             transform.position = Vector3.Lerp(transform.position, vFinalPosition, Time.deltaTime * followSpeed);
-            Vector3 lookTarget = lockTarget.position + Vector3.up * lockCameraHeight;
-            transform.forward = (lookTarget - transform.position).normalized;
+
+            // 攝影機朝向：看向角色與敵人之間的中點上方
+            transform.forward = (centerBetween - transform.position).normalized;
         }
     }
     // Update is called once per frame
     void LateUpdate()
     {
-        if ( wasLock != isLock )
+        //同步攝影機位置解決 攝影機初始化時移動問題
+        mFollowPoint.position = mFollowPointRef.position;
+
+        if (wasLock != isLock)
         {
             mFollowPoint.position = mFollowPointRef.position;
             mFollowPoint.rotation = mFollowPointRef.rotation;
@@ -108,7 +120,7 @@ public class TPCamera : MonoBehaviour
             Vector3 vDir = transform.position - mFollowPoint.position;
             mHorizontalVector = vDir;
             mHorizontalVector.y = 0.0f;
-            mHorizontalVector.Normalize();    
+            mHorizontalVector.Normalize();
         }
         UpdateCameraTransform();
         wasLock = isLock;

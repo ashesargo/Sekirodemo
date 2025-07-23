@@ -3,7 +3,10 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Enemy
+  - Hook
+  - Obstacle
   layers:
   - Default
   - TransparentFX
@@ -11,6 +14,10 @@ TagManager:
   - Ground
   - Water
   - UI
+  - Enemy
+  - Player
+  - HookAble
+  - Obstacle
   - 
   - 
   - 
@@ -31,12 +38,8 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Post Processing
+  - Terrain
   m_SortingLayers:
   - name: Default
     uniqueID: 0
