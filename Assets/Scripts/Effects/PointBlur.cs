@@ -41,7 +41,7 @@ public class PointBlur : MonoBehaviour
         InitializeMaterial();
     }
 
-    void FixedUpdate()
+    void Update()
     {
         UpdateMaterialParameters();
         CheckParrySuccess();
