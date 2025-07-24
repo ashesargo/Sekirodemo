@@ -1,15 +1,16 @@
 using UnityEngine;
 
-public class ChaseState : IEnemyState
+public class ChaseState : BaseEnemyState
 {
-    public void EnterState(EnemyAI enemy)
+    public override void EnterState(EnemyAI enemy)
     {
+        base.EnterState(enemy);
         Debug.Log("Entering ChaseState");
         enemy.animator.Play("Run");
         // 移除 canAutoAttack 設置，由 RetreatState 控制
     }
 
-    public void UpdateState(EnemyAI enemy)
+    public override void UpdateState(EnemyAI enemy)
     {
         // 檢查是否在攻擊範圍內
         if (enemy.IsInAttackRange())
@@ -56,9 +57,11 @@ public class ChaseState : IEnemyState
         enemy.Move(totalForce);
     }
 
-    public void ExitState(EnemyAI enemy)
+    public override void ExitState(EnemyAI enemy)
     {
+        base.ExitState(enemy);
         Debug.Log("Exiting ChaseState");
         enemy.Stop();
     }
+    public override bool ShouldUseRootMotion() => false;
 }

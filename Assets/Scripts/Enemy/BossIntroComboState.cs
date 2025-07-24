@@ -1,18 +1,18 @@
 using UnityEngine;
 
-public class BossIntroComboState : IEnemyState
+public class BossIntroComboState : BaseEnemyState
 {
     private int comboStep = 0;
     private string[] combos = { "Combo1", "Combo2", "Combo3" };
 
-    public void EnterState(EnemyAI enemy)
+    public override void EnterState(EnemyAI enemy)
     {
-        enemy.SetRootMotion(true);
+        base.EnterState(enemy);
         var bossAI = enemy.GetComponent<BossAI>();
         if (bossAI != null && bossAI.pendingIntroComboStep >= 0)
         {
             comboStep = bossAI.pendingIntroComboStep;
-            bossAI.pendingIntroComboStep = -1; // 進入時馬上重設，避免重複
+            bossAI.pendingIntroComboStep = -1;
         }
         else
         {
@@ -21,22 +21,20 @@ public class BossIntroComboState : IEnemyState
         PlayNextCombo(enemy);
     }
 
-    public void UpdateState(EnemyAI enemy)
+    public override void UpdateState(EnemyAI enemy)
     {
         AnimatorStateInfo stateInfo = enemy.animator.GetCurrentAnimatorStateInfo(0);
-        // 攻擊期間持續追蹤玩家
         if (enemy.player != null)
         {
             enemy.SmoothLookAt(enemy.player.position, turnSpeed: 8f);
         }
         if (stateInfo.IsName("Idle"))
         {
-            comboStep++; // 每次Idle都++
+            comboStep++;
             if (comboStep < combos.Length)
             {
                 if (!enemy.IsInAttackRange())
                 {
-                    // 記錄下一個comboStep，切換到Chase
                     var bossAI = enemy.GetComponent<BossAI>();
                     if (bossAI != null)
                         bossAI.pendingIntroComboStep = comboStep;
@@ -47,7 +45,6 @@ public class BossIntroComboState : IEnemyState
             }
             else
             {
-                // 開場Combo結束，進入正常AI
                 var bossAI = enemy.GetComponent<BossAI>();
                 if (bossAI != null)
                 {
@@ -64,9 +61,10 @@ public class BossIntroComboState : IEnemyState
         enemy.animator.Play(combos[comboStep]);
     }
 
-    public void ExitState(EnemyAI enemy)
+    public override void ExitState(EnemyAI enemy)
     {
-        enemy.SetRootMotion(false);
+        base.ExitState(enemy);
         enemy.Stop();
     }
+    public override bool ShouldUseRootMotion() => true;
 } 

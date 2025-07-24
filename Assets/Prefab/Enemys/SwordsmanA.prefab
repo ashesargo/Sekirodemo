@@ -6108,16 +6108,16 @@ MonoBehaviour:
   animator: {fileID: 8253529524297296019}
   rb: {fileID: 0}
   visionRange: 100
-  attackRange: 10
+  attackRange: 15
   maxSpeed: 15
   avoidDistance: 20
   avoidStrength: 40
   obstacleMask:
     serializedVersion: 2
     m_Bits: 512
-  retreatTime: 2.1
+  retreatTime: 1
   enemyAvoidDistance: 10
-  enemyAvoidStrength: 30
+  enemyAvoidStrength: 20
   enemyLayerMask:
     serializedVersion: 2
     m_Bits: 64

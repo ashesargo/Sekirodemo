@@ -1,14 +1,15 @@
 using UnityEngine;
 
-public class HitState : IEnemyState
+public class HitState : BaseEnemyState
 {
     private float timer = 0f;
     private float maxHitTime = 1.5f; // 最多等待1.5秒，避免卡死
     private bool isParry = false;
     private string parryAnim = "";
 
-    public void EnterState(EnemyAI enemy)
+    public override void EnterState(EnemyAI enemy)
     {
+        base.EnterState(enemy);
         var enemyTest = enemy.GetComponent<EnemyTest>();
         if (enemyTest != null && enemyTest.isDead)
             return; // 死亡時不再進入 Hit
@@ -34,7 +35,7 @@ public class HitState : IEnemyState
         enemy.canAutoAttack = false; // 受傷時禁用自動攻擊
     }
 
-    public void UpdateState(EnemyAI enemy)
+    public override void UpdateState(EnemyAI enemy)
     {
         timer += Time.deltaTime;
         AnimatorStateInfo stateInfo = enemy.animator.GetCurrentAnimatorStateInfo(0);
@@ -83,8 +84,10 @@ public class HitState : IEnemyState
         }
     }
 
-    public void ExitState(EnemyAI enemy)
+    public override void ExitState(EnemyAI enemy)
     {
+        base.ExitState(enemy);
         Debug.Log($"[HitState] ExitState: {enemy.name}");
     }
+    public override bool ShouldUseRootMotion() => true;
 } 

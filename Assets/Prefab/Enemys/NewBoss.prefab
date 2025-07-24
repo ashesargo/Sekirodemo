@@ -4626,6 +4626,11 @@ SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 5483520963365029346, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
   m_PrefabInstance: {fileID: 6658117099092282916}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &1191984664551618550 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5542987232439597522, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
+  m_PrefabInstance: {fileID: 6658117099092282916}
+  m_PrefabAsset: {fileID: 0}
 --- !u!137 &1207742302148962274 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 5522716065099196870, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
@@ -4946,7 +4951,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ede9019da687ddd46b1547c1fb033561, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
+  animator: {fileID: 1191984664551618550}
+  rb: {fileID: 0}
   visionRange: 100
   attackRange: 10
   maxSpeed: 30
@@ -4976,8 +4982,13 @@ MonoBehaviour:
   minDistanceToPlayer: 5
   velocity: {x: 0, y: 0, z: 0}
   canAutoAttack: 1
+  canBeParried: 0
   currentComboCount: 0
   maxComboCount: 3
+  hasDoneIntroCombo: 0
+  hasJustRangedOrRushed: 0
+  pendingIntroComboStep: -1
+  pendingJumpAttack: 0
   comboAnimations:
   - Combo1
   - Combo2

@@ -1,17 +1,19 @@
 using UnityEngine;
 
-public class DieState : IEnemyState
+public class DieState : BaseEnemyState
 {
-    public void EnterState(EnemyAI enemy)
+    public override void EnterState(EnemyAI enemy)
     {
+        base.EnterState(enemy);
         enemy.animator.SetTrigger("Death");
-        enemy.Stop(); // 停止移動
+        enemy.Stop();
     }
 
-    public void UpdateState(EnemyAI enemy)
+    public override void UpdateState(EnemyAI enemy)
     {
         // 死亡狀態不做任何事，等待物件池回收
     }
 
-    public void ExitState(EnemyAI enemy) { }
+    public override void ExitState(EnemyAI enemy) { base.ExitState(enemy); }
+    public override bool ShouldUseRootMotion() => true;
 } 

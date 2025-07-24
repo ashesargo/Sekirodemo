@@ -42,13 +42,13 @@ public class EnemyAI : MonoBehaviour
     [Header("與玩家最小距離 (避免推擠)")]
     public float minDistanceToPlayer = 1.2f;
 
-    private IEnemyState currentState;
+    private BaseEnemyState currentState;
     [HideInInspector] public Vector3 velocity;
     public bool canAutoAttack = true;
     private bool isObstacleDetected = false; // 是否檢測到障礙物
     public bool canBeParried = false;
 
-    public IEnemyState CurrentState => currentState;
+    public BaseEnemyState CurrentState => currentState;
 
     void Awake()
     {
@@ -88,7 +88,7 @@ public class EnemyAI : MonoBehaviour
         currentState?.UpdateState(this);
     }
 
-    public void SwitchState(IEnemyState newState)
+    public void SwitchState(BaseEnemyState newState)
     {
         currentState?.ExitState(this);
         currentState = newState;

@@ -1,13 +1,14 @@
 using UnityEngine;
 
-public class RetreatState : IEnemyState
+public class RetreatState : BaseEnemyState
 {
     private float timer = 0f;
     private Vector3 retreatDir;
     private string retreatAnim = "Retreat";
 
-    public void EnterState(EnemyAI enemy)
+    public override void EnterState(EnemyAI enemy)
     {
+        base.EnterState(enemy);
         Debug.Log("RetreatState: 進入後退狀態");
         // 隨機選擇撤退動畫
         string[] retreatAnims = { "Retreat", "RetreatR", "RetreatL" };
@@ -31,7 +32,7 @@ public class RetreatState : IEnemyState
         enemy.canAutoAttack = false; // 後退時禁用自動攻擊
     }
 
-    public void UpdateState(EnemyAI enemy)
+    public override void UpdateState(EnemyAI enemy)
     {
         timer += Time.deltaTime;
         
@@ -129,12 +130,15 @@ public class RetreatState : IEnemyState
         }
     }
 
-    public void ExitState(EnemyAI enemy)
+    public override void ExitState(EnemyAI enemy)
     {
+        base.ExitState(enemy);
         Debug.Log("RetreatState: 退出後退狀態");
         enemy.Stop();
     }
     
+    public override bool ShouldUseRootMotion() => false;
+
     // 測試撤退方向的方法
     [ContextMenu("Test Retreat Direction")]
     public void TestRetreatDirection()

@@ -1,31 +1,30 @@
 using UnityEngine;
 
-public class AlertState : IEnemyState
+public class AlertState : BaseEnemyState
 {
     private float alertTime = 1.5f;
     private float timer = 0f;
 
-    public void EnterState(EnemyAI enemy)
+    public override void EnterState(EnemyAI enemy)
     {
+        base.EnterState(enemy);
         enemy.animator.Play("Alert");
         enemy.Stop();
         timer = 0f;
-        enemy.canAutoAttack = true; // 啟用自動攻擊
+        enemy.canAutoAttack = true;
     }
 
-    public void UpdateState(EnemyAI enemy)
+    public override void UpdateState(EnemyAI enemy)
     {
         timer += Time.deltaTime;
-        // 新增：警戒時慢慢轉向玩家
         if (enemy.player != null)
         {
-            enemy.SmoothLookAt(enemy.player.position); // 使用 Inspector 可調整的 lookAtTurnSpeed
+            enemy.SmoothLookAt(enemy.player.position);
         }
         if (timer > alertTime)
         {
             if (enemy.IsInAttackRange())
             {
-                // 檢查是否為遠程兵種
                 var rangedEnemy = enemy.GetComponent<RangedEnemy>();
                 if (rangedEnemy != null)
                 {
@@ -41,5 +40,6 @@ public class AlertState : IEnemyState
         }
     }
 
-    public void ExitState(EnemyAI enemy) { }
+    public override void ExitState(EnemyAI enemy) { base.ExitState(enemy); }
+    public override bool ShouldUseRootMotion() => true;
 }

@@ -1,20 +1,18 @@
 using UnityEngine;
 
-public class BossRushState : IEnemyState
+public class BossRushState : BaseEnemyState
 {
     private Vector3 rushDirection;
 
-    public void EnterState(EnemyAI enemy)
+    public override void EnterState(EnemyAI enemy)
     {
-        enemy.SetRootMotion(true);
+        base.EnterState(enemy);
         Debug.Log("BossRushState: 進入突進狀態");
-        enemy.animator.Play("Rush"); // 直接播放Rush動畫
+        enemy.animator.Play("Rush");
         enemy.Stop();
-        // 標記剛做過突進
         var bossAI = enemy.GetComponent<BossAI>();
         if (bossAI != null)
             bossAI.hasJustRangedOrRushed = true;
-        // 計算突進方向（朝向玩家）
         if (enemy.player != null)
         {
             rushDirection = (enemy.player.position - enemy.transform.position).normalized;
@@ -26,26 +24,24 @@ public class BossRushState : IEnemyState
         }
     }
 
-    public void UpdateState(EnemyAI enemy)
+    public override void UpdateState(EnemyAI enemy)
     {
         AnimatorStateInfo stateInfo = enemy.animator.GetCurrentAnimatorStateInfo(0);
-        // 攻擊期間持續追蹤玩家
         if (enemy.player != null)
         {
             enemy.SmoothLookAt(enemy.player.position, turnSpeed: 8f);
         }
-        // Rush位移完全交給Root Motion，不再用程式碼推動
-        // 只要動畫已經自動Transition到Idle（或ComboEnd等），就切換狀態
         if (stateInfo.IsName("Idle"))
         {
             enemy.SwitchState(new BossChaseState());
         }
     }
 
-    public void ExitState(EnemyAI enemy)
+    public override void ExitState(EnemyAI enemy)
     {
-        enemy.SetRootMotion(false);
+        base.ExitState(enemy);
         Debug.Log("BossRushState: 退出突進狀態");
         enemy.Stop();
     }
+    public override bool ShouldUseRootMotion() => true;
 } 
