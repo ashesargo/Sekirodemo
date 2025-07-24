@@ -53,7 +53,8 @@ public class PlayerStatus : MonoBehaviour
         {
             if (currentHitState == HitState.Parry)
             {
-                _TPContraller.parrySuccess = false;
+                // 不立即重置 parrySuccess，讓 TPController 自己處理
+                // _TPContraller.parrySuccess = false;
             }
             else if (currentHitState == HitState.Guard) _animator.SetTrigger("GuardHit");
             else _animator.SetTrigger("Hit");

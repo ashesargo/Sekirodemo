@@ -47,6 +47,10 @@ public class TPContraller : MonoBehaviour
     EnemyAI enemyAI;
     public bool isGuard;
     public bool parrySuccess;
+    private bool parryEffectTriggered = false; // 新增：追蹤特效是否已觸發
+    
+    // 新增：Parry 特效事件
+    public System.Action<Vector3> OnParrySuccess; // 當 Parry 成功時觸發，參數為碰撞點
     public float attackRadius = 9f;
     public float attackAngle = 90f;
     public LayerMask targetLayer;
@@ -173,6 +177,9 @@ public class TPContraller : MonoBehaviour
         _characterController = GetComponent<CharacterController>();
         _playerGrapple = GetComponent<PlayerGrapple>();
         _playerStatus = GetComponent<PlayerStatus>();
+        
+        // 初始化 parrySuccess 為 false
+        parrySuccess = false;
     }
 
     // Update is called once per frame
@@ -250,13 +257,27 @@ public class TPContraller : MonoBehaviour
                     if (enemyAI != null)
                     {
                         parrySuccess = enemyAI.canBeParried;
-                        if (parrySuccess)
+                        if (parrySuccess && !parryEffectTriggered)
                         {
+                            Debug.Log("[TPController] Parry 成功，觸發動畫和特效");
                             int parry = UnityEngine.Random.Range(1, 3);
                             if (_animator != null)
                             {
                                 _animator.SetTrigger("Parry" + parry);
                             }
+                            
+                            // 標記特效已觸發
+                            parryEffectTriggered = true;
+                            
+                            // 觸發 Parry 特效事件
+                            if (OnParrySuccess != null)
+                            {
+                                Vector3 parryPosition = hit.transform.position;
+                                OnParrySuccess.Invoke(parryPosition);
+                            }
+                            
+                            // 確保特效有足夠時間觸發
+                            StartCoroutine(ResetParrySuccessAfterDelay(0.2f));
                         }
                     }
                     else
@@ -450,5 +471,14 @@ public class TPContraller : MonoBehaviour
             // 如果沒有 PlayerStatus 組件，至少觸發動畫
             _animator.SetTrigger("Hit");
         }
+    }
+
+    // 延遲重置 parrySuccess 狀態，確保特效有足夠時間觸發
+    private IEnumerator ResetParrySuccessAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        parrySuccess = false;
+        parryEffectTriggered = false; // 重置特效觸發標記
+        Debug.Log("[TPController] Parry 狀態已重置");
     }
 }

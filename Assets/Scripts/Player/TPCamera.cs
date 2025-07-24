@@ -138,7 +138,6 @@ public class TPCamera : MonoBehaviour
     // 更新鎖定圖示（LockOn Icon）
     public void UpdateLockOnIcon()
     {
-        Debug.Log($"isLock: {isLock}, lockTarget: {lockTarget}, lastLockTarget: {lastLockTarget}");
         if (isLock && lockTarget != null)
         {
             if (lockTarget != lastLockTarget)
