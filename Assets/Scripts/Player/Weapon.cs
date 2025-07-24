@@ -8,10 +8,15 @@ public class Weapon : MonoBehaviour
     public float attackRadius = 3f; // 攻擊範圍半徑
     public float attackAngle = 90f; // 攻擊角度
     public LayerMask targetLayer; // 敵人層級
-    public int damage = 10;
-
+    public int damage = 10;    
     private HashSet<Collider> alreadyHit = new HashSet<Collider>();
-
+    
+    public AudioClip AttackSwingSound;
+    AudioSource _audioSource;
+    private void Update()
+    {
+        _audioSource = GetComponent<AudioSource>();
+    }
     public void PerformFanAttack()
     {
         alreadyHit.Clear();
@@ -30,6 +35,8 @@ public class Weapon : MonoBehaviour
                 alreadyHit.Add(hit);
             }
         }
+        _audioSource.PlayOneShot(AttackSwingSound);
+        
     }
 
     // 可視化顯示範圍

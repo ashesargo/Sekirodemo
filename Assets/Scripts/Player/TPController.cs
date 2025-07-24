@@ -221,6 +221,10 @@ public class TPContraller : MonoBehaviour
                 EnableGurad();
             }
         }
+        if (Input.GetKey(KeyCode.Mouse1))
+        {
+            EnableGurad();
+        }
         if (Input.GetKeyUp(KeyCode.Mouse1) && isGuard)
         {
             DisableGuard();
