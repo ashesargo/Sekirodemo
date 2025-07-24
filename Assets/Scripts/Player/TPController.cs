@@ -161,7 +161,7 @@ public class TPContraller : MonoBehaviour
     void Update()
     {
         AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
-        if (stateInfo.IsTag("Attack") || stateInfo.IsTag("Hit") || stateInfo.IsTag("Stagger")|| stateInfo.IsTag("Heal"))
+        if (stateInfo.IsTag("Attack") || stateInfo.IsTag("Hit") || stateInfo.IsTag("Stagger"))
         {
             canMove = false;
         }
