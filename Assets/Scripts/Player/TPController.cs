@@ -1,10 +1,11 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Audio;
 
 public class TPContraller : MonoBehaviour
 {
@@ -43,8 +44,13 @@ public class TPContraller : MonoBehaviour
     public LayerMask enemyLayer;
     public TPCamera TPCamera;
 
+    EnemyAI enemyAI;
     public bool isGuard;
     public bool parrySuccess;
+    public float attackRadius = 9f;
+    public float attackAngle = 90f;
+    public LayerMask targetLayer;
+
     public void StartAttack()
     {
         currentStep = comboStep;
@@ -107,7 +113,7 @@ public class TPContraller : MonoBehaviour
     void EnableGurad()
     {
         isGuard = true;
-        _animator.SetBool("Guard", isGuard);        
+        _animator.SetBool("Guard", isGuard);
     }
     void DisableGuard()
     {
@@ -128,7 +134,7 @@ public class TPContraller : MonoBehaviour
     void Update()
     {
         AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
-        if (stateInfo.IsTag("Attack")|| stateInfo.IsTag("Hit"))
+        if (stateInfo.IsTag("Attack") || stateInfo.IsTag("Hit"))
         {
             canMove = false;
         }
@@ -136,6 +142,8 @@ public class TPContraller : MonoBehaviour
         {
             canMove = true;
         }
+
+        //Debug.Log(comboTimer);
         if (_playerGrapple.IsGrappling() || _playerStatus.isDeath == true) return;
         TPCamera.isLock = isLocked;
         TPCamera.lockTarget = lockTarget;
@@ -163,16 +171,31 @@ public class TPContraller : MonoBehaviour
                 _animator.SetBool("Lock", isLocked);
             }
         }
-        // if (Input.GetKeyDown(KeyCode.Mouse1))
-        // {
-        //     _animator.SetTrigger("Parry");
-        //     parrySuccess = true;
-        // }
-        if (Input.GetKeyDown(KeyCode.Mouse1))
+        if (Input.GetKeyDown(KeyCode.Mouse1) )
         {
-            EnableGurad();
+            Collider[] hits = Physics.OverlapSphere(transform.position, attackRadius, targetLayer);
+            foreach (var hit in hits)
+            {
+                // 判斷是否在前方角度內
+                Vector3 dirToTarget = (hit.transform.position - transform.position).normalized;
+                float angle = Vector3.Angle(transform.forward, dirToTarget); // 跟前方夾角
+                if (angle <= attackAngle * 0.5f) // 扇形角度範圍內
+                {
+                    enemyAI = hit.GetComponent<EnemyAI>();
+                    parrySuccess = enemyAI.canBeParried;
+                    if (parrySuccess)
+                    {
+                        int parry = UnityEngine.Random.Range(1, 3);
+                        _animator.SetTrigger("Parry" + parry);
+                    }
+                }
+            }
+            if (!parrySuccess)
+            {
+                EnableGurad();
+            }
         }
-        if (Input.GetKeyUp(KeyCode.Mouse1))
+        if (Input.GetKeyUp(KeyCode.Mouse1) && isGuard)
         {
             DisableGuard();
         }
@@ -294,6 +317,8 @@ public class TPContraller : MonoBehaviour
             }
         }
     }
+
+
     public void TakeDamage(float damage)
     {
         // 調用 PlayerStatus 的 TakeDamage 方法來處理傷害

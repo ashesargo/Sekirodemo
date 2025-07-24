@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerStatus : MonoBehaviour
 {
@@ -31,7 +31,11 @@ public class PlayerStatus : MonoBehaviour
     public void TakeDamage(float damage)
     {
         if (isDeath) return; // 死亡後不再受傷
-        if (_TPContraller.parrySuccess) { currentHitState = HitState.Parry; damage = 0; }
+        AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+        if (stateInfo.IsTag("Parry"))
+        {
+            currentHitState = HitState.Parry; damage = 0;
+        }
         else if (_TPContraller.isGuard) { currentHitState = HitState.Guard; damage = 0; }
         else currentHitState = HitState.Hit;
         // 使用 HealthPostureController 處理傷害
@@ -49,8 +53,7 @@ public class PlayerStatus : MonoBehaviour
         {
             if (currentHitState == HitState.Parry)
             {
-                int parry = UnityEngine.Random.Range(0, 3);
-                _animator.SetTrigger("Parry" + parry);
+                _TPContraller.parrySuccess = false;
             }
             else if (currentHitState == HitState.Guard) _animator.SetTrigger("GuardHit");
             else _animator.SetTrigger("Hit");
