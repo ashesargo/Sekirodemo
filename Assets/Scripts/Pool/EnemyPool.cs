@@ -61,7 +61,7 @@ public class EnemyPool : MonoBehaviour
     private Dictionary<GameObject, int> spawnPointIndices;
     private Dictionary<GameObject, int> spawnedCounts;
     
-    void Start()
+    void Awake()
     {
         SetupEnemyPools();
         StartCoroutine(CustomSpawnEnemies());

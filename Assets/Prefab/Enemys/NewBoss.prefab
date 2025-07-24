@@ -4949,13 +4949,13 @@ MonoBehaviour:
   animator: {fileID: 0}
   visionRange: 100
   attackRange: 10
-  maxSpeed: 15
+  maxSpeed: 30
   avoidDistance: 20
   avoidStrength: 40
   obstacleMask:
     serializedVersion: 2
     m_Bits: 512
-  retreatTime: 2.5
+  retreatTime: 1
   enemyAvoidDistance: 10
   enemyAvoidStrength: 30
   enemyLayerMask:
@@ -4982,9 +4982,9 @@ MonoBehaviour:
   - Combo1
   - Combo2
   - Combo3
-  combo1Duration: 4
-  combo2Duration: 4.7
-  combo3Duration: 4
+  combo1Duration: 6
+  combo2Duration: 6
+  combo3Duration: 6
 --- !u!137 &5630134567351512465 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 1316216258256692149, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}

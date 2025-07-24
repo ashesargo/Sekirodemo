@@ -3700,6 +3700,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 3096965204288466699, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: weaponCollider
+      value: 
+      objectReference: {fileID: 650492525681827714}
     - target: {fileID: 3098556963569235404, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -6846,6 +6850,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6869600998273829490, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       insertIndex: -1
       addedObject: {fileID: -1160162506741361965}
+    - targetCorrespondingSourceObject: {fileID: 6022667745087572463, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 650492525681827714}
   m_SourcePrefab: {fileID: 100100000, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
 --- !u!95 &3368920649114396822 stripped
 Animator:
@@ -6883,6 +6890,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 3368920649114396822}
+  rb: {fileID: 0}
   visionRange: 100
   attackRange: 10
   maxSpeed: 15
@@ -6912,8 +6920,35 @@ MonoBehaviour:
   minDistanceToPlayer: 5
   velocity: {x: 0, y: 0, z: 0}
   canAutoAttack: 0
+  canBeParried: 0
 --- !u!137 &8903478637846447385 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 6318840630577899325, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
   m_PrefabInstance: {fileID: 3188138096956498468}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &9199265049831451595 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6022667745087572463, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+  m_PrefabInstance: {fileID: 3188138096956498468}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &650492525681827714
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9199265049831451595}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.08122018, y: 1.0272809, z: 0.09212408}
+  m_Center: {x: -0.0004505857, y: -0.3444411, z: 0.0028560306}
