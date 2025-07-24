@@ -109,34 +109,27 @@ public class TPCamera : MonoBehaviour
         {
             // 鎖定模式：攝影機會對準目標
             mFollowPoint.position = Vector3.Lerp(mFollowPoint.position, mFollowPointRef.position, followSpeed * Time.deltaTime);
-
             // 計算角色與目標的1/3分點，讓鏡頭更靠近自己
             Vector3 centerBetween = mFollowPoint.position * (2.0f / 3.0f) + lockTarget.position * (1.0f / 3.0f);
             centerBetween.y += lockCameraHeight;  // 增加高度，讓鏡頭在目標上方
-
             // 計算水平方向（忽略Y軸）
             Vector3 lockDirection = centerBetween - mFollowPoint.position;
             lockDirection.y = 0;
             lockDirection.Normalize();
-
             // 計算攝影機最終位置（加上高度後往後拉）
             Vector3 offset = Vector3.up * lockCameraHeight;
             Vector3 vFinalPosition = mFollowPoint.position + offset - lockDirection * mFollowDistance;
-
             // 檢查攝影機與角色間是否有障礙物
             Vector3 vDir = mFollowPoint.position - vFinalPosition;
             vDir.Normalize();
             RaycastHit rh;
             Ray r = new Ray(mFollowPoint.position, -vDir);
-
             if (Physics.SphereCast(r, 0.1f, out rh, mFollowDistance, mCheckLayer))
             {
                 vFinalPosition = mFollowPoint.position - vDir * (rh.distance - 0.1f);
             }
-
             // 攝影機平滑移動到目標位置
             transform.position = Vector3.Lerp(transform.position, vFinalPosition, Time.deltaTime * followSpeed);
-
             // 攝影機朝向角色與目標的中點
             transform.forward = (centerBetween - transform.position).normalized;
         }

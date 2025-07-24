@@ -96,17 +96,44 @@ public class TPContraller : MonoBehaviour
         Transform closestTarget = null;
         foreach (Collider col in targets)
         {
-            float distance = Vector3.Distance(transform.position, col.transform.position);
-            if (distance < closestDistance)
+            // 獲取敵人的 Animator 組件
+            Animator animator = col.GetComponent<Animator>();
+            if (animator != null)
             {
-                closestDistance = distance;
-                closestTarget = col.transform;
+                // 檢查敵人是否處於 "Death" 動畫狀態
+                if (!animator.GetCurrentAnimatorStateInfo(0).IsTag("Death"))
+                {
+                    float distance = Vector3.Distance(transform.position, col.transform.position);
+                    if (distance < closestDistance)
+                    {
+                        closestDistance = distance;
+                        closestTarget = col.transform;
+                    }
+                }
             }
         }
+        // 更新鎖定目標
         if (closestTarget != null)
         {
             lockTarget = closestTarget;
             isLocked = true;
+        }
+        else
+        {
+            // 如果沒有可鎖定的目標，解除鎖定
+            lockTarget = null;
+            isLocked = false;
+        }
+        // 檢查當前鎖定目標是否進入 "Death" 狀態
+        if (lockTarget != null)
+        {
+            Animator targetAnimator = lockTarget.GetComponent<Animator>();
+            if (targetAnimator != null && targetAnimator.GetCurrentAnimatorStateInfo(0).IsTag("Death"))
+            {
+                // 如果當前鎖定目標進入 "Death" 狀態，解除鎖定
+                lockTarget = null;
+                isLocked = false;
+            }
         }
     }
     //Guard
@@ -134,7 +161,7 @@ public class TPContraller : MonoBehaviour
     void Update()
     {
         AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
-        if (stateInfo.IsTag("Attack") || stateInfo.IsTag("Hit"))
+        if (stateInfo.IsTag("Attack") || stateInfo.IsTag("Hit") || stateInfo.IsTag("Stagger")|| stateInfo.IsTag("Heal"))
         {
             canMove = false;
         }
@@ -142,7 +169,6 @@ public class TPContraller : MonoBehaviour
         {
             canMove = true;
         }
-
         //Debug.Log(comboTimer);
         if (_playerGrapple.IsGrappling() || _playerStatus.isDeath == true) return;
         TPCamera.isLock = isLocked;
@@ -315,6 +341,12 @@ public class TPContraller : MonoBehaviour
                 _animator.SetInteger("ComboStep", comboStep);
                 _animator.SetTrigger("Attack");
             }
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            _animator.SetTrigger("Heal");
+            HealthPostureController healthPostureController = GetComponent<HealthPostureController>();
+            healthPostureController.HealHealth(50);
         }
     }
 

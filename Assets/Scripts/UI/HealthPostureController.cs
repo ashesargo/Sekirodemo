@@ -242,7 +242,7 @@ public class HealthPostureController : MonoBehaviour
         PlayerStatus playerStatus = GetComponent<PlayerStatus>();
         if (playerStatus != null)
         {
-            playerStatus.RemoveControl();
+            playerStatus.Sragger();
         }
         
         // 移除敵人操控
@@ -445,14 +445,6 @@ public class HealthPostureController : MonoBehaviour
     private IEnumerator RestoreControlAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        
-        // 恢復玩家操控
-        PlayerStatus playerStatus = GetComponent<PlayerStatus>();
-        if (playerStatus != null)
-        {
-            playerStatus.RestoreControl();
-        }
-        
         // 恢復敵人操控
         EnemyTest enemyTest = GetComponent<EnemyTest>();
         if (enemyTest != null)
