@@ -251,8 +251,6 @@ public class HealthPostureController : MonoBehaviour
         {
             enemyTest.RemoveControl();
         }
-        
-        // 播放失衡動畫
     }
 
     // 延遲顯示死亡 UI 的協程

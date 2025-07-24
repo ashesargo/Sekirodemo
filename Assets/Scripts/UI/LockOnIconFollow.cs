@@ -5,9 +5,7 @@ using UnityEngine;
 /// </summary>
 public class LockOnIconFollow : MonoBehaviour
 {
-    [Tooltip("要跟隨的目標 Transform（通常是敵人）")]
     public Transform target;
-    [Tooltip("ICON 在目標上方的偏移量")]
     public Vector3 offset = new Vector3(0, 2f, 0);
 
     private Camera mainCamera;

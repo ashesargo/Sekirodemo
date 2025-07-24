@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -36,8 +37,6 @@ public class ItemSystem : MonoBehaviour
     public Transform itemContainer; // 道具槽容器
     public GameObject itemSlotPrefab; // 道具槽預製體
     public TMP_Text currentItemText; // 當前道具文字 (TextMeshPro)
-    public Image currentItemIcon; // 當前道具圖示
-    public Image useProgressBar; // 使用進度條
     
     [Header("效果設定")]
     public float useAnimationTime = 1.5f;
@@ -49,6 +48,7 @@ public class ItemSystem : MonoBehaviour
     private HealthPostureController healthController;
     private AudioSource audioSource;
     private List<ItemSlotUI> slots = new List<ItemSlotUI>();
+    private Animator animator; // 動畫控制器
     
     // 事件
     public System.Action<ItemData> OnItemUsed;
@@ -56,11 +56,9 @@ public class ItemSystem : MonoBehaviour
     
     void Start()
     {
-        Debug.Log("[ItemSystem] 開始初始化道具系統");
         InitializeSystem();
         CreateDefaultItems();
         CreateUI();
-        Debug.Log($"[ItemSystem] 初始化完成，共有 {items.Count} 個道具");
     }
     
     void Update()
@@ -71,17 +69,14 @@ public class ItemSystem : MonoBehaviour
     
     void InitializeSystem()
     {
-        Debug.Log("[ItemSystem] 初始化系統組件");
         healthController = GetComponent<HealthPostureController>();
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
-        
-        Debug.Log($"[ItemSystem] 組件初始化完成 - HealthController: {(healthController != null ? "找到" : "未找到")}, AudioSource: {(audioSource != null ? "找到" : "未找到")}");
+        animator = GetComponent<Animator>();
     }
     
     void CreateDefaultItems()
     {
-        Debug.Log("[ItemSystem] 創建預設道具");
         if (items.Count == 0)
         {
             items.Add(new ItemData
@@ -94,19 +89,17 @@ public class ItemSystem : MonoBehaviour
                 cooldown = 30f,
                 description = "緩慢恢復生命值"
             });
-            Debug.Log("[ItemSystem] 添加藥丸 x3");
             
             items.Add(new ItemData
             {
                 type = ItemType.SteelSugar,
                 name = "剛幹糖",
                 quantity = 3,
-                effectValue = 10f,
+                effectValue = 0.3f,
                 duration = 30f,
                 cooldown = 30f,
                 description = "減少架勢增加"
             });
-            Debug.Log("[ItemSystem] 添加剛幹糖 x3");
             
             items.Add(new ItemData
             {
@@ -118,27 +111,28 @@ public class ItemSystem : MonoBehaviour
                 cooldown = 1f,
                 description = "立即恢復生命值"
             });
-            Debug.Log("[ItemSystem] 添加傷藥葫蘆 x10");
-        }
-        else
-        {
-            Debug.Log($"[ItemSystem] 道具已存在，跳過創建預設道具");
         }
     }
     
     void CreateUI()
     {
-        Debug.Log("[ItemSystem] 創建UI");
         if (itemContainer == null || itemSlotPrefab == null) 
         {
             Debug.LogError("[ItemSystem] UI組件缺失 - itemContainer或itemSlotPrefab為null");
             return;
         }
         
+        // 檢查 itemSlotPrefab 是否有 ItemSlotUI 組件
+        ItemSlotUI prefabSlot = itemSlotPrefab.GetComponent<ItemSlotUI>();
+        if (prefabSlot == null)
+        {
+            Debug.LogError("[ItemSystem] itemSlotPrefab上沒有ItemSlotUI組件！");
+            return;
+        }
+        
         // 清除現有UI
         foreach (Transform child in itemContainer) Destroy(child.gameObject);
         slots.Clear();
-        Debug.Log("[ItemSystem] 清除現有UI");
         
         // 創建道具槽
         for (int i = 0; i < items.Count; i++)
@@ -147,29 +141,33 @@ public class ItemSystem : MonoBehaviour
             ItemSlotUI slot = slotObj.GetComponent<ItemSlotUI>();
             if (slot != null)
             {
-                slot.Initialize(items[i], i == currentIndex);
-                slots.Add(slot);
-                Debug.Log($"[ItemSystem] 創建道具槽 {i}: {items[i].name}");
+                try
+                {
+                    bool isSelected = (i == currentIndex);
+                    slot.Initialize(items[i], isSelected);
+                    slot.gameObject.SetActive(isSelected); // 只顯示當前選中的道具槽
+                    slots.Add(slot);
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"[ItemSystem] 初始化道具槽 {i} 時發生錯誤: {e.Message}");
+                }
             }
             else
             {
                 Debug.LogError($"[ItemSystem] 道具槽 {i} 組件獲取失敗");
             }
         }
-        Debug.Log($"[ItemSystem] UI創建完成，共創建 {slots.Count} 個道具槽");
     }
     
     void HandleInput()
     {
         if (Input.GetKeyDown(KeyCode.R))
         {
-            Debug.Log("[ItemSystem] 按下R鍵 - 切換道具");
             SwitchItem();
         }
-        
         if (Input.GetKeyDown(KeyCode.E))
         {
-            Debug.Log("[ItemSystem] 按下E鍵 - 使用道具");
             UseCurrentItem();
         }
     }
@@ -182,9 +180,22 @@ public class ItemSystem : MonoBehaviour
             return;
         }
         
+        // 檢查 slots 是否正確初始化
+        if (slots.Count == 0)
+        {
+            CreateUI();
+            if (slots.Count == 0)
+            {
+                Debug.LogError("[ItemSystem] SwitchItem: 重新創建UI失敗，無法切換道具");
+                return;
+            }
+        }
+        
         int oldIndex = currentIndex;
+        
+        // 正向切換：0->1->2->0->1->2...
         currentIndex = (currentIndex + 1) % items.Count;
-        Debug.Log($"[ItemSystem] 切換道具: {oldIndex} -> {currentIndex} ({items[currentIndex].name})");
+        
         UpdateSlotSelection();
         OnItemSwitched?.Invoke(items[currentIndex]);
     }
@@ -193,7 +204,6 @@ public class ItemSystem : MonoBehaviour
     {
         if (isUsingItem) 
         {
-            Debug.Log("[ItemSystem] 無法使用道具 - 正在使用中");
             return;
         }
         
@@ -203,15 +213,13 @@ public class ItemSystem : MonoBehaviour
             return;
         }
         
-        // 檢查 currentIndex 是否在有效範圍內
+        // 確保 currentIndex 在有效範圍內（使用迴圈模式）
         if (currentIndex >= items.Count)
         {
-            Debug.LogWarning($"[ItemSystem] currentIndex超出範圍 ({currentIndex} >= {items.Count})，重置為0");
-            currentIndex = 0;
+            currentIndex = currentIndex % items.Count;
         }
         
         ItemData item = items[currentIndex];
-        Debug.Log($"[ItemSystem] 嘗試使用道具: {item.name} (數量: {item.quantity}, 索引: {currentIndex})");
         
         if (item.quantity <= 0)
         {
@@ -219,61 +227,50 @@ public class ItemSystem : MonoBehaviour
             return;
         }
         
+        // 檢查 slots 是否正確初始化
+        if (slots.Count == 0)
+        {
+            Debug.LogError($"[ItemSystem] slots列表為空！items數量: {items.Count}, currentIndex: {currentIndex}");
+            return;
+        }
+        
         if (currentIndex >= slots.Count)
         {
-            Debug.LogError($"[ItemSystem] slots索引超出範圍 ({currentIndex} >= {slots.Count})");
+            CreateUI();
             return;
         }
         
         if (slots[currentIndex].IsOnCooldown())
         {
-            Debug.Log($"[ItemSystem] 道具 {item.name} 正在冷卻中");
             return;
         }
         
-        Debug.Log($"[ItemSystem] 開始使用道具: {item.name}");
         StartCoroutine(UseItemCoroutine(item));
     }
     
     IEnumerator UseItemCoroutine(ItemData item)
     {
-        Debug.Log($"[ItemSystem] 開始使用道具協程: {item.name}");
         isUsingItem = true;
         
-        // 播放使用動畫
-        if (useProgressBar != null)
+        // 觸發動畫
+        if (animator != null)
         {
-            Debug.Log($"[ItemSystem] 播放使用動畫，持續時間: {useAnimationTime}秒");
-            float elapsed = 0f;
-            while (elapsed < useAnimationTime)
-            {
-                elapsed += Time.deltaTime;
-                useProgressBar.fillAmount = elapsed / useAnimationTime;
-                yield return null;
-            }
-        }
-        else
-        {
-            Debug.LogWarning("[ItemSystem] useProgressBar為null，跳過動畫");
+            animator.SetTrigger("Heal");
         }
         
+        // 等待使用動畫時間
+        yield return new WaitForSeconds(useAnimationTime);
+        
         // 應用效果
-        Debug.Log($"[ItemSystem] 應用道具效果: {item.name}");
         ApplyItemEffect(item);
         
         // 減少數量
         item.quantity--;
-        Debug.Log($"[ItemSystem] 道具 {item.name} 數量減少為: {item.quantity}");
         
         // 開始冷卻
         if (currentIndex < slots.Count)
         {
             slots[currentIndex].StartCooldown(item.cooldown);
-            Debug.Log($"[ItemSystem] 開始冷卻: {item.name} ({item.cooldown}秒)");
-        }
-        else
-        {
-            Debug.LogError($"[ItemSystem] 無法開始冷卻 - slots索引超出範圍");
         }
         
         // 播放效果
@@ -283,8 +280,6 @@ public class ItemSystem : MonoBehaviour
         OnItemUsed?.Invoke(item);
         
         isUsingItem = false;
-        if (useProgressBar != null) useProgressBar.fillAmount = 0f;
-        Debug.Log($"[ItemSystem] 道具使用完成: {item.name}");
     }
     
     void ApplyItemEffect(ItemData item)
@@ -295,20 +290,15 @@ public class ItemSystem : MonoBehaviour
             return;
         }
         
-        Debug.Log($"[ItemSystem] 應用道具效果: {item.name} (類型: {item.type}, 效果值: {item.effectValue}, 持續時間: {item.duration})");
-        
         switch (item.type)
         {
             case ItemType.MedicinePill:
-                Debug.Log($"[ItemSystem] 啟動藥丸效果: 每秒恢復{item.effectValue}HP，持續{item.duration}秒");
                 StartCoroutine(HealOverTime(item.effectValue, item.duration)); // 緩慢恢復生命值
                 break;
             case ItemType.SteelSugar:
-                Debug.Log($"[ItemSystem] 啟動剛幹糖效果: 架勢減少{item.effectValue}，持續{item.duration}秒");
                 StartCoroutine(ReducePostureGain(item.effectValue, item.duration)); // 減少架勢增加
                 break;
             case ItemType.HealingGourd:
-                Debug.Log($"[ItemSystem] 立即恢復生命值: {item.effectValue}HP");
                 healthController.HealHealth((int)item.effectValue); // 立即恢復生命值
                 break;
             default:
@@ -358,55 +348,68 @@ public class ItemSystem : MonoBehaviour
     {
         if (items.Count == 0) return;
         
-        // 確保 currentIndex 在有效範圍內
+        // 確保 currentIndex 在有效範圍內（使用迴圈模式）
         if (currentIndex >= items.Count)
         {
-            currentIndex = 0;
+            currentIndex = currentIndex % items.Count;
         }
         
         ItemData currentItem = items[currentIndex];
         
         if (currentItemText != null)
         {
-            currentItemText.text = $"{currentItem.name} x{currentItem.quantity}";
+            currentItemText.text = $"{currentItem.name}";
         }
         
-        if (currentItemIcon != null && currentItem.icon != null)
+        // 檢查 slots 是否正確初始化
+        if (slots.Count == 0)
         {
-            currentItemIcon.sprite = currentItem.icon;
+            return;
         }
         
         // 更新所有槽位
         for (int i = 0; i < slots.Count && i < items.Count; i++)
         {
-            slots[i].UpdateQuantity(items[i].quantity);
+            if (slots[i] != null)
+            {
+                slots[i].UpdateQuantity(items[i].quantity);
+            }
         }
     }
     
     void UpdateSlotSelection()
     {
-        // 確保 currentIndex 在有效範圍內
+        // 確保 currentIndex 在有效範圍內（使用迴圈模式）
         if (currentIndex >= items.Count)
         {
-            currentIndex = 0;
+            currentIndex = currentIndex % items.Count;
+        }
+        
+        // 檢查 slots 是否正確初始化
+        if (slots.Count == 0)
+        {
+            return;
         }
         
         for (int i = 0; i < slots.Count; i++)
         {
-            slots[i].SetSelected(i == currentIndex);
+            if (slots[i] != null)
+            {
+                // 只顯示當前選中的道具槽，隱藏其他
+                bool isSelected = (i == currentIndex);
+                slots[i].SetSelected(isSelected);
+                slots[i].gameObject.SetActive(isSelected);
+            }
         }
     }
     
     // 公共方法
     public void AddItem(ItemType type, int quantity = 1)
     {
-        Debug.Log($"[ItemSystem] 嘗試添加道具: {type} x{quantity}");
         ItemData item = items.Find(x => x.type == type);
         if (item != null)
         {
-            int oldQuantity = item.quantity;
             item.quantity += quantity;
-            Debug.Log($"[ItemSystem] 道具 {item.name} 數量更新: {oldQuantity} -> {item.quantity}");
         }
         else
         {
@@ -424,10 +427,10 @@ public class ItemSystem : MonoBehaviour
     {
         if (items.Count == 0) return null;
         
-        // 確保 currentIndex 在有效範圍內
+        // 確保 currentIndex 在有效範圍內（使用迴圈模式）
         if (currentIndex >= items.Count)
         {
-            currentIndex = 0;
+            currentIndex = currentIndex % items.Count;
         }
         
         return items[currentIndex];
@@ -439,10 +442,10 @@ public class ItemSystem : MonoBehaviour
         var steelSugar = items.Find(x => x.type == ItemType.SteelSugar && x.duration > 0);
         if (steelSugar != null)
         {
-            Debug.Log($"[ItemSystem] 架勢減少倍率: {steelSugar.effectValue}");
             return steelSugar.effectValue;
         }
-        Debug.Log("[ItemSystem] 架勢減少倍率: 1.0 (無效果)");
         return 1f;
     }
+    
+
 }

@@ -346,12 +346,7 @@ public class TPContraller : MonoBehaviour
                 _animator.SetTrigger("Attack");
             }
         }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            _animator.SetTrigger("Heal");
-            HealthPostureController healthPostureController = GetComponent<HealthPostureController>();
-            healthPostureController.HealHealth(50);
-        }
+
     }
 
 
