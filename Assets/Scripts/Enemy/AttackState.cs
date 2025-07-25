@@ -11,7 +11,7 @@ public class AttackState : BaseEnemyState
     {
         base.EnterState(enemy);
         Debug.Log("AttackState: 進入攻擊狀態");
-        enemy.Stop();
+        enemy.Stop(); // 進入攻擊時完全靜止
         enemy.animator.ResetTrigger("Attack"); // 先重置Trigger
         enemy.animator.SetTrigger("Attack");   // 再設置Trigger
         hasAttacked = false;
@@ -26,14 +26,13 @@ public class AttackState : BaseEnemyState
         {
             hasAttacked = true;
             Debug.Log("AttackState: 攻擊動畫開始播放");
-            enemy.Stop(); // 停止移動
+            enemy.Stop(); // 再次保險，攻擊動畫開始時也停止
         }
-
         // 等待攻擊動畫結束
         if (hasAttacked && stateInfo.IsName("Attack") && stateInfo.normalizedTime >= 1.0f)
         {
             Debug.Log("AttackState: 攻擊動畫結束，切換到 RetreatState");
-            enemy.SwitchState(new RetreatState());
+            enemy.SwitchState(new RetreatState()); // 攻擊後自動撤退
         }
     }
 

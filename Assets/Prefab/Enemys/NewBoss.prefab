@@ -4570,6 +4570,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1245062765284686098, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
       insertIndex: -1
       addedObject: {fileID: -2384988033914571718}
+    - targetCorrespondingSourceObject: {fileID: 1245062765284686098, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -2264536825696089340}
   m_SourcePrefab: {fileID: 100100000, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
 --- !u!137 &167012479499398312 stripped
 SkinnedMeshRenderer:
@@ -4996,6 +4999,27 @@ MonoBehaviour:
   combo1Duration: 6
   combo2Duration: 6
   combo3Duration: 6
+  meleeWeapon: {fileID: 2715113398885782681, guid: 5f384ba378458884ba6fdf30a8715b72, type: 3}
+  rangedWeapon: {fileID: 100000, guid: 4e1664fab1d1087438bca405ac83c36d, type: 3}
+--- !u!114 &-2264536825696089340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5557789131163203382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 836707184620a0e4c99b319ae87a1076, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  projectilePrefab: {fileID: 100000, guid: e98c129b2cbb9184eb9c7d8d9e6df07c, type: 3}
+  firePoint: {fileID: 0}
+  projectileSpeed: 150
+  projectileDamage: 30
+  shootSound: {fileID: 0}
+  muzzleFlash: {fileID: 0}
+  projectileTarget: {fileID: 0}
 --- !u!137 &5630134567351512465 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 1316216258256692149, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
