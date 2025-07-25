@@ -4689,7 +4689,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6022667745087572463, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6022667745087572463, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_IsActive
@@ -6108,7 +6108,7 @@ MonoBehaviour:
   animator: {fileID: 8253529524297296019}
   rb: {fileID: 0}
   visionRange: 100
-  attackRange: 10
+  attackRange: 9
   maxSpeed: 15
   avoidDistance: 20
   avoidStrength: 40

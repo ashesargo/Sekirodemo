@@ -153,8 +153,7 @@ public class WeaponEffect : MonoBehaviour
         isAttackActive = true;
         
         // 使用與 Weapon.PerformFanAttack 相同的邏輯來計算有效目標
-        Collider[] hits = Physics.OverlapSphere(weaponComponent.transform.position, weaponComponent.attackRadius, weaponComponent.targetLayer);
-        
+        Collider[] hits = Physics.OverlapSphere(weaponComponent.transform.position, weaponComponent.attackRadius, weaponComponent.targetLayer);     
         foreach (var hit in hits)
         {
             Vector3 dirToTarget = (hit.transform.position - weaponComponent.transform.position).normalized;

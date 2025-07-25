@@ -453,22 +453,6 @@ public class TPContraller : MonoBehaviour
             }
         }
     }
-
-
-    public void TakeDamage(float damage)
-    {
-        // 調用 PlayerStatus 的 TakeDamage 方法來處理傷害
-        if (_playerStatus != null)
-        {
-            _playerStatus.TakeDamage(damage);
-        }
-        else if (_animator != null)
-        {
-            // 如果沒有 PlayerStatus 組件，至少觸發動畫
-            _animator.SetTrigger("Hit");
-        }
-    }
-
     // 延遲重置 parrySuccess 狀態，確保特效有足夠時間觸發
     private IEnumerator ResetParrySuccessAfterDelay(float delay)
     {
