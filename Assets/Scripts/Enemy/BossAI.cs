@@ -19,41 +19,15 @@ public class BossAI : EnemyAI
     public float combo2Duration = 12f; // Combo2 總持續時間  
     public float combo3Duration = 10f; // Combo3 總持續時間
     
-    // === 武器切換與遠程攻擊動畫事件用 ===
-    public GameObject meleeWeapon;   // 指到近戰武器 GameObject
-    public GameObject rangedWeapon;  // 指到遠程武器 GameObject
-
     // === 左右手武器切換動畫事件用 ===
-    public GameObject leftWeapon;   // 左手武器
-    public GameObject rightWeapon;  // 右手武器
+    public GameObject leftWeapon;   // 左手武器（弓/遠程）
+    public GameObject rightWeapon;  // 右手武器（刀/近戰）
 
-    // 動畫事件：切換武器
-    public void SwitchWeapon(string type)
+    // 動畫事件：簡化武器顯示切換（int 版本，1=顯示弓，0=顯示近戰）
+    public void ShowRangedWeapon(int show)
     {
-        if (type == "melee")
-        {
-            if (meleeWeapon != null) meleeWeapon.SetActive(true);
-            if (rangedWeapon != null) rangedWeapon.SetActive(false);
-        }
-        else if (type == "ranged")
-        {
-            if (meleeWeapon != null) meleeWeapon.SetActive(false);
-            if (rangedWeapon != null) rangedWeapon.SetActive(true);
-        }
-    }
-
-    // 動畫事件：發射遠程攻擊
-    public void FireBossProjectile()
-    {
-        var ranged = GetComponent<BossRangedAttack>();
-        if (ranged != null)
-            ranged.FireBossProjectile();
-    }
-
-    // 動畫事件：簡化武器顯示切換
-    public void ShowRangedWeapon(bool show)
-    {
-        if (show)
+        bool isShow = show != 0;
+        if (isShow)
         {
             if (rightWeapon != null) rightWeapon.SetActive(false);
             if (leftWeapon != null) leftWeapon.SetActive(true);
@@ -62,6 +36,21 @@ public class BossAI : EnemyAI
         {
             if (rightWeapon != null) rightWeapon.SetActive(true);
             if (leftWeapon != null) leftWeapon.SetActive(false);
+        }
+    }
+
+    // 動畫事件：切換武器顯示（如需更細緻控制）
+    public void ShowWeapon(string hand)
+    {
+        if (hand == "left")
+        {
+            if (leftWeapon != null) leftWeapon.SetActive(true);
+            if (rightWeapon != null) rightWeapon.SetActive(false);
+        }
+        else if (hand == "right")
+        {
+            if (leftWeapon != null) leftWeapon.SetActive(false);
+            if (rightWeapon != null) rightWeapon.SetActive(true);
         }
     }
     

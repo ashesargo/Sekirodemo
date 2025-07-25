@@ -5001,6 +5001,8 @@ MonoBehaviour:
   combo3Duration: 6
   meleeWeapon: {fileID: 2715113398885782681, guid: 5f384ba378458884ba6fdf30a8715b72, type: 3}
   rangedWeapon: {fileID: 100000, guid: 4e1664fab1d1087438bca405ac83c36d, type: 3}
+  leftWeapon: {fileID: 100000, guid: 4e1664fab1d1087438bca405ac83c36d, type: 3}
+  rightWeapon: {fileID: 2715113398885782681, guid: 5f384ba378458884ba6fdf30a8715b72, type: 3}
 --- !u!114 &-2264536825696089340
 MonoBehaviour:
   m_ObjectHideFlags: 0
