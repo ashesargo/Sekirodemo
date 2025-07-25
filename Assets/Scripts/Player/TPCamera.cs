@@ -34,6 +34,10 @@ public class TPCamera : MonoBehaviour
     public LayerMask mCheckLayer;
     // 前一幀是否為鎖定狀態
     private bool wasLock;
+    // 鎖定過渡時間
+    private float lockTransitionTime = 0.0f;
+    // 鎖定過渡持續時間
+    public float lockTransitionDuration = 0.3f;
     [Header("鎖定設定")]
     // 是否鎖定目標
     public bool isLock;
@@ -41,6 +45,10 @@ public class TPCamera : MonoBehaviour
     public Transform lockTarget;
     // 鎖定時攝影機高度
     public float lockCameraHeight = 1.5f;
+    // 鎖定時額外的後退距離倍數
+    public float lockExtraDistanceMultiplier = 0.5f;
+    // 鎖定時的俯視角度（度）
+    public float lockTiltAngle = -15f;
     // 鎖定圖示的 Prefab
     public GameObject lockOnIconPrefab; // 指到 LockOnIcon.prefab
     // 當前顯示的鎖定圖示
@@ -109,29 +117,48 @@ public class TPCamera : MonoBehaviour
         {
             // 鎖定模式：攝影機會對準目標
             mFollowPoint.position = Vector3.Lerp(mFollowPoint.position, mFollowPointRef.position, followSpeed * Time.deltaTime);
+            
             // 計算角色與目標的1/3分點，讓鏡頭更靠近自己
             Vector3 centerBetween = mFollowPoint.position * (2.0f / 3.0f) + lockTarget.position * (1.0f / 3.0f);
             centerBetween.y += lockCameraHeight;  // 增加高度，讓鏡頭在目標上方
+            
             // 計算水平方向（忽略Y軸）
             Vector3 lockDirection = centerBetween - mFollowPoint.position;
             lockDirection.y = 0;
             lockDirection.Normalize();
-            // 計算攝影機最終位置（加上高度後往後拉）
+            
+            // 計算攝影機最終位置（加上高度後往後拉，並增加額外的後退距離）
             Vector3 offset = Vector3.up * lockCameraHeight;
-            Vector3 vFinalPosition = mFollowPoint.position + offset - lockDirection * mFollowDistance;
+            // 增加額外的後退距離，讓視角更遠
+            float extraDistance = mFollowDistance * lockExtraDistanceMultiplier;
+            Vector3 vFinalPosition = mFollowPoint.position + offset - lockDirection * (mFollowDistance + extraDistance);
+            
             // 檢查攝影機與角色間是否有障礙物
             Vector3 vDir = mFollowPoint.position - vFinalPosition;
             vDir.Normalize();
             RaycastHit rh;
             Ray r = new Ray(mFollowPoint.position, -vDir);
-            if (Physics.SphereCast(r, 0.1f, out rh, mFollowDistance, mCheckLayer))
+            if (Physics.SphereCast(r, 0.1f, out rh, mFollowDistance + extraDistance, mCheckLayer))
             {
                 vFinalPosition = mFollowPoint.position - vDir * (rh.distance - 0.1f);
             }
+            
+            // 使用平滑過渡到鎖定位置
+            float transitionProgress = Mathf.Clamp01(lockTransitionTime / lockTransitionDuration);
+            float smoothFactor = Mathf.SmoothStep(0, 1, transitionProgress);
+            
             // 攝影機平滑移動到目標位置
-            transform.position = Vector3.Lerp(transform.position, vFinalPosition, Time.deltaTime * followSpeed);
-            // 攝影機朝向角色與目標的中點
-            transform.forward = (centerBetween - transform.position).normalized;
+            transform.position = Vector3.Lerp(transform.position, vFinalPosition, Time.deltaTime * followSpeed * (1 + smoothFactor));
+            
+            // 平滑過渡攝影機朝向，加入俯視角度
+            Vector3 targetForward = (centerBetween - transform.position).normalized;
+            // 計算俯視角度
+            Vector3 horizontalForward = targetForward;
+            horizontalForward.y = 0;
+            horizontalForward.Normalize();
+            // 將水平方向向下旋轉指定角度
+            Vector3 tiltedForward = Quaternion.AngleAxis(lockTiltAngle, Vector3.Cross(horizontalForward, Vector3.up)) * horizontalForward;
+            transform.forward = Vector3.Slerp(transform.forward, tiltedForward, Time.deltaTime * followSpeed * (1 + smoothFactor));
         }
     }
     
@@ -236,16 +263,14 @@ public class TPCamera : MonoBehaviour
         // 鎖定狀態切換時重設攝影機
         if (wasLock != isLock)
         {
+            // 重置過渡時間
+            lockTransitionTime = 0.0f;
+            
             // 只在進入鎖定時重設，解除鎖定時不重設攝影機位置，保留原本指向
             if (isLock)
             {
-                mFollowPoint.position = mFollowPointRef.position;
-                mFollowPoint.rotation = mFollowPointRef.rotation;
-                transform.position = mFollowPoint.position - mFollowDistance * mFollowPoint.forward;
-                Vector3 vDir = transform.position - mFollowPoint.position;
-                mHorizontalVector = vDir;
-                mHorizontalVector.y = 0.0f;
-                mHorizontalVector.Normalize();
+                // 進入鎖定模式時，保持當前攝影機位置，讓過渡更平滑
+                // 不立即重設位置，讓過渡系統處理
             }
             else // 解除鎖定時，將當前攝影機 forward 轉換回 mHorizontalVector 與 mVerticalDegree
             {
@@ -259,6 +284,12 @@ public class TPCamera : MonoBehaviour
                 float angle = Vector3.SignedAngle(mHorizontalVector, camDir, rotationAxis);
                 mVerticalDegree = angle;
             }
+        }
+        
+        // 更新過渡時間
+        if (isLock && lockTarget != null)
+        {
+            lockTransitionTime += Time.deltaTime;
         }
         // 更新攝影機位置與旋轉
         UpdateCameraTransform();
