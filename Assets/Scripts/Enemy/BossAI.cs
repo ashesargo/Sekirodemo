@@ -78,6 +78,32 @@ public class BossAI : EnemyAI
         Debug.Log("BossAI: Boss初始化完成");
     }
     
+    void Awake()
+    {
+        if (leftWeapon == null)
+        {
+            foreach (var t in GetComponentsInChildren<Transform>(true))
+            {
+                if (t.name == "SM_Bow_02")
+                {
+                    leftWeapon = t.gameObject;
+                    break;
+                }
+            }
+        }
+        if (rightWeapon == null)
+        {
+            foreach (var t in GetComponentsInChildren<Transform>(true))
+            {
+                if (t.name == "Katana")
+                {
+                    rightWeapon = t.gameObject;
+                    break;
+                }
+            }
+        }
+    }
+    
     // 移除FindBossPlayer方法
     
     // 獲取下一個連擊動畫
