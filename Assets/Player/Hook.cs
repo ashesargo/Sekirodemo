@@ -8,7 +8,7 @@ public class PlayerGrapple : MonoBehaviour
     public float grappleRange = 10f; // 勾鎖檢測範圍
     public float maxGrappleDistance = 15f; // 最大勾鎖距離
     public float grappleSpeed = 10f; // 勾鎖移動速度
-    public float sphereRadius = 0.5f; // SphereCast的球體半徑
+    public float sphereRadius = 10f; // SphereCast的球體半徑
     public float ropeWidth = 0.05f; // 繩索寬度
     public float ropeExtendDuration = 0.1f; // 繩索射出時長
     public float grapple2Duration = 0.2f; // Grapple2 動畫時長

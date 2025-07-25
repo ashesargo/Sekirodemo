@@ -7,6 +7,7 @@ public class PlayerStatus : MonoBehaviour
     public bool isDeath = false;
     private HealthPostureController healthController;  // 引用生命值控制器
     TPContraller _TPContraller;
+    PlayerGrapple _playerGrapple;
     public HitState currentHitState;
     public enum HitState
     {
@@ -21,6 +22,7 @@ public class PlayerStatus : MonoBehaviour
         _TPContraller = GetComponent<TPContraller>();
         // 獲取 HealthPostureController 組件
         healthController = GetComponent<HealthPostureController>();
+        _playerGrapple = GetComponent<PlayerGrapple>();
         // 如果沒有 HealthPostureController，創建一個
         if (healthController == null)
         {
@@ -30,7 +32,7 @@ public class PlayerStatus : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        if (isDeath) return; // 死亡後不再受傷
+        if (isDeath || _playerGrapple.IsGrappling()) return; // 死亡後不再受傷
         AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
         if (stateInfo.IsTag("Parry"))
         {
@@ -51,12 +53,8 @@ public class PlayerStatus : MonoBehaviour
         }
         else if (GetCurrentHP() > 0)
         {
-            if (currentHitState == HitState.Parry)
-            {
-                // 不立即重置 parrySuccess，讓 TPController 自己處理
-                // _TPContraller.parrySuccess = false;
-            }
-            else if (currentHitState == HitState.Guard) _animator.SetTrigger("GuardHit");
+            if (currentHitState == HitState.Parry) return;
+            if (currentHitState == HitState.Guard) _animator.SetTrigger("GuardHit");
             else _animator.SetTrigger("Hit");
         }
     }

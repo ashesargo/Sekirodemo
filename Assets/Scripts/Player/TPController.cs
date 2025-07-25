@@ -48,7 +48,7 @@ public class TPContraller : MonoBehaviour
     public bool isGuard;
     public bool parrySuccess;
     private bool parryEffectTriggered = false; // 新增：追蹤特效是否已觸發
-    
+
     // 新增：Parry 特效事件
     public System.Action<Vector3> OnParrySuccess; // 當 Parry 成功時觸發，參數為碰撞點
     public float attackRadius = 9f;
@@ -177,16 +177,16 @@ public class TPContraller : MonoBehaviour
         _characterController = GetComponent<CharacterController>();
         _playerGrapple = GetComponent<PlayerGrapple>();
         _playerStatus = GetComponent<PlayerStatus>();
-        
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         // 初始化 parrySuccess 為 false
         parrySuccess = false;
     }
-
     // Update is called once per frame
     void Update()
     {
         if (_animator == null) return;
-        
+
         AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
         if (stateInfo.IsTag("Attack") || stateInfo.IsTag("Hit") || stateInfo.IsTag("Stagger"))
         {
@@ -243,7 +243,7 @@ public class TPContraller : MonoBehaviour
                 }
             }
         }
-        if (Input.GetKeyDown(KeyCode.Mouse1) )
+        if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             Collider[] hits = Physics.OverlapSphere(transform.position, attackRadius, targetLayer);
             foreach (var hit in hits)
@@ -265,24 +265,19 @@ public class TPContraller : MonoBehaviour
                             {
                                 _animator.SetTrigger("Parry" + parry);
                             }
-                            
+
                             // 標記特效已觸發
                             parryEffectTriggered = true;
-                            
+
                             // 觸發 Parry 特效事件
                             if (OnParrySuccess != null)
                             {
                                 Vector3 parryPosition = hit.transform.position;
                                 OnParrySuccess.Invoke(parryPosition);
                             }
-                            
                             // 確保特效有足夠時間觸發
                             StartCoroutine(ResetParrySuccessAfterDelay(0.2f));
                         }
-                    }
-                    else
-                    {
-                        parrySuccess = false;
                     }
                 }
             }
@@ -291,6 +286,8 @@ public class TPContraller : MonoBehaviour
                 EnableGurad();
             }
         }
+        if (!stateInfo.IsTag("Parry"))
+            parrySuccess = false;
         if (Input.GetKey(KeyCode.Mouse1))
         {
             EnableGurad();
