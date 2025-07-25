@@ -79,7 +79,7 @@ public class PlayerGrapple : MonoBehaviour
         UpdateNearbyPoints();
         UpdateIndicators(); // 新增的 UI 圖示更新
 
-        if (Input.GetKeyDown(KeyCode.E) && !isGrappling)
+        if (Input.GetKeyDown(KeyCode.F) && !isGrappling)
         {
             TryGrapple();
         }
