@@ -37,6 +37,7 @@ public class ItemSystem : MonoBehaviour
     public Transform itemContainer; // 道具槽容器
     public GameObject itemSlotPrefab; // 道具槽預製體
     public TMP_Text currentItemText; // 當前道具文字 (TextMeshPro)
+    public GameObject useEffectPosition; // 使用效果位置
     
     [Header("效果設定")]
     public float useAnimationTime = 1.5f;
@@ -252,6 +253,9 @@ public class ItemSystem : MonoBehaviour
     {
         isUsingItem = true;
         
+        // 立即播放效果（按下E鍵的瞬間）
+        PlayUseEffect(item);
+        
         // 觸發動畫
         if (animator != null)
         {
@@ -272,9 +276,6 @@ public class ItemSystem : MonoBehaviour
         {
             slots[currentIndex].StartCooldown(item.cooldown);
         }
-        
-        // 播放效果
-        PlayUseEffect(item);
         
         // 觸發事件
         OnItemUsed?.Invoke(item);
@@ -336,11 +337,13 @@ public class ItemSystem : MonoBehaviour
         
         if (item.useEffect != null)
         {
-            Instantiate(item.useEffect, transform.position, Quaternion.identity);
+            Vector3 effectPosition = useEffectPosition.transform.position;
+            Instantiate(item.useEffect, effectPosition, Quaternion.identity);
         }
         else if (useEffectPrefab != null)
         {
-            Instantiate(useEffectPrefab, transform.position, Quaternion.identity);
+            Vector3 effectPosition = useEffectPosition.transform.position;
+            Instantiate(useEffectPrefab, effectPosition, Quaternion.identity);
         }
     }
     
