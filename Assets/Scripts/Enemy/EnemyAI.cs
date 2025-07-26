@@ -46,6 +46,12 @@ public class EnemyAI : MonoBehaviour
     public float groundCheckDistance = 0.1f; // 地面檢測距離
     public LayerMask groundMask = 1 << 3; // Ground 層 (Layer 3)
     public float maxSlopeAngle = 45f; // 最大可攀爬角度
+    
+    [Header("樓梯/斜坡處理")]
+    public float slopeCheckDistance = 1.0f; // 斜坡檢測距離
+    public float maxStepHeight = 0.5f; // 最大可跨越高度（增加）
+    public float stepSmooth = 5f; // 跨越樓梯的平滑度
+    public float downSlopeSpeed = 20f; // 下坡/下樓梯速度（調整為與平地速度相同）
 
     private BaseEnemyState currentState;
     [HideInInspector] public Vector3 velocity;
@@ -78,6 +84,12 @@ public class EnemyAI : MonoBehaviour
             transform.position = position;
             transform.rotation = rotation;
             characterController.enabled = true;
+            
+            // 重置速度，避免飄浮
+            velocity = Vector3.zero;
+            
+            // 生成後立即對齊地面
+            AlignToGround();
         }
         else
         {
@@ -103,12 +115,25 @@ public class EnemyAI : MonoBehaviour
             Debug.Log($"敵人 {gameObject.name} 有 CharacterController, Layer: {gameObject.layer}");
         }
         
+        // 強制對齊地面
+        AlignToGround();
+        
+        // 延遲再次對齊地面，確保CharacterController已經初始化
+        StartCoroutine(DelayedGroundAlign());
+        
         Debug.Log("EnemyAI: 敵人初始化完成");
     }
 
     void Update()
     {
         if (player == null) return; // 找不到就不執行狀態機
+        
+        // 減少地面對齊頻率（每60幀檢查一次），避免干擾移動
+        if (Time.frameCount % 60 == 0 && characterController != null && !characterController.isGrounded)
+        {
+            AlignToGround();
+        }
+        
         currentState?.UpdateState(this);
     }
 
@@ -340,7 +365,10 @@ public class EnemyAI : MonoBehaviour
     {
         if (animator != null && animator.applyRootMotion)
             return; // 啟用Root Motion時不由程式移動
-        force.y = 0f;
+        
+        // 保存原始的Y軸分量，讓HandleSlopeMovement可以修改
+        float originalForceY = force.y;
+        force.y = 0f; // 先處理水平移動
         
         // 檢查與玩家的距離
         if (player != null)
@@ -381,9 +409,27 @@ public class EnemyAI : MonoBehaviour
             }
         }
         
-        velocity += force * Time.deltaTime;
+        // 處理斜坡和樓梯移動
+        Vector3 adjustedForce = HandleSlopeMovement(force.normalized) * force.magnitude;
+        
+        velocity += adjustedForce * Time.deltaTime;
         velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
-        velocity.y = 0f;
+        
+        // CharacterController會自動處理重力，我們只需要確保Y軸速度合理
+        if (characterController != null)
+        {
+            // 如果在地面上且Y軸速度為負，重置為0
+            if (characterController.isGrounded && velocity.y < 0)
+            {
+                velocity.y = 0f;
+            }
+            // 如果不在地面上，應用重力
+            else if (!characterController.isGrounded)
+            {
+                velocity.y += Physics.gravity.y * Time.deltaTime;
+                velocity.y = Mathf.Max(velocity.y, -10f); // 限制最大下降速度
+            }
+        }
         
         // 使用CharacterController移動
         if (characterController != null)
@@ -446,26 +492,29 @@ public class EnemyAI : MonoBehaviour
             }
         }
         
-        // 簡化的地面檢測 - 只檢查前方是否有地面
-        Vector3 groundCheckStart = transform.position + direction * 0.5f;
-        if (!Physics.Raycast(groundCheckStart + Vector3.up * 0.5f, Vector3.down, out RaycastHit groundHit, 1.0f, groundMask))
+        // 檢查前方是否有地面（更寬鬆的檢測）
+        bool hasForwardGround = Physics.Raycast(transform.position + direction * 0.5f + Vector3.up * 0.1f, Vector3.down, out RaycastHit forwardGroundHit, groundCheckDistance + 1.0f, groundMask);
+        
+        // 如果前方有地面，就允許移動
+        if (hasForwardGround)
         {
-            // 如果沒有檢測到地面，但敵人當前是站在地面上的，就允許移動
-            if (IsGrounded())
-            {
-                return true;
-            }
-            return false; // 沒有地面，不能移動
+            return true;
         }
         
-        // 檢查地面角度（放寬限制）
-        float slopeAngle = Vector3.Angle(groundHit.normal, Vector3.up);
-        if (slopeAngle > maxSlopeAngle)
+        // 如果正在下降，也允許移動
+        if (characterController != null && !characterController.isGrounded && velocity.y < 0)
         {
-            return false; // 坡度太陡，不能移動
+            return true;
         }
         
-        return true;
+        // 檢查當前是否有地面
+        bool hasCurrentGround = Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, out RaycastHit currentGroundHit, groundCheckDistance, groundMask);
+        if (hasCurrentGround)
+        {
+            return true;
+        }
+        
+        return false; // 只有明顯懸崖才阻止移動
     }
 
     // 檢查是否站在地面上
@@ -483,6 +532,121 @@ public class EnemyAI : MonoBehaviour
         }
         
         return grounded;
+    }
+    
+    // 強制對齊地面
+    private void AlignToGround()
+    {
+        if (characterController == null) return;
+        
+        // 調試：顯示當前狀態
+        if (showDebugInfo)
+        {
+            Debug.Log($"敵人 {gameObject.name} 開始對齊地面，當前位置: {transform.position}, isGrounded: {characterController.isGrounded}");
+        }
+        
+        // 檢測地面 - 從敵人位置向上開始檢測
+        Vector3 rayStart = transform.position + Vector3.up * 1f;
+        bool hitGround = Physics.Raycast(rayStart, Vector3.down, out RaycastHit groundHit, 3f, groundMask);
+        
+        if (hitGround)
+        {
+            // 計算敵人應該的位置 - 直接站在地面上
+            float targetY = groundHit.point.y;
+            Vector3 targetPosition = new Vector3(transform.position.x, targetY, transform.position.z);
+            
+            // 如果位置差異太大，強制移動
+            if (Mathf.Abs(transform.position.y - targetY) > 0.1f)
+            {
+                if (showDebugInfo)
+                {
+                    Debug.Log($"敵人 {gameObject.name} 強制對齊地面，從 {transform.position.y:F2} 到 {targetY:F2}, 地面點: {groundHit.point}");
+                }
+                
+                // 暫時禁用CharacterController來設置位置
+                characterController.enabled = false;
+                transform.position = targetPosition;
+                characterController.enabled = true;
+                
+                // 重置速度
+                velocity = Vector3.zero;
+            }
+            else
+            {
+                if (showDebugInfo)
+                {
+                    Debug.Log($"敵人 {gameObject.name} 已經在地面上，位置正確");
+                }
+            }
+        }
+        else
+        {
+            if (showDebugInfo)
+            {
+                Debug.LogWarning($"敵人 {gameObject.name} 無法檢測到地面，位置: {transform.position}, groundMask: {groundMask.value}");
+                
+                // 顯示射線起點和方向
+                Debug.DrawRay(rayStart, Vector3.down * 3f, Color.red, 2f);
+            }
+        }
+    }
+    
+    // 延遲對齊地面的協程
+    private System.Collections.IEnumerator DelayedGroundAlign()
+    {
+        // 等待一幀，確保CharacterController已經初始化
+        yield return null;
+        
+        // 再次對齊地面
+        AlignToGround();
+        
+        // 等待0.1秒後再次檢查
+        yield return new WaitForSeconds(0.1f);
+        
+        // 如果還是不在地面上，強制對齊
+        if (characterController != null && !characterController.isGrounded)
+        {
+            if (showDebugInfo)
+            {
+                Debug.LogWarning($"敵人 {gameObject.name} 延遲對齊後仍不在地面上，強制對齊");
+            }
+            AlignToGround();
+        }
+    }
+    
+    // 處理樓梯和斜坡移動
+    private Vector3 HandleSlopeMovement(Vector3 moveDirection)
+    {
+        // CharacterController會自動處理大部分斜坡移動
+        // 我們只需要處理特殊情況，比如樓梯邊緣
+        if (characterController == null) return moveDirection;
+        
+        Vector3 rayStart = transform.position + Vector3.up * 0.1f;
+        
+        // 檢查當前位置和前方位置的地面高度
+        bool hasCurrentGround = Physics.Raycast(rayStart, Vector3.down, out RaycastHit currentGroundHit, groundCheckDistance, groundMask);
+        bool hasForwardGround = Physics.Raycast(rayStart + moveDirection * 0.5f, Vector3.down, out RaycastHit forwardGroundHit, groundCheckDistance + 0.5f, groundMask);
+        
+        if (hasCurrentGround && hasForwardGround)
+        {
+            float heightDifference = forwardGroundHit.point.y - currentGroundHit.point.y;
+            
+            // 如果是明顯的下坡，稍微調整Y軸分量
+            if (heightDifference < -0.1f)
+            {
+                Vector3 adjustedDirection = moveDirection;
+                adjustedDirection.y = -0.5f; // 輕微向下調整
+                
+                if (showDebugInfo)
+                {
+                    Debug.Log($"敵人 {gameObject.name} 檢測到下坡，高度差: {heightDifference:F2}");
+                }
+                
+                return adjustedDirection;
+            }
+        }
+        
+        return moveDirection;
     }
 
     // 近戰攻擊時對玩家造成傷害（前方90度扇形範圍判定）

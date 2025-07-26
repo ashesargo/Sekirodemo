@@ -6144,6 +6144,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2147483656
   maxSlopeAngle: 45
+  slopeCheckDistance: 5
+  maxStepHeight: 5
+  stepSmooth: 5
   velocity: {x: 0, y: 0, z: 0}
   canAutoAttack: 0
   canBeParried: 0
