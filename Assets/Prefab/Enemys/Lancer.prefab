@@ -8063,13 +8063,13 @@ MonoBehaviour:
   characterController: {fileID: 5125634401423986934}
   visionRange: 100
   attackRange: 20
-  maxSpeed: 10
+  maxSpeed: 20
   avoidDistance: 20
   avoidStrength: 40
   obstacleMask:
     serializedVersion: 2
     m_Bits: 512
-  retreatTime: 2.1
+  retreatTime: 1
   enemyAvoidDistance: 10
   enemyAvoidStrength: 30
   enemyLayerMask:

@@ -6897,14 +6897,14 @@ MonoBehaviour:
   animator: {fileID: 3368920649114396822}
   characterController: {fileID: 4722292873944998952}
   visionRange: 100
-  attackRange: 10
-  maxSpeed: 15
+  attackRange: 15
+  maxSpeed: 20
   avoidDistance: 20
   avoidStrength: 40
   obstacleMask:
     serializedVersion: 2
     m_Bits: 512
-  retreatTime: 2.1
+  retreatTime: 1
   enemyAvoidDistance: 10
   enemyAvoidStrength: 30
   enemyLayerMask:
