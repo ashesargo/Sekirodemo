@@ -70,7 +70,6 @@ public class PlayerGrapple : MonoBehaviour
         if (indicatorCanvas != null)
         {
             canvasScaler = indicatorCanvas.GetComponent<CanvasScaler>();
-
         }
     }
 
@@ -94,29 +93,69 @@ public class PlayerGrapple : MonoBehaviour
             UpdateRopeWithSag(ropeStartPos, ropeEndPos, sagAmount, ropeSegments);
         }
     }
+
     void UpdateNearbyPoints()
     {
         nearbyPoints.Clear();
         Collider[] colliders = Physics.OverlapSphere(transform.position, grappleRange, grappleLayer);
         string layerName = grappleLayer.value == 0 ? "未設置" : LayerMask.LayerToName(Mathf.FloorToInt(Mathf.Log(grappleLayer.value, 2)));
+
+        // 取得攝影機前方向量（忽略 y 軸以專注於水平朝向）
+        Vector3 cameraForward = mainCamera.transform.forward;
+        cameraForward.y = 0; // 忽略垂直方向
+        cameraForward.Normalize();
+
+        // 使用滑鼠游標的射線來選擇最佳點
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        RaycastHit[] hits = Physics.SphereCastAll(ray, sphereRadius, maxGrappleDistance, grappleLayer);
+        GrapplePoint bestPoint = null;
+        float minAngle = float.MaxValue;
+
         foreach (var collider in colliders)
         {
             GrapplePoint point = collider.GetComponent<GrapplePoint>();
             if (point != null && point.isGrapplable)
             {
-                nearbyPoints.Add(point);
-                // 為新檢測到的目標創建圖示
-                if (!targetInfos.Exists(info => info.target == point.transform))
+                // 計算從玩家到可抓取點的方向向量
+                Vector3 directionToPoint = (point.transform.position - transform.position).normalized;
+                directionToPoint.y = 0; // 忽略垂直方向
+                directionToPoint.Normalize();
+
+                // 檢查點積是否為正（即點是否在攝影機前方）
+                float dotProduct = Vector3.Dot(cameraForward, directionToPoint);
+                if (dotProduct > 0) // 僅當點在攝影機前方
                 {
-                    CreateIndicatorForTarget(point.transform);
+                    // 計算與滑鼠射線的夾角
+                    Vector3 pointWorldPos = point.transform.position;
+                    Vector3 screenPointPos = mainCamera.WorldToScreenPoint(pointWorldPos);
+                    Vector3 mousePos = Input.mousePosition;
+                    float angle = Vector2.Angle(new Vector2(screenPointPos.x, screenPointPos.y), new Vector2(mousePos.x, mousePos.y));
+
+                    // 選擇與滑鼠游標夾角最小的點
+                    if (angle < minAngle)
+                    {
+                        minAngle = angle;
+                        bestPoint = point;
+                    }
                 }
             }
         }
 
-        // 移除已不存在的目標
+        // 僅將最佳點添加到 nearbyPoints
+        if (bestPoint != null)
+        {
+            nearbyPoints.Add(bestPoint);
+            // 為最佳點創建圖示（如果尚未創建）
+            if (!targetInfos.Exists(info => info.target == bestPoint.transform))
+            {
+                CreateIndicatorForTarget(bestPoint.transform);
+            }
+        }
+
+        // 移除非最佳點的目標資訊
         targetInfos.RemoveAll(info =>
         {
-            if (info.target == null || !nearbyPoints.Exists(p => p.transform == info.target))
+            if (info.target == null || (bestPoint != null && info.target != bestPoint.transform))
             {
                 if (info.indicatorImage != null)
                 {
@@ -127,26 +166,17 @@ public class PlayerGrapple : MonoBehaviour
             return false;
         });
 
-        // 使用現有的射線檢測 邏輯來更新圖示狀態
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        Debug.DrawRay(ray.origin, ray.direction * maxGrappleDistance, Color.yellow, 2f);
-        RaycastHit[] hits = Physics.SphereCastAll(ray, sphereRadius, maxGrappleDistance, grappleLayer);
-        // 重置所有目標的射線擊中狀態
+        // 更新射線擊中狀態
         foreach (var info in targetInfos)
         {
             info.isHitByRay = false;
-        }
-
-        // 檢查哪些目標被射線擊中
-        foreach (var hit in hits)
-        {
-            GrapplePoint point = hit.collider.GetComponent<GrapplePoint>();
-            if (point != null && point.isGrapplable)
+            foreach (var hit in hits)
             {
-                TargetInfo info = targetInfos.Find(t => t.target == point.transform);
-                if (info != null)
+                GrapplePoint point = hit.collider.GetComponent<GrapplePoint>();
+                if (point != null && point.isGrapplable && info.target == point.transform)
                 {
                     info.isHitByRay = true;
+                    break;
                 }
             }
         }
@@ -158,18 +188,36 @@ public class PlayerGrapple : MonoBehaviour
         Debug.DrawRay(ray.origin, ray.direction * maxGrappleDistance, Color.yellow, 2f);
         RaycastHit[] hits = Physics.SphereCastAll(ray, sphereRadius, maxGrappleDistance, grappleLayer);
         GrapplePoint closestPoint = null;
-        float minDistance = float.MaxValue;
+        float minAngle = float.MaxValue;
+
+        // 取得攝影機前方向量
+        Vector3 cameraForward = mainCamera.transform.forward;
+        cameraForward.y = 0;
+        cameraForward.Normalize();
 
         foreach (var hit in hits)
         {
             GrapplePoint point = hit.collider.GetComponent<GrapplePoint>();
             if (point != null && point.isGrapplable)
             {
-                float distance = Vector3.Distance(transform.position, point.transform.position);
-                if (distance < minDistance)
+                // 檢查點是否在攝影機前方
+                Vector3 directionToPoint = (point.transform.position - transform.position).normalized;
+                directionToPoint.y = 0;
+                directionToPoint.Normalize();
+                float dotProduct = Vector3.Dot(cameraForward, directionToPoint);
+                if (dotProduct > 0)
                 {
-                    minDistance = distance;
-                    closestPoint = point;
+                    // 計算與滑鼠游標的夾角
+                    Vector3 pointWorldPos = point.transform.position;
+                    Vector3 screenPointPos = mainCamera.WorldToScreenPoint(pointWorldPos);
+                    Vector3 mousePos = Input.mousePosition;
+                    float angle = Vector2.Angle(new Vector2(screenPointPos.x, screenPointPos.y), new Vector2(mousePos.x, mousePos.y));
+
+                    if (angle < minAngle)
+                    {
+                        minAngle = angle;
+                        closestPoint = point;
+                    }
                 }
             }
         }
@@ -179,6 +227,93 @@ public class PlayerGrapple : MonoBehaviour
             selectedPoint = closestPoint;
             StartCoroutine(StartGrappleWithTurn(closestPoint));
         }
+    }
+
+    void UpdateIndicators()
+    {
+        // 取得攝影機前方向量（忽略 y 軸以專注於水平朝向）
+        Vector3 cameraForward = mainCamera.transform.forward;
+        cameraForward.y = 0; // 忽略垂直方向
+        cameraForward.Normalize();
+
+        foreach (TargetInfo info in targetInfos)
+        {
+            if (info.target == null) // 檢查目標是否已被銷毀
+            {
+                if (info.indicatorImage != null)
+                {
+                    Destroy(info.indicatorImage.gameObject);
+                }
+                continue;
+            }
+
+            // 計算從玩家到可抓取點的方向向量
+            Vector3 directionToPoint = (info.target.position - transform.position).normalized;
+            directionToPoint.y = 0; // 忽略垂直方向
+            directionToPoint.Normalize();
+
+            // 檢查點積是否為正（即點是否在攝影機前方）
+            float dotProduct = Vector3.Dot(cameraForward, directionToPoint);
+            if (dotProduct <= 0) // 如果點不在攝影機前方，隱藏圖示
+            {
+                info.indicatorImage.enabled = false;
+                continue;
+            }
+
+            // 計算目標與玩家的距離
+            float distanceToTarget = Vector3.Distance(transform.position, info.target.position);
+            info.isInRange = distanceToTarget <= grappleRange;
+
+            // 當目標不在範圍內時不顯示
+            if (!info.isInRange)
+            {
+                info.indicatorImage.enabled = false;
+                continue;
+            }
+
+            // 目標在範圍內且在攝影機前方，啟用圖示
+            info.indicatorImage.enabled = true;
+
+            // 根據射線是否擊中選擇圖示
+            info.indicatorImage.sprite = info.isHitByRay ? greenCircleSprite : grayCircleSprite;
+
+            // 將目標世界座標轉換為螢幕座標
+            Vector3 targetScreenPos = mainCamera.WorldToScreenPoint(info.target.position);
+
+            // 判斷目標是否在攝影機視野內
+            bool isTargetVisible = targetScreenPos.z > 0 &&
+                                  targetScreenPos.x > 0 && targetScreenPos.x < Screen.width &&
+                                  targetScreenPos.y > 0 && targetScreenPos.y < Screen.height;
+
+            if (isTargetVisible)
+            {
+                // 目標在攝影機視野內，直接顯示在目標位置
+                info.indicatorRect.position = targetScreenPos;
+            }
+            else
+            {
+                // 目標在偵測範圍內但不在攝影機視野內，顯示在螢幕邊緣
+                Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0);
+                Vector3 direction = (targetScreenPos - screenCenter).normalized;
+
+                // 計算螢幕邊緣位置
+                Vector2 canvasSize = canvasScaler.referenceResolution;
+                float canvasScale = canvasScaler.scaleFactor;
+                float edgeX = (Screen.width / canvasScale - edgeOffset) / 2f;
+                float edgeY = (Screen.height / canvasScale - edgeOffset) / 2f;
+
+                // 限制圖示在螢幕邊緣
+                float maxX = edgeX;
+                float maxY = edgeY;
+                float ratio = Mathf.Min(maxX / Mathf.Abs(direction.x), maxY / Mathf.Abs(direction.y));
+                Vector3 edgePosition = screenCenter + direction * ratio * canvasScale;
+
+                info.indicatorRect.position = edgePosition;
+            }
+        }
+
+        // 清理無效的目標資訊
+        targetInfos.RemoveAll(info => info.target == null || info.indicatorImage == null);
     }
 
     IEnumerator StartGrappleWithTurn(GrapplePoint target)
@@ -370,10 +505,12 @@ public class PlayerGrapple : MonoBehaviour
             grappleRope.SetPosition(i, point);
         }
     }
+
     public bool IsGrappling()
     {
         return isGrappling;
     }
+
     public void DisableGrapple()
     {
         if (grappleRope != null)
@@ -383,15 +520,9 @@ public class PlayerGrapple : MonoBehaviour
         }
     }
 
-    // 新增的 UI 圖示管理方法
     void CreateIndicatorForTarget(Transform target)
     {
-        if (indicatorPrefab == null)
-        {
-            return;
-        }
-
-        if (indicatorCanvas == null)
+        if (indicatorPrefab == null || indicatorCanvas == null)
         {
             return;
         }
@@ -421,74 +552,5 @@ public class PlayerGrapple : MonoBehaviour
             isHitByRay = false
         };
         targetInfos.Add(info);
-    }
-
-    void UpdateIndicators()
-    {
-        foreach (TargetInfo info in targetInfos)
-        {
-            if (info.target == null) // 檢查目標是否已被銷毀
-            {
-                if (info.indicatorImage != null)
-                {
-                    Destroy(info.indicatorImage.gameObject);
-                }
-                continue;
-            }
-
-            // 計算目標與玩家的距離
-            float distanceToTarget = Vector3.Distance(transform.position, info.target.position);
-            info.isInRange = distanceToTarget <= grappleRange;
-
-            // 1. 當目標不在範圍內時不顯示
-            if (!info.isInRange)
-            {
-                info.indicatorImage.enabled = false;
-                continue;
-            }
-
-            // 目標在範圍內，啟用圖示
-            info.indicatorImage.enabled = true;
-
-            // 2 & 5. 根據射線是否擊中選擇圖示
-            info.indicatorImage.sprite = info.isHitByRay ? greenCircleSprite : grayCircleSprite;
-
-            // 將目標世界座標轉換為螢幕座標
-            Vector3 targetScreenPos = mainCamera.WorldToScreenPoint(info.target.position);
-
-            // 3 & 4. 判斷目標是否在攝影機視野內
-            bool isTargetVisible = targetScreenPos.z > 0 &&
-                                  targetScreenPos.x > 0 && targetScreenPos.x < Screen.width &&
-                                  targetScreenPos.y > 0 && targetScreenPos.y < Screen.height;
-
-            if (isTargetVisible)
-            {
-                // 目標在攝影機視野內，直接顯示在目標位置
-                info.indicatorRect.position = targetScreenPos;
-            }
-            else
-            {
-                // 4. 目標在偵測範圍內但不在攝影機視野內，顯示在螢幕邊緣
-                Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0);
-                Vector3 direction = (targetScreenPos - screenCenter).normalized;
-
-                // 計算螢幕邊緣位置
-                Vector2 canvasSize = canvasScaler.referenceResolution;
-                float canvasScale = canvasScaler.scaleFactor;
-                float edgeX = (Screen.width / canvasScale - edgeOffset) / 2f;
-                float edgeY = (Screen.height / canvasScale - edgeOffset) / 2f;
-
-                // 限制圖示在螢幕邊緣
-                float maxX = edgeX;
-                float maxY = edgeY;
-                float ratio = Mathf.Min(maxX / Mathf.Abs(direction.x), maxY / Mathf.Abs(direction.y));
-                Vector3 edgePosition = screenCenter + direction * ratio * canvasScale;
-
-                info.indicatorRect.position = edgePosition;
-            }
-        }
-
-        // 清理無效的目標資訊
-        targetInfos.RemoveAll(info => info.target == null || info.indicatorImage == null);
     }
 }
