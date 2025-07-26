@@ -25,9 +25,8 @@ public class PoolController : MonoBehaviour
         // 無限循環生成物件
         while (true)
         {
-            GameObject obj = objectPool.GetPooledObject();
-            // 設置物件位置!!!!!
-            obj.transform.position = Vector3.zero;
+            // 使用新的GetPooledObject方法來正確設置CharacterController的位置
+            GameObject obj = objectPool.GetPooledObject(Vector3.zero, Quaternion.identity);
 
             yield return new WaitForSeconds(spawnTime);
         }

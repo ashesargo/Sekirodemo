@@ -64,15 +64,15 @@ public class BossAI : EnemyAI
         // 調試：檢查 obstacleMask 設置
         Debug.Log($"BossAI Start - obstacleMask: {obstacleMask.value}, avoidDistance: {avoidDistance}");
         
-        // 檢查自己的 Collider
-        Collider myCollider = GetComponent<Collider>();
-        if (myCollider == null)
+        // 檢查自己的 CharacterController
+        CharacterController myController = GetComponent<CharacterController>();
+        if (myController == null)
         {
-            Debug.LogError($"Boss {gameObject.name} 沒有 Collider 組件！Boss避障需要 Collider 才能工作。");
+            Debug.LogError($"Boss {gameObject.name} 沒有 CharacterController 組件！Boss移動需要 CharacterController 才能工作。");
         }
         else
         {
-            Debug.Log($"Boss {gameObject.name} 有 Collider: {myCollider.GetType().Name}, Layer: {gameObject.layer}");
+            Debug.Log($"Boss {gameObject.name} 有 CharacterController: {myController.GetType().Name}, Layer: {gameObject.layer}");
         }
         
         Debug.Log("BossAI: Boss初始化完成");

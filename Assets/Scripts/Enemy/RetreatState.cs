@@ -41,30 +41,11 @@ public class RetreatState : BaseEnemyState
         strafeDir = right * strafeSign;
         // 計算橫移力
         Vector3 strafeForce = strafeDir * enemy.maxSpeed * 0.5f;
-        // 使用前方避障（橫移方向的前方）
-        Vector3 boxCenter = enemy.transform.position + strafeDir * enemy.detectionBoxOffset + Vector3.up * enemy.detectionBoxYOffset;
-        Quaternion boxRotation = Quaternion.LookRotation(strafeDir);
-        Collider[] hitColliders = Physics.OverlapBox(boxCenter, enemy.detectionBoxSize * 0.5f, boxRotation, enemy.obstacleMask);
-        Vector3 avoid = Vector3.zero;
-        foreach (var hitCollider in hitColliders)
-        {
-            if (hitCollider.gameObject == enemy.gameObject) continue;
-            Vector3 directionToObstacle = hitCollider.transform.position - enemy.transform.position;
-            directionToObstacle.y = 0f;
-            if (directionToObstacle.magnitude > 0.1f)
-            {
-                Vector3 awayFromObstacle = -directionToObstacle.normalized;
-                float distance = directionToObstacle.magnitude;
-                float distanceRatio = Mathf.Clamp01(1f - (distance / enemy.detectionBoxSize.z));
-                float adjustedStrength = enemy.avoidStrength * distanceRatio;
-                avoid += awayFromObstacle * adjustedStrength;
-            }
-        }
-        if (avoid.magnitude > enemy.maxSpeed)
-            avoid = avoid.normalized * enemy.maxSpeed;
-        // 加上敵人避障
-        avoid += enemy.EnemyAvoid();
-        Vector3 totalForce = strafeForce + avoid;
+        
+        // 使用統一的避障方法
+        Vector3 obstacleAvoid = enemy.ObstacleAvoid(); // 前方避障
+        Vector3 enemyAvoid = enemy.EnemyAvoid(); // 敵人避障
+        Vector3 totalForce = strafeForce + obstacleAvoid + enemyAvoid;
         // 橫移時面向玩家
         enemy.Move(totalForce, true);
         if (timer >= enemy.retreatTime)

@@ -4963,7 +4963,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 1191984664551618550}
-  rb: {fileID: 0}
+  characterController: {fileID: 9206198347430853448}
   visionRange: 100
   attackRange: 10
   maxSpeed: 30
@@ -4991,6 +4991,11 @@ MonoBehaviour:
   showDebugInfo: 0
   lookAtTurnSpeed: 2
   minDistanceToPlayer: 5
+  groundCheckDistance: 5
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 2147483656
+  maxSlopeAngle: 45
   velocity: {x: 0, y: 0, z: 0}
   canAutoAttack: 1
   canBeParried: 0
@@ -5266,6 +5271,11 @@ SkinnedMeshRenderer:
 --- !u!137 &9182408932335905569 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 2524296726959416581, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
+  m_PrefabInstance: {fileID: 6658117099092282916}
+  m_PrefabAsset: {fileID: 0}
+--- !u!143 &9206198347430853448 stripped
+CharacterController:
+  m_CorrespondingSourceObject: {fileID: 2568352129253045612, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
   m_PrefabInstance: {fileID: 6658117099092282916}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6986254440204515934

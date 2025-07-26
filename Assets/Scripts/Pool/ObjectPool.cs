@@ -49,6 +49,26 @@ public class ObjectPool : MonoBehaviour
         return newObj;
     }
 
+    // 取得物件池內的物件並設置位置（適用於有CharacterController的物件）
+    public GameObject GetPooledObject(Vector3 position, Quaternion rotation)
+    {
+        GameObject obj = GetPooledObject();
+        
+        // 檢查是否有EnemyAI組件，如果有則使用SetSpawnPosition
+        EnemyAI enemyAI = obj.GetComponent<EnemyAI>();
+        if (enemyAI != null)
+        {
+            enemyAI.SetSpawnPosition(position, rotation);
+        }
+        else
+        {
+            obj.transform.position = position;
+            obj.transform.rotation = rotation;
+        }
+        
+        return obj;
+    }
+
     // 將物件回收至物件池
     public void ReturnPooledObject(GameObject obj)
     {

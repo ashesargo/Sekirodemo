@@ -144,15 +144,34 @@ public class EnemyPool : MonoBehaviour
             Transform spawnPoint = GetSelectedSpawnPoint(selectedPrefab);
             if (spawnPoint != null)
             {
-                enemy.transform.position = spawnPoint.position;
-                enemy.transform.rotation = spawnPoint.rotation;
+                // 使用新的SetSpawnPosition方法來正確設置CharacterController的位置
+                EnemyAI enemyAI = enemy.GetComponent<EnemyAI>();
+                if (enemyAI != null)
+                {
+                    enemyAI.SetSpawnPosition(spawnPoint.position, spawnPoint.rotation);
+                }
+                else
+                {
+                    enemy.transform.position = spawnPoint.position;
+                    enemy.transform.rotation = spawnPoint.rotation;
+                }
             }
             else
             {
                 // 使用隨機生成
                 Vector3 spawnPosition = GetRandomSpawnPosition();
-                enemy.transform.position = spawnPosition;
-                enemy.transform.rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
+                Quaternion randomRotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
+                
+                EnemyAI enemyAI = enemy.GetComponent<EnemyAI>();
+                if (enemyAI != null)
+                {
+                    enemyAI.SetSpawnPosition(spawnPosition, randomRotation);
+                }
+                else
+                {
+                    enemy.transform.position = spawnPosition;
+                    enemy.transform.rotation = randomRotation;
+                }
             }
             
             // 重置敵人狀態
@@ -356,14 +375,33 @@ public class EnemyPool : MonoBehaviour
                 Transform spawnPoint = GetSelectedSpawnPoint(selectedPrefab);
                 if (spawnPoint != null)
                 {
-                    enemy.transform.position = spawnPoint.position;
-                    enemy.transform.rotation = spawnPoint.rotation;
+                    // 使用新的SetSpawnPosition方法來正確設置CharacterController的位置
+                    EnemyAI enemyAI = enemy.GetComponent<EnemyAI>();
+                    if (enemyAI != null)
+                    {
+                        enemyAI.SetSpawnPosition(spawnPoint.position, spawnPoint.rotation);
+                    }
+                    else
+                    {
+                        enemy.transform.position = spawnPoint.position;
+                        enemy.transform.rotation = spawnPoint.rotation;
+                    }
                 }
                 else
                 {
                     Vector3 spawnPosition = GetRandomSpawnPosition();
-                    enemy.transform.position = spawnPosition;
-                    enemy.transform.rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
+                    Quaternion randomRotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
+                    
+                    EnemyAI enemyAI = enemy.GetComponent<EnemyAI>();
+                    if (enemyAI != null)
+                    {
+                        enemyAI.SetSpawnPosition(spawnPosition, randomRotation);
+                    }
+                    else
+                    {
+                        enemy.transform.position = spawnPosition;
+                        enemy.transform.rotation = randomRotation;
+                    }
                 }
             }
         }
@@ -387,14 +425,33 @@ public class EnemyPool : MonoBehaviour
                 Transform spawnPoint = GetSelectedSpawnPoint(selectedPrefab);
                 if (spawnPoint != null)
                 {
-                    enemy.transform.position = spawnPoint.position;
-                    enemy.transform.rotation = spawnPoint.rotation;
+                    // 使用新的SetSpawnPosition方法來正確設置CharacterController的位置
+                    EnemyAI enemyAI = enemy.GetComponent<EnemyAI>();
+                    if (enemyAI != null)
+                    {
+                        enemyAI.SetSpawnPosition(spawnPoint.position, spawnPoint.rotation);
+                    }
+                    else
+                    {
+                        enemy.transform.position = spawnPoint.position;
+                        enemy.transform.rotation = spawnPoint.rotation;
+                    }
                 }
                 else
                 {
                     Vector3 spawnPosition = GetRandomSpawnPosition();
-                    enemy.transform.position = spawnPosition;
-                    enemy.transform.rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
+                    Quaternion randomRotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
+                    
+                    EnemyAI enemyAI = enemy.GetComponent<EnemyAI>();
+                    if (enemyAI != null)
+                    {
+                        enemyAI.SetSpawnPosition(spawnPosition, randomRotation);
+                    }
+                    else
+                    {
+                        enemy.transform.position = spawnPosition;
+                        enemy.transform.rotation = randomRotation;
+                    }
                 }
             }
         }
