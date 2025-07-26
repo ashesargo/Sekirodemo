@@ -1,14 +1,15 @@
 using UnityEngine;
 
-public class CloseCombatState : IEnemyState
+public class CloseCombatState : BaseEnemyState
 {
     private bool hasAttacked = false;
     private bool hasTriggeredAttack = false;
     private float timer = 0f;
     private float maxAttackTime = 3f; // 最多等待3秒，避免卡死
 
-    public void EnterState(EnemyAI enemy)
+    public override void EnterState(EnemyAI enemy)
     {
+        base.EnterState(enemy);
         Debug.Log("CloseCombatState: 進入近戰狀態");
         enemy.Stop();
         
@@ -21,7 +22,7 @@ public class CloseCombatState : IEnemyState
         enemy.canAutoAttack = false; // 攻擊時禁用自動攻擊
     }
 
-    public void UpdateState(EnemyAI enemy)
+    public override void UpdateState(EnemyAI enemy)
     {
         timer += Time.deltaTime;
         AnimatorStateInfo stateInfo = enemy.animator.GetCurrentAnimatorStateInfo(0);
@@ -55,9 +56,11 @@ public class CloseCombatState : IEnemyState
         }
     }
 
-    public void ExitState(EnemyAI enemy)
+    public override void ExitState(EnemyAI enemy)
     {
+        base.ExitState(enemy);
         Debug.Log("CloseCombatState: 退出近戰狀態");
         enemy.Stop();
     }
+    public override bool ShouldUseRootMotion() => true;
 } 

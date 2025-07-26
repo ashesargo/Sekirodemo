@@ -1,13 +1,14 @@
 using UnityEngine;
 
-public class AimState : IEnemyState
+public class AimState : BaseEnemyState
 {
     private float aimTime = 1.5f; // 瞄準時間
     private float timer = 0f;
     private bool hasStartedAiming = false;
 
-    public void EnterState(EnemyAI enemy)
+    public override void EnterState(EnemyAI enemy)
     {
+        base.EnterState(enemy);
         Debug.Log("AimState: 進入瞄準狀態");
         enemy.Stop();
         
@@ -26,7 +27,7 @@ public class AimState : IEnemyState
         enemy.canAutoAttack = false; // 瞄準時禁用自動攻擊
     }
 
-    public void UpdateState(EnemyAI enemy)
+    public override void UpdateState(EnemyAI enemy)
     {
         timer += Time.deltaTime;
         
@@ -67,9 +68,11 @@ public class AimState : IEnemyState
         }
     }
 
-    public void ExitState(EnemyAI enemy)
+    public override void ExitState(EnemyAI enemy)
     {
+        base.ExitState(enemy);
         Debug.Log("AimState: 退出瞄準狀態");
         enemy.Stop();
     }
+    public override bool ShouldUseRootMotion() => true;
 } 

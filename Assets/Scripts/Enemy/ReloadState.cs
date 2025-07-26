@@ -1,13 +1,14 @@
 using UnityEngine;
 
-public class ReloadState : IEnemyState
+public class ReloadState : BaseEnemyState
 {
     private float reloadTime = 2f; // 裝彈時間
     private float timer = 0f;
     private bool hasStartedReloading = false;
 
-    public void EnterState(EnemyAI enemy)
+    public override void EnterState(EnemyAI enemy)
     {
+        base.EnterState(enemy);
         Debug.Log("ReloadState: 進入裝彈狀態");
         enemy.Stop();
         
@@ -27,7 +28,7 @@ public class ReloadState : IEnemyState
         enemy.canAutoAttack = false; // 裝彈時禁用自動攻擊
     }
 
-    public void UpdateState(EnemyAI enemy)
+    public override void UpdateState(EnemyAI enemy)
     {
         timer += Time.deltaTime;
         AnimatorStateInfo stateInfo = enemy.animator.GetCurrentAnimatorStateInfo(0);
@@ -83,9 +84,11 @@ public class ReloadState : IEnemyState
         }
     }
 
-    public void ExitState(EnemyAI enemy)
+    public override void ExitState(EnemyAI enemy)
     {
+        base.ExitState(enemy);
         Debug.Log("ReloadState: 退出裝彈狀態");
         enemy.Stop();
     }
+    public override bool ShouldUseRootMotion() => true;
 } 

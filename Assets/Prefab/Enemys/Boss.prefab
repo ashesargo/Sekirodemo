@@ -7305,10 +7305,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6869600998273829490, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7658690381631198487}
-    - targetCorrespondingSourceObject: {fileID: 6869600998273829490, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2123935402674682406}
   m_SourcePrefab: {fileID: 100100000, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+--- !u!143 &2151013661169599612 stripped
+CharacterController:
+  m_CorrespondingSourceObject: {fileID: 7905645749971633676, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+  m_PrefabInstance: {fileID: 8101854144654213744}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2592737532880117844 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6022667746007867940, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
@@ -7350,7 +7352,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 8255613398275737794}
-  rb: {fileID: 0}
+  characterController: {fileID: 2151013661169599612}
   visionRange: 100
   attackRange: 15
   maxSpeed: 20
@@ -7378,6 +7380,11 @@ MonoBehaviour:
   showDebugInfo: 0
   lookAtTurnSpeed: 2
   minDistanceToPlayer: 5
+  groundCheckDistance: 5
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 2147483656
+  maxSlopeAngle: 45
   velocity: {x: 0, y: 0, z: 0}
   canAutoAttack: 1
   canBeParried: 0
@@ -7394,33 +7401,8 @@ MonoBehaviour:
   combo1Duration: 6
   combo2Duration: 1
   combo3Duration: 1
---- !u!54 &2123935402674682406
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3403077399576037378}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
+  leftWeapon: {fileID: 0}
+  rightWeapon: {fileID: 0}
 --- !u!95 &8255613398275737794 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 215686583444720306, guid: eb198f9017afb5e45a01d418e8811423, type: 3}

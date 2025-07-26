@@ -5,7 +5,7 @@ public class EnemyAI : MonoBehaviour
     public static Transform CachedPlayer; // 靜態快取
     public Transform player { get { return CachedPlayer; } }
     public Animator animator;
-    public Rigidbody rb; // 新增Rigidbody引用
+    public CharacterController characterController; // 改用CharacterController
 
     public float visionRange = 1000f;
     public float attackRange = 2f;
@@ -41,19 +41,24 @@ public class EnemyAI : MonoBehaviour
     public float lookAtTurnSpeed = 2f;
     [Header("與玩家最小距離 (避免推擠)")]
     public float minDistanceToPlayer = 1.2f;
+    
+    [Header("地面檢測設定")]
+    public float groundCheckDistance = 0.1f; // 地面檢測距離
+    public LayerMask groundMask = 1 << 3; // Ground 層 (Layer 3)
+    public float maxSlopeAngle = 45f; // 最大可攀爬角度
 
-    private IEnemyState currentState;
+    private BaseEnemyState currentState;
     [HideInInspector] public Vector3 velocity;
     public bool canAutoAttack = true;
     private bool isObstacleDetected = false; // 是否檢測到障礙物
     public bool canBeParried = false;
 
-    public IEnemyState CurrentState => currentState;
+    public BaseEnemyState CurrentState => currentState;
 
     void Awake()
     {
         animator = GetComponent<Animator>();
-        rb = GetComponent<Rigidbody>(); // 取得Rigidbody
+        characterController = GetComponent<CharacterController>(); // 取得CharacterController
         // 只在第一次時尋找並快取
         if (CachedPlayer == null)
         {
@@ -63,23 +68,42 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    // 物件池生成時呼叫此方法來正確設置位置和旋轉
+    public void SetSpawnPosition(Vector3 position, Quaternion rotation)
+    {
+        if (characterController != null)
+        {
+            // 暫時禁用CharacterController來設置位置
+            characterController.enabled = false;
+            transform.position = position;
+            transform.rotation = rotation;
+            characterController.enabled = true;
+        }
+        else
+        {
+            transform.position = position;
+            transform.rotation = rotation;
+        }
+    }
+
     void Start()
     {
         SwitchState(new IdleState());
         
-        // 調試：檢查 obstacleMask 設置
-        Debug.Log($"EnemyAI Start - obstacleMask: {obstacleMask.value}, avoidDistance: {avoidDistance}");
+        // 調試：檢查各種設置
+        Debug.Log($"EnemyAI Start - obstacleMask: {obstacleMask.value}, groundMask: {groundMask.value}, avoidDistance: {avoidDistance}");
         
-        // 檢查自己的 Collider
-        Collider myCollider = GetComponent<Collider>();
-        if (myCollider == null)
+        // 檢查CharacterController
+        if (characterController == null)
         {
-            Debug.LogError($"敵人 {gameObject.name} 沒有 Collider 組件！敵人避障需要 Collider 才能工作。");
+            Debug.LogError($"敵人 {gameObject.name} 沒有 CharacterController 組件！");
         }
         else
         {
-            Debug.Log($"敵人 {gameObject.name} 有 Collider: {myCollider.GetType().Name}, Layer: {gameObject.layer}");
+            Debug.Log($"敵人 {gameObject.name} 有 CharacterController, Layer: {gameObject.layer}");
         }
+        
+        Debug.Log("EnemyAI: 敵人初始化完成");
     }
 
     void Update()
@@ -88,7 +112,7 @@ public class EnemyAI : MonoBehaviour
         currentState?.UpdateState(this);
     }
 
-    public void SwitchState(IEnemyState newState)
+    public void SwitchState(BaseEnemyState newState)
     {
         currentState?.ExitState(this);
         currentState = newState;
@@ -150,6 +174,31 @@ public class EnemyAI : MonoBehaviour
                     if (showDebugInfo)
                     {
                         Debug.Log($"ObstacleAvoid - 跳過自己的 Collider: {hitCollider.name}");
+                    }
+                    continue;
+                }
+                
+                // 特別檢查玩家和其他敵人
+                if (hitCollider.CompareTag("Player") || hitCollider.CompareTag("Enemy"))
+                {
+                    Vector3 directionToTarget = hitCollider.transform.position - transform.position;
+                    directionToTarget.y = 0f;
+                    
+                    if (directionToTarget.magnitude > 0.1f)
+                    {
+                        Vector3 awayFromTarget = -directionToTarget.normalized;
+                        float distance = directionToTarget.magnitude;
+                        
+                        // 對玩家和敵人使用更強的避障力
+                        float distanceRatio = Mathf.Clamp01(1f - (distance / detectionBoxSize.z));
+                        float adjustedStrength = avoidStrength * 2f * distanceRatio; // 加倍避障強度
+                        
+                        avoid += awayFromTarget * adjustedStrength;
+                        
+                        if (showDebugInfo)
+                        {
+                            Debug.Log($"ObstacleAvoid - 檢測到玩家/敵人: {hitCollider.name}, 距離: {distance:F2}, 避障力: {awayFromTarget * adjustedStrength}");
+                        }
                     }
                     continue;
                 }
@@ -268,15 +317,15 @@ public class EnemyAI : MonoBehaviour
             animator.applyRootMotion = useRootMotion;
     }
 
-    // Root Motion推動Rigidbody（如有）
+    // Root Motion推動CharacterController（如有）
     void OnAnimatorMove()
     {
         if (animator.applyRootMotion)
         {
-            if (rb != null)
+            if (characterController != null)
             {
-                rb.MovePosition(animator.rootPosition);
-                rb.MoveRotation(animator.rootRotation);
+                characterController.Move(animator.deltaPosition);
+                transform.rotation = animator.rootRotation;
             }
             else
             {
@@ -292,6 +341,8 @@ public class EnemyAI : MonoBehaviour
         if (animator != null && animator.applyRootMotion)
             return; // 啟用Root Motion時不由程式移動
         force.y = 0f;
+        
+        // 檢查與玩家的距離
         if (player != null)
         {
             float distToPlayer = Vector3.Distance(transform.position, player.position);
@@ -308,10 +359,41 @@ public class EnemyAI : MonoBehaviour
                 return;
             }
         }
+        
+        // 簡化的移動檢測 - 只在有明顯障礙物時才檢查
+        if (force.magnitude > 0.1f && !CanMoveInDirection(force.normalized))
+        {
+            // 如果前方不可行走，嘗試左右避開
+            Vector3 rightDir = Vector3.Cross(force.normalized, Vector3.up);
+            if (CanMoveInDirection(rightDir))
+            {
+                force = rightDir * force.magnitude * 0.5f;
+            }
+            else if (CanMoveInDirection(-rightDir))
+            {
+                force = -rightDir * force.magnitude * 0.5f;
+            }
+            else
+            {
+                // 如果都無法移動，停止
+                velocity = Vector3.zero;
+                return;
+            }
+        }
+        
         velocity += force * Time.deltaTime;
         velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
         velocity.y = 0f;
-        transform.position += velocity * Time.deltaTime;
+        
+        // 使用CharacterController移動
+        if (characterController != null)
+        {
+            characterController.Move(velocity * Time.deltaTime);
+        }
+        else
+        {
+            transform.position += velocity * Time.deltaTime;
+        }
 
         if (lookAtPlayer && player != null)
         {
@@ -332,6 +414,75 @@ public class EnemyAI : MonoBehaviour
     public void Stop()
     {
         velocity = Vector3.zero;
+    }
+
+    // 檢查是否可以在指定方向移動
+    private bool CanMoveInDirection(Vector3 direction)
+    {
+        if (characterController == null) return true;
+        
+        // 檢查前方是否有障礙物
+        Vector3 checkStart = transform.position + Vector3.up * 0.1f;
+        
+        // 使用SphereCast檢測前方障礙物
+        if (Physics.SphereCast(checkStart, characterController.radius * 0.8f, direction, out RaycastHit hit, 1.5f, obstacleMask))
+        {
+            // 檢查是否為玩家
+            if (hit.collider.CompareTag("Player"))
+            {
+                return false; // 不能踩到玩家
+            }
+            
+            // 檢查是否為其他敵人
+            if (hit.collider.CompareTag("Enemy"))
+            {
+                return false; // 不能踩到其他敵人
+            }
+            
+            // 檢查是否為不可行走的物件
+            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
+            {
+                return false;
+            }
+        }
+        
+        // 簡化的地面檢測 - 只檢查前方是否有地面
+        Vector3 groundCheckStart = transform.position + direction * 0.5f;
+        if (!Physics.Raycast(groundCheckStart + Vector3.up * 0.5f, Vector3.down, out RaycastHit groundHit, 1.0f, groundMask))
+        {
+            // 如果沒有檢測到地面，但敵人當前是站在地面上的，就允許移動
+            if (IsGrounded())
+            {
+                return true;
+            }
+            return false; // 沒有地面，不能移動
+        }
+        
+        // 檢查地面角度（放寬限制）
+        float slopeAngle = Vector3.Angle(groundHit.normal, Vector3.up);
+        if (slopeAngle > maxSlopeAngle)
+        {
+            return false; // 坡度太陡，不能移動
+        }
+        
+        return true;
+    }
+
+    // 檢查是否站在地面上
+    private bool IsGrounded()
+    {
+        if (characterController == null) return true;
+        
+        Vector3 groundCheckStart = transform.position + Vector3.up * 0.1f;
+        bool grounded = Physics.Raycast(groundCheckStart, Vector3.down, groundCheckDistance, groundMask);
+        
+        // 調試：如果敵人無法移動，檢查地面狀態
+        if (showDebugInfo && !grounded)
+        {
+            Debug.LogWarning($"敵人 {gameObject.name} 地面檢測失敗 - 位置: {transform.position}, groundMask: {groundMask.value}");
+        }
+        
+        return grounded;
     }
 
     // 近戰攻擊時對玩家造成傷害（前方90度扇形範圍判定）

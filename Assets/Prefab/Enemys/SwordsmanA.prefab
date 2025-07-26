@@ -4689,7 +4689,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6022667745087572463, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6022667745087572463, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_IsActive
@@ -6044,6 +6044,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 850079304113082800}
   m_SourcePrefab: {fileID: 100100000, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+--- !u!143 &2144371471560533037 stripped
+CharacterController:
+  m_CorrespondingSourceObject: {fileID: 7905645749971633676, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+  m_PrefabInstance: {fileID: 8103146234995941921}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2585339921990413262 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6022667745087572463, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
@@ -6106,18 +6111,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 8253529524297296019}
-  rb: {fileID: 0}
+  characterController: {fileID: 2144371471560533037}
   visionRange: 100
-  attackRange: 9
+  attackRange: 15
   maxSpeed: 15
   avoidDistance: 20
   avoidStrength: 40
   obstacleMask:
     serializedVersion: 2
     m_Bits: 512
-  retreatTime: 2.1
+  retreatTime: 1
   enemyAvoidDistance: 10
-  enemyAvoidStrength: 30
+  enemyAvoidStrength: 20
   enemyLayerMask:
     serializedVersion: 2
     m_Bits: 64
@@ -6131,9 +6136,14 @@ MonoBehaviour:
   retreatObstacleMask:
     serializedVersion: 2
     m_Bits: 512
-  showDebugInfo: 0
+  showDebugInfo: 1
   lookAtTurnSpeed: 2
-  minDistanceToPlayer: 5
+  minDistanceToPlayer: 10
+  groundCheckDistance: 5
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 2147483656
+  maxSlopeAngle: 15
   velocity: {x: 0, y: 0, z: 0}
   canAutoAttack: 0
   canBeParried: 0

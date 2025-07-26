@@ -7153,7 +7153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 5877804063483958700}
-  rb: {fileID: 0}
+  characterController: {fileID: 4528963733458229522}
   visionRange: 100
   attackRange: 80
   maxSpeed: 10
@@ -7181,6 +7181,11 @@ MonoBehaviour:
   showDebugInfo: 0
   lookAtTurnSpeed: 2
   minDistanceToPlayer: 10
+  groundCheckDistance: 5
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 2147483656
+  maxSlopeAngle: 45
   velocity: {x: 0, y: 0, z: 0}
   canAutoAttack: 0
   canBeParried: 0
@@ -7204,6 +7209,11 @@ MonoBehaviour:
   reloadSound: {fileID: 0}
   muzzleFlash: {fileID: 0}
   projectileTarget: {fileID: 0}
+--- !u!143 &4528963733458229522 stripped
+CharacterController:
+  m_CorrespondingSourceObject: {fileID: 7905645749971633676, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+  m_PrefabInstance: {fileID: 6011287807124135710}
+  m_PrefabAsset: {fileID: 0}
 --- !u!95 &5877804063483958700 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 215686583444720306, guid: eb198f9017afb5e45a01d418e8811423, type: 3}

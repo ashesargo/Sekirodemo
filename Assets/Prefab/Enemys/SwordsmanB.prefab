@@ -6859,6 +6859,11 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 215686583444720306, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
   m_PrefabInstance: {fileID: 3188138096956498468}
   m_PrefabAsset: {fileID: 0}
+--- !u!143 &4722292873944998952 stripped
+CharacterController:
+  m_CorrespondingSourceObject: {fileID: 7905645749971633676, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+  m_PrefabInstance: {fileID: 3188138096956498468}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &8316797225807947862 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6869600998273829490, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
@@ -6890,7 +6895,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 3368920649114396822}
-  rb: {fileID: 0}
+  characterController: {fileID: 4722292873944998952}
   visionRange: 100
   attackRange: 10
   maxSpeed: 15
@@ -6918,6 +6923,11 @@ MonoBehaviour:
   showDebugInfo: 0
   lookAtTurnSpeed: 2
   minDistanceToPlayer: 5
+  groundCheckDistance: 5
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 2147483656
+  maxSlopeAngle: 45
   velocity: {x: 0, y: 0, z: 0}
   canAutoAttack: 0
   canBeParried: 0

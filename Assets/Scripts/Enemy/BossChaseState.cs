@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class BossChaseState : IEnemyState
+public class BossChaseState : BaseEnemyState
 {
-    public void EnterState(EnemyAI enemy)
+    public override void EnterState(EnemyAI enemy)
     {
-        enemy.SetRootMotion(false);
+        base.EnterState(enemy);
         Debug.Log("BossChaseState: Boss進入追擊狀態");
         
         // 檢查是否有Run動畫，如果沒有則使用Idle
@@ -19,7 +19,7 @@ public class BossChaseState : IEnemyState
         }
     }
 
-    public void UpdateState(EnemyAI enemy)
+    public override void UpdateState(EnemyAI enemy)
     {
         float distanceToPlayer = Vector3.Distance(enemy.transform.position, enemy.player.position);
         var bossAI = enemy.GetComponent<BossAI>();
@@ -113,9 +113,11 @@ public class BossChaseState : IEnemyState
         enemy.Move(totalForce2);
     }
 
-    public void ExitState(EnemyAI enemy)
+    public override void ExitState(EnemyAI enemy)
     {
+        base.ExitState(enemy);
         Debug.Log("BossChaseState: Boss退出追擊狀態");
         enemy.Stop();
     }
+    public override bool ShouldUseRootMotion() => false;
 } 

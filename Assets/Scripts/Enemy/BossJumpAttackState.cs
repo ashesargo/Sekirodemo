@@ -1,12 +1,12 @@
 using UnityEngine;
 
-public class BossJumpAttackState : IEnemyState
+public class BossJumpAttackState : BaseEnemyState
 {
     private string jumpAnim = "Jump Attack1";
 
-    public void EnterState(EnemyAI enemy)
+    public override void EnterState(EnemyAI enemy)
     {
-        enemy.SetRootMotion(true);
+        base.EnterState(enemy);
         string[] jumpAnims = { "Jump Attack1", "Jump Attack2" };
         jumpAnim = jumpAnims[Random.Range(0, jumpAnims.Length)];
         Debug.Log($"BossJumpAttackState: 進入 {jumpAnim}");
@@ -14,7 +14,7 @@ public class BossJumpAttackState : IEnemyState
         enemy.Stop();
     }
 
-    public void UpdateState(EnemyAI enemy)
+    public override void UpdateState(EnemyAI enemy)
     {
         AnimatorStateInfo stateInfo = enemy.animator.GetCurrentAnimatorStateInfo(0);
         // 攻擊期間持續追蹤玩家
@@ -30,10 +30,11 @@ public class BossJumpAttackState : IEnemyState
         }
     }
 
-    public void ExitState(EnemyAI enemy)
+    public override void ExitState(EnemyAI enemy)
     {
-        enemy.SetRootMotion(false);
+        base.ExitState(enemy);
         Debug.Log($"BossJumpAttackState: 退出 {jumpAnim}");
         enemy.Stop();
     }
+    public override bool ShouldUseRootMotion() => true;
 } 

@@ -1,15 +1,16 @@
 using UnityEngine;
 
-public class IdleState : IEnemyState
+public class IdleState : BaseEnemyState
 {
-    public void EnterState(EnemyAI enemy)
+    public override void EnterState(EnemyAI enemy)
     {
+        base.EnterState(enemy);
         enemy.animator.Play("Idle");
         enemy.Stop();
         enemy.canAutoAttack = true; // 啟用自動攻擊
     }
 
-    public void UpdateState(EnemyAI enemy)
+    public override void UpdateState(EnemyAI enemy)
     {
         // 檢查 player 是否為 null
         if (enemy.player == null)
@@ -30,5 +31,6 @@ public class IdleState : IEnemyState
         }
     }
 
-    public void ExitState(EnemyAI enemy) { }
+    public override void ExitState(EnemyAI enemy) { base.ExitState(enemy); }
+    public override bool ShouldUseRootMotion() => true;
 }

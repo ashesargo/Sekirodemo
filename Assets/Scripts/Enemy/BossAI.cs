@@ -19,6 +19,41 @@ public class BossAI : EnemyAI
     public float combo2Duration = 12f; // Combo2 總持續時間  
     public float combo3Duration = 10f; // Combo3 總持續時間
     
+    // === 左右手武器切換動畫事件用 ===
+    public GameObject leftWeapon;   // 左手武器（弓/遠程）
+    public GameObject rightWeapon;  // 右手武器（刀/近戰）
+
+    // 動畫事件：簡化武器顯示切換（int 版本，1=顯示弓，0=顯示近戰）
+    public void ShowRangedWeapon(int show)
+    {
+        bool isShow = show != 0;
+        if (isShow)
+        {
+            if (rightWeapon != null) rightWeapon.SetActive(false);
+            if (leftWeapon != null) leftWeapon.SetActive(true);
+        }
+        else
+        {
+            if (rightWeapon != null) rightWeapon.SetActive(true);
+            if (leftWeapon != null) leftWeapon.SetActive(false);
+        }
+    }
+
+    // 動畫事件：切換武器顯示（如需更細緻控制）
+    public void ShowWeapon(string hand)
+    {
+        if (hand == "left")
+        {
+            if (leftWeapon != null) leftWeapon.SetActive(true);
+            if (rightWeapon != null) rightWeapon.SetActive(false);
+        }
+        else if (hand == "right")
+        {
+            if (leftWeapon != null) leftWeapon.SetActive(false);
+            if (rightWeapon != null) rightWeapon.SetActive(true);
+        }
+    }
+    
     private void Start()
     {
         // Boss特有的初始化
@@ -29,18 +64,44 @@ public class BossAI : EnemyAI
         // 調試：檢查 obstacleMask 設置
         Debug.Log($"BossAI Start - obstacleMask: {obstacleMask.value}, avoidDistance: {avoidDistance}");
         
-        // 檢查自己的 Collider
-        Collider myCollider = GetComponent<Collider>();
-        if (myCollider == null)
+        // 檢查自己的 CharacterController
+        CharacterController myController = GetComponent<CharacterController>();
+        if (myController == null)
         {
-            Debug.LogError($"Boss {gameObject.name} 沒有 Collider 組件！Boss避障需要 Collider 才能工作。");
+            Debug.LogError($"Boss {gameObject.name} 沒有 CharacterController 組件！Boss移動需要 CharacterController 才能工作。");
         }
         else
         {
-            Debug.Log($"Boss {gameObject.name} 有 Collider: {myCollider.GetType().Name}, Layer: {gameObject.layer}");
+            Debug.Log($"Boss {gameObject.name} 有 CharacterController: {myController.GetType().Name}, Layer: {gameObject.layer}");
         }
         
         Debug.Log("BossAI: Boss初始化完成");
+    }
+    
+    void Awake()
+    {
+        if (leftWeapon == null)
+        {
+            foreach (var t in GetComponentsInChildren<Transform>(true))
+            {
+                if (t.name == "SM_Bow_02")
+                {
+                    leftWeapon = t.gameObject;
+                    break;
+                }
+            }
+        }
+        if (rightWeapon == null)
+        {
+            foreach (var t in GetComponentsInChildren<Transform>(true))
+            {
+                if (t.name == "Katana")
+                {
+                    rightWeapon = t.gameObject;
+                    break;
+                }
+            }
+        }
     }
     
     // 移除FindBossPlayer方法
