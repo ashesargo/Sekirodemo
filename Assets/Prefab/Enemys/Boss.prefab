@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2592737532880117844}
     m_Modifications:
+    - target: {fileID: 1823014076688538465, guid: 94720485ea1cc0243959cd34b4532faf, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8627139117915373825, guid: 94720485ea1cc0243959cd34b4532faf, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -7416,14 +7420,14 @@ MonoBehaviour:
   animator: {fileID: 8255613398275737794}
   characterController: {fileID: 2151013661169599612}
   visionRange: 100
-  attackRange: 15
+  attackRange: 20
   maxSpeed: 20
   avoidDistance: 20
   avoidStrength: 40
   obstacleMask:
     serializedVersion: 2
     m_Bits: 512
-  retreatTime: 2
+  retreatTime: 1
   enemyAvoidDistance: 10
   enemyAvoidStrength: 30
   enemyLayerMask:
