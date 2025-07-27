@@ -7190,6 +7190,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2147483656
   maxSlopeAngle: 45
+  slopeCheckDistance: 1
+  maxStepHeight: 0.5
+  stepSmooth: 5
+  downSlopeSpeed: 20
   velocity: {x: 0, y: 0, z: 0}
   canAutoAttack: 0
   canBeParried: 0
@@ -7211,7 +7215,7 @@ MonoBehaviour:
   projectileDamage: 10
   shootSound: {fileID: 0}
   reloadSound: {fileID: 0}
-  muzzleFlash: {fileID: 0}
+  muzzleFlash: {fileID: 19800002, guid: 56bfc2f4b4a0c534c8ef3d0fd1124c44, type: 3}
   projectileTarget: {fileID: 0}
 --- !u!143 &4528963733458229522 stripped
 CharacterController:

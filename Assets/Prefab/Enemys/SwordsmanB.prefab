@@ -6853,6 +6853,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6022667745087572463, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       insertIndex: -1
       addedObject: {fileID: 650492525681827714}
+    - targetCorrespondingSourceObject: {fileID: 6022667745087572463, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6057227265593542804}
+    - targetCorrespondingSourceObject: {fileID: 6022667745087572463, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 368674335574252717}
   m_SourcePrefab: {fileID: 100100000, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
 --- !u!95 &3368920649114396822 stripped
 Animator:
@@ -6928,6 +6934,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2147483656
   maxSlopeAngle: 45
+  slopeCheckDistance: 1
+  maxStepHeight: 0.5
+  stepSmooth: 5
+  downSlopeSpeed: 20
   velocity: {x: 0, y: 0, z: 0}
   canAutoAttack: 0
   canBeParried: 0
@@ -6962,3 +6972,37 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.08122018, y: 1.0272809, z: 0.09212408}
   m_Center: {x: -0.0004505857, y: -0.3444411, z: 0.0028560306}
+--- !u!114 &6057227265593542804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9199265049831451595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bff4f5a8991d7fa47baed5c5ff25979f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: ae721c767fcd6664ca1cf46b36bb56b7, type: 2}
+  duration: 0.5
+  corner: 30
+  loop: 0
+  points:
+  - {x: -0.0071666543, y: -0.8517357, z: -0.043888673}
+  - {x: -0.009687993, y: -0.48616067, z: -0.0070360075}
+  - {x: -0.00060755113, y: -0.1805373, z: 0.0016369144}
+--- !u!114 &368674335574252717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9199265049831451595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eb7e0624ddd6fc4da04d66fa31d050f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bladeTrail: {fileID: 6057227265593542804}
+  animator: {fileID: 3368920649114396822}

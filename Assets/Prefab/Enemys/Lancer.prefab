@@ -8093,6 +8093,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2147483656
   maxSlopeAngle: 60
+  slopeCheckDistance: 1
+  maxStepHeight: 0.5
+  stepSmooth: 5
+  downSlopeSpeed: 20
   velocity: {x: 0, y: 0, z: 0}
   canAutoAttack: 0
   canBeParried: 0
@@ -8297,6 +8301,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4749354469079687155, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
       insertIndex: -1
       addedObject: {fileID: 905128411136321190}
+    - targetCorrespondingSourceObject: {fileID: 4749354469079687155, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7578950436501379183}
   m_SourcePrefab: {fileID: 100100000, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
 --- !u!1 &2601229347952428254 stripped
 GameObject:
@@ -8318,12 +8325,32 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.059335858, y: 0.4259638, z: 0.032724902}
   m_Center: {x: -0.000003585592, y: -2.389755e-14, z: -0.000000001862646}
+--- !u!114 &7578950436501379183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2601229347952428254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bff4f5a8991d7fa47baed5c5ff25979f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: ae721c767fcd6664ca1cf46b36bb56b7, type: 2}
+  duration: 1
+  corner: 10
+  loop: 0
+  points:
+  - {x: 0.0030168917, y: -0.33928695, z: 0.004437336}
+  - {x: 0.0023519164, y: -0.20070025, z: 0.009236482}
+  - {x: 0.0033531564, y: 0.22762173, z: 0.010212742}
 --- !u!4 &7096210163640794310 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
