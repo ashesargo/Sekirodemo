@@ -7213,7 +7213,7 @@ MonoBehaviour:
   firePoint: {fileID: 4280088553051569232}
   projectileSpeed: 150
   projectileDamage: 10
-  shootSound: {fileID: 0}
+  shootSound: {fileID: 8300000, guid: 7cff378b9b9307c48bf3cad91a0bd381, type: 3}
   reloadSound: {fileID: 0}
   muzzleFlash: {fileID: 19800002, guid: 56bfc2f4b4a0c534c8ef3d0fd1124c44, type: 3}
   projectileTarget: {fileID: 0}
