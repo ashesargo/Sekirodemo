@@ -10,16 +10,33 @@ public class Weapon : MonoBehaviour
     public LayerMask targetLayer; // 敵人層級
     public int damage = 10;    
     private HashSet<Collider> alreadyHit = new HashSet<Collider>();
+    private bool isAttacking = false; // 新增：防止重複攻擊
+    private float lastAttackTime = 0f; // 新增：記錄上次攻擊時間
+    private const float ATTACK_COOLDOWN = 0.1f; // 新增：攻擊冷卻時間
     
     public AudioClip AttackSwingSound;
     AudioSource _audioSource;
+    
     private void Update()
     {
         _audioSource = GetComponent<AudioSource>();
     }
+    
     public void PerformFanAttack()
     {
+        // 防止重複攻擊
+        if (isAttacking || Time.time - lastAttackTime < ATTACK_COOLDOWN)
+        {
+            Debug.Log($"[Weapon] PerformFanAttack - 忽略重複攻擊，距離上次攻擊: {Time.time - lastAttackTime:F3}秒");
+            return;
+        }
+        
+        lastAttackTime = Time.time;
+        isAttacking = true;
+        
         alreadyHit.Clear();
+        Debug.Log($"[Weapon] PerformFanAttack - 開始攻擊，時間: {Time.time:F3}");
+        
         // 找出半徑內的所有敵人
         Collider[] hits = Physics.OverlapSphere(transform.position, attackRadius, targetLayer);
         foreach (var hit in hits)
@@ -33,10 +50,24 @@ public class Weapon : MonoBehaviour
             {
                 hit.GetComponent<EnemyTest>()?.TakeDamage(damage);
                 alreadyHit.Add(hit);
+                Debug.Log($"[Weapon] 對敵人 {hit.name} 造成 {damage} 點傷害");
             }
         }
-        _audioSource.PlayOneShot(AttackSwingSound);
         
+        if (_audioSource != null && AttackSwingSound != null)
+        {
+            _audioSource.PlayOneShot(AttackSwingSound);
+        }
+        
+        // 延遲重置攻擊狀態
+        StartCoroutine(ResetAttackState());
+    }
+    
+    private IEnumerator ResetAttackState()
+    {
+        yield return new WaitForSeconds(ATTACK_COOLDOWN);
+        isAttacking = false;
+        Debug.Log("[Weapon] 攻擊狀態已重置");
     }
 
     // 可視化顯示範圍

@@ -22,6 +22,7 @@ public class WeaponEffect : MonoBehaviour
     [Header("Layer Settings")]
     public LayerMask environmentLayer; // 環境判定層
     public LayerMask enemyLayer; // 敵人判定層
+    public LayerMask playerLayer; // 新增：玩家判定層
     public List<LayerEffectMapping> layerEffectMappings = new List<LayerEffectMapping>(); // 層級特效映射
 
     [Header("Effect Settings")]
@@ -33,6 +34,11 @@ public class WeaponEffect : MonoBehaviour
     private HashSet<Collider> hitCollidersThisAttack = new HashSet<Collider>(); // 記錄本段攻擊已觸發的碰撞體
     private HashSet<Collider> validAttackTargets = new HashSet<Collider>(); // 本次攻擊的有效目標
     private List<GameObject> activeEffects = new List<GameObject>(); // 記錄當前活躍的特效
+    private bool hasTriggeredEffectThisAttack = false; // 新增：防止本次攻擊重複觸發特效
+    private float lastStopDetectionTime = 0f; // 新增：記錄上次StopDetection的時間
+    private const float STOP_DETECTION_COOLDOWN = 0.1f; // 新增：StopDetection冷卻時間
+    private int effectCountThisAttack = 0; // 新增：本次攻擊的特效計數
+    private const int MAX_EFFECTS_PER_ATTACK = 5; // 新增：每次攻擊最多觸發的特效數量
 
     public System.Action OnAllEffectsComplete; // 當所有特效完成時觸發事件
 
@@ -58,7 +64,15 @@ public class WeaponEffect : MonoBehaviour
     // 動畫用觸發事件
     public void StartDetection()
     {
+        // 防止重複調用
+        if (isDetecting) 
+        {
+            return;
+        }
+        
         isDetecting = true;
+        hasTriggeredEffectThisAttack = false; // 重置特效觸發標記
+        effectCountThisAttack = 0; // 重置特效計數器
         hitCollidersThisAttack.Clear(); // 清空上一段攻擊的碰撞體記錄
         
         // 預先計算本次攻擊的有效目標
@@ -68,10 +82,20 @@ public class WeaponEffect : MonoBehaviour
     // 動畫用觸發事件
     public void StopDetection()
     {
+        // 防止重複調用 - 添加時間間隔檢查
+        if (!isDetecting || Time.time - lastStopDetectionTime < STOP_DETECTION_COOLDOWN) 
+        {
+            return;
+        }
+        
+        lastStopDetectionTime = Time.time;
         isDetecting = false;
         hitCollidersThisAttack.Clear(); // 清空碰撞體記錄
         isAttackActive = false; // 標記攻擊結束
-        validAttackTargets.Clear(); // 清空有效目標列表        
+        validAttackTargets.Clear(); // 清空有效目標列表
+        hasTriggeredEffectThisAttack = false; // 重置特效觸發標記
+        effectCountThisAttack = 0; // 重置特效計數器
+        
         // 開始監控特效完成
         StartCoroutine(MonitorEffectsCompletion());
     }
@@ -79,6 +103,12 @@ public class WeaponEffect : MonoBehaviour
     // 在指定位置生成火花特效
     public void SpawnSpark(Vector3 position, Vector3 normal, int hitLayer)
     {
+        // 檢查特效數量限制
+        if (effectCountThisAttack >= MAX_EFFECTS_PER_ATTACK)
+        {
+            return;
+        }
+        
         // 根據碰撞層級選擇對應的特效預製體
         GameObject effectPrefab = GetEffectPrefabForLayer(hitLayer);
         
@@ -88,6 +118,9 @@ public class WeaponEffect : MonoBehaviour
             GameObject effect = Instantiate(effectPrefab, position, Quaternion.LookRotation(normal));
             activeEffects.Add(effect); // 將特效添加到活躍特效列表以便後續管理
             Destroy(effect, 1f); // 1秒後自動銷毀特效
+            
+            effectCountThisAttack++; // 增加特效計數
+            hasTriggeredEffectThisAttack = true; // 標記已觸發特效
         }
     }
 
@@ -96,8 +129,8 @@ public class WeaponEffect : MonoBehaviour
     {
         if (weaponCollider == null) return; // 如果沒有武器 Collider 則直接返回
 
-        // 合併環境層和敵人層進行統一檢測
-        LayerMask combinedLayer = environmentLayer | enemyLayer;
+        // 合併所有檢測層級
+        LayerMask combinedLayer = environmentLayer | enemyLayer | playerLayer;
         
         // 使用武器 Collider 邊界進行碰撞檢測
         Collider[] hitColliders = Physics.OverlapBox
@@ -112,8 +145,13 @@ public class WeaponEffect : MonoBehaviour
         {
             if (hitCollidersThisAttack.Contains(col)) continue; // 跳過本段攻擊中已經處理過的 Collider
 
+            // 檢查碰撞體的層級
+            int colliderLayer = col.gameObject.layer;
+            bool isEnemy = ((1 << colliderLayer) & enemyLayer) != 0;
+            bool isPlayer = ((1 << colliderLayer) & playerLayer) != 0;
+
             // 如果是敵人 Collider，檢查是否在 Weapon 組件的攻擊範圍內
-            if (IsEnemyCollider(col))
+            if (isEnemy)
             {
                 if (!IsInWeaponAttackRange(col)) continue; // 如果不在攻擊範圍內則跳過
             }
@@ -127,6 +165,12 @@ public class WeaponEffect : MonoBehaviour
     // 處理 Collider 的碰撞並生成火花特效
     private void ProcessCollision(Collider col, LayerMask combinedLayer)
     {
+        // 檢查特效數量限制
+        if (effectCountThisAttack >= MAX_EFFECTS_PER_ATTACK)
+        {
+            return;
+        }
+        
         // 計算 Collider 到武器 Collider 中心的最遠點
         Vector3 closestPoint = col.ClosestPoint(weaponCollider.bounds.center);
 
@@ -191,12 +235,6 @@ public class WeaponEffect : MonoBehaviour
         
         // 回傳是否在攻擊範圍內
         return angle <= weaponComponent.attackAngle * 0.5f;
-    }
-
-    // 檢查 Collider 是否為敵人
-    private bool IsEnemyCollider(Collider col)
-    {
-        return ((1 << col.gameObject.layer) & enemyLayer) != 0;
     }
 
     // 獲取對應層級的特效 Prefab

@@ -3544,6 +3544,10 @@ PrefabInstance:
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3096965204288466699, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: weaponRange
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3096965204288466699, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: weaponCollider
       value: 
       objectReference: {fileID: 850079304113082800}
@@ -6040,6 +6044,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6869600998273829490, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1687266463544770986}
+    - targetCorrespondingSourceObject: {fileID: 6869600998273829490, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3177024028959742414}
     - targetCorrespondingSourceObject: {fileID: 6022667745087572463, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       insertIndex: -1
       addedObject: {fileID: 850079304113082800}
@@ -6113,7 +6120,7 @@ MonoBehaviour:
   animator: {fileID: 8253529524297296019}
   characterController: {fileID: 2144371471560533037}
   visionRange: 100
-  attackRange: 15
+  attackRange: 10
   maxSpeed: 20
   avoidDistance: 20
   avoidStrength: 40
@@ -6136,9 +6143,9 @@ MonoBehaviour:
   retreatObstacleMask:
     serializedVersion: 2
     m_Bits: 512
-  showDebugInfo: 1
+  showDebugInfo: 0
   lookAtTurnSpeed: 2
-  minDistanceToPlayer: 10
+  minDistanceToPlayer: 8
   groundCheckDistance: 5
   groundMask:
     serializedVersion: 2
@@ -6147,9 +6154,106 @@ MonoBehaviour:
   slopeCheckDistance: 5
   maxStepHeight: 5
   stepSmooth: 5
+  downSlopeSpeed: 20
   velocity: {x: 0, y: 0, z: 0}
   canAutoAttack: 0
   canBeParried: 0
+--- !u!82 &3177024028959742414
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3396155193140570195}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 0.2
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!95 &8253529524297296019 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 215686583444720306, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
