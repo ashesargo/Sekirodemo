@@ -3701,9 +3701,17 @@ PrefabInstance:
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3096965204288466699, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: weaponRange
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3096965204288466699, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: weaponCollider
       value: 
       objectReference: {fileID: 650492525681827714}
+    - target: {fileID: 3096965204288466699, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: playerLayer.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
     - target: {fileID: 3098556963569235404, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -6903,7 +6911,7 @@ MonoBehaviour:
   animator: {fileID: 3368920649114396822}
   characterController: {fileID: 4722292873944998952}
   visionRange: 100
-  attackRange: 15
+  attackRange: 10
   maxSpeed: 20
   avoidDistance: 20
   avoidStrength: 40
@@ -6927,8 +6935,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   showDebugInfo: 0
-  lookAtTurnSpeed: 2
-  minDistanceToPlayer: 5
+  lookAtTurnSpeed: 3
+  minDistanceToPlayer: 10
   groundCheckDistance: 5
   groundMask:
     serializedVersion: 2
