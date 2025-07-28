@@ -273,7 +273,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &255801539
 RectTransform:
   m_ObjectHideFlags: 0
@@ -292,8 +292,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -336.2}
-  m_SizeDelta: {x: 160, y: 80}
+  m_AnchoredPosition: {x: 0, y: -345}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &255801540
 MonoBehaviour:
@@ -327,7 +327,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
-  m_Spacing: 20
+  m_Spacing: 36
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -538,9 +538,9 @@ RectTransform:
   - {fileID: 588895134}
   m_Father: {fileID: 255801539}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 80, y: -15}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &529319548
@@ -706,10 +706,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New  Game
+  m_text: "\u958B\u59CB\u904A\u73A9"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 339660236f8e45c4499517805499198b, type: 2}
-  m_sharedMaterial: {fileID: 2626008095552232224, guid: 339660236f8e45c4499517805499198b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c32b7d50f86894a7e9ef7552bba4e9bd, type: 2}
+  m_sharedMaterial: {fileID: -5829922165598646085, guid: c32b7d50f86894a7e9ef7552bba4e9bd, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -881,7 +881,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &747012824
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1141,10 +1141,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Quit  Game
+  m_text: "\u9000\u51FA\u904A\u73A9"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 339660236f8e45c4499517805499198b, type: 2}
-  m_sharedMaterial: {fileID: 2626008095552232224, guid: 339660236f8e45c4499517805499198b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c32b7d50f86894a7e9ef7552bba4e9bd, type: 2}
+  m_sharedMaterial: {fileID: -5829922165598646085, guid: c32b7d50f86894a7e9ef7552bba4e9bd, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1786,9 +1786,9 @@ RectTransform:
   - {fileID: 921539590}
   m_Father: {fileID: 255801539}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 80, y: -65}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1525471422
@@ -1947,7 +1947,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.3372549, g: 0.33333334, b: 0.3254902, a: 0.11764706}
+  m_Color: {r: 0.3372549, g: 0.33333334, b: 0.3254902, a: 0.2}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

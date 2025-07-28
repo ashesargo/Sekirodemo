@@ -130,6 +130,18 @@ public class HealthPostureController : MonoBehaviour
 
         if (isPlayer)
         {
+            // 檢查架勢值是否大於50%，如果是則常駐顯示
+            float posturePercentage = healthPostureSystem.GetPostureNormalized();
+            if (posturePercentage > 0.5f)
+            {
+                // 架勢值大於50%時常駐顯示，停止隱藏協程
+                if (hideUICoroutine != null)
+                {
+                    StopCoroutine(hideUICoroutine);
+                    hideUICoroutine = null;
+                }
+            }
+            
             // 玩家血條始終顯示，不需要隱藏邏輯
             if (healthPostureUI != null)
             {
@@ -172,6 +184,19 @@ public class HealthPostureController : MonoBehaviour
 
         if (isPlayer)
         {
+            // 檢查架勢值是否大於50%，如果是則不隱藏
+            float posturePercentage = healthPostureSystem.GetPostureNormalized();
+            if (posturePercentage > 0.5f)
+            {
+                // 架勢值大於50%時不隱藏，只停止協程
+                if (hideUICoroutine != null)
+                {
+                    StopCoroutine(hideUICoroutine);
+                    hideUICoroutine = null;
+                }
+                return;
+            }
+            
             // 玩家血條不隱藏，只停止協程
             if (hideUICoroutine != null)
             {
@@ -411,12 +436,16 @@ public class HealthPostureController : MonoBehaviour
             healthPostureSystem.OnDead += OnDead;
             healthPostureSystem.OnPostureBroken += OnPostureBroken;
 
-            // 隱藏血條
-            HideHealthBar();
+            // 玩家重置時不隱藏血條，只停止協程
+            if (hideUICoroutine != null)
+            {
+                StopCoroutine(hideUICoroutine);
+                hideUICoroutine = null;
+            }
         }
         else
         {
-            // 隱藏血條
+            // 敵人重置時隱藏血條
             HideHealthBar();
         }
 

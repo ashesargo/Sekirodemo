@@ -114,7 +114,12 @@ public class HealthPostureSystem
         
         if (postureRecoveryTimer >= postureRecoveryInterval)
         {
-            // 執行架勢恢復
+            // 檢查是否為玩家且架勢值大於50%
+            bool isPlayer = false;
+            // 這裡需要檢查是否為玩家，但 HealthPostureSystem 沒有直接訪問 PlayerStatus 的方法
+            // 我們將在 HealthPostureUI 中處理這個邏輯
+            
+            // 執行架勢恢復（暫時保持原邏輯）
             PostureDecrease(postureRecoveryAmount);
             
             // 若為安全狀態，每 0.1 秒恢復

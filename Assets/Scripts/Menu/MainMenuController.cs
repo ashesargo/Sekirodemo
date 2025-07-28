@@ -26,46 +26,46 @@ public class MainMenuController : MonoBehaviour
 
     void Start()
     {
-        // 初始化只顯示 Press Any Button 面板
-        if (pressAnyButton != null && mainMenu != null)
-        {
-            pressAnyButton.SetActive(true);
-            mainMenu.SetActive(false);
-        }
-        else
-        {
-            Debug.LogError("UI 幹你娘！");
-        }
+        // // 初始化只顯示 Press Any Button 面板
+        // if (pressAnyButton != null && mainMenu != null)
+        // {
+        //     pressAnyButton.SetActive(true);
+        //     mainMenu.SetActive(false);
+        // }
+        // else
+        // {
+        //     Debug.LogError("UI 幹你娘！");
+        // }
 
-        // 初始化淡出面板
-        if (fadePanel != null)
-        {
-            fadePanel.SetActive(false);
-        }
+        // // 初始化淡出面板
+        // if (fadePanel != null)
+        // {
+        //     fadePanel.SetActive(false);
+        // }
     }
 
     void Update()
     {
-        // 檢測任意輸入
-        if (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame ||
-            Mouse.current != null && (Mouse.current.leftButton.wasPressedThisFrame || Mouse.current.rightButton.wasPressedThisFrame))
-        {
-            ShowMainMenu();
-        }
+        // // 檢測任意輸入
+        // if (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame ||
+        //     Mouse.current != null && (Mouse.current.leftButton.wasPressedThisFrame || Mouse.current.rightButton.wasPressedThisFrame))
+        // {
+        //     ShowMainMenu();
+        // }
     }
 
     // 顯示主選單
-    private void ShowMainMenu()
-    {
-        if (pressAnyButton == null || mainMenu == null)
-        {
-            Debug.LogError("UI 幹你娘！");
-            return;
-        }
+    // private void ShowMainMenu()
+    // {
+    //     if (pressAnyButton == null || mainMenu == null)
+    //     {
+    //         Debug.LogError("UI 幹你娘！");
+    //         return;
+    //     }
 
-        pressAnyButton.SetActive(false);
-        mainMenu.SetActive(true);
-    }
+    //     pressAnyButton.SetActive(false);
+    //     mainMenu.SetActive(true);
+    // }
 
     // 開始新遊戲
     public void OnNewGame()

@@ -29,7 +29,10 @@ public class HealthPostureUI : MonoBehaviour
 
     private void Update()
     {
-        // 架勢自動恢復
+        // 檢查是否為玩家（玩家UI在GUI父物件底下，需要特殊判斷）
+        bool isPlayer = IsPlayerUI();
+        
+        // 架勢自動恢復（所有角色都正常自動恢復）
         if (healthPostureSystem != null)
         {
             healthPostureSystem.HandlePostureRecovery();
@@ -52,10 +55,28 @@ public class HealthPostureUI : MonoBehaviour
     {
         this.healthPostureSystem = healthPostureSystem;
 
-        // 初始化時隱藏架勢條
+        // 檢查是否為玩家（玩家UI在GUI父物件底下，需要特殊判斷）
+        bool isPlayer = IsPlayerUI();
+        
+        // 初始化時隱藏架勢條（除非是玩家且架勢值大於50%）
         if (postureBarGameObject != null)
         {
-            postureBarGameObject.SetActive(false);
+            if (isPlayer && healthPostureSystem != null)
+            {
+                float postureNormalized = healthPostureSystem.GetPostureNormalized();
+                if (postureNormalized > 0.5f)
+                {
+                    postureBarGameObject.SetActive(true);
+                }
+                else
+                {
+                    postureBarGameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                postureBarGameObject.SetActive(false);
+            }
         }
 
         // 初始化 UI
@@ -126,11 +147,51 @@ public class HealthPostureUI : MonoBehaviour
         // 檢查架勢條是否在增加
         bool isPostureIncreasing = postureNormalized > previousPostureNormalized;
 
+        // 檢查是否為玩家（玩家UI在GUI父物件底下，需要特殊判斷）
+        bool isPlayer = IsPlayerUI();
+
+        // 玩家架勢值大於50%時常駐顯示
+        if (isPlayer && postureNormalized > 0.5f)
+        {
+            ShowPostureBar();
+            // 停止隱藏協程
+            if (hidePostureBarCoroutine != null)
+            {
+                StopCoroutine(hidePostureBarCoroutine);
+                hidePostureBarCoroutine = null;
+            }
+        }
         // 如果架勢值增加，顯示架勢條並重置隱藏計時器
-        if (isPostureIncreasing && postureNormalized > 0f)
+        else if (isPostureIncreasing && postureNormalized > 0f)
         {
             ShowPostureBar();
             StartPostureBarHideTimer();
+        }
+        // 如果架勢值減少且玩家架勢值大於50%，確保架勢條仍然顯示
+        else if (isPlayer && postureNormalized > 0.5f && !isPostureIncreasing)
+        {
+            ShowPostureBar();
+            // 停止隱藏協程
+            if (hidePostureBarCoroutine != null)
+            {
+                StopCoroutine(hidePostureBarCoroutine);
+                hidePostureBarCoroutine = null;
+            }
+        }
+        // 玩家架勢值小於等於50%且架勢值減少時，讓隱藏計時器處理
+        else if (isPlayer && postureNormalized <= 0.5f && !isPostureIncreasing)
+        {
+            // 不顯示架勢條，讓隱藏計時器處理
+            // 如果沒有隱藏計時器在運行，則隱藏架勢條
+            if (hidePostureBarCoroutine == null)
+            {
+                HidePostureBar();
+            }
+        }
+        // 其他情況（非玩家或架勢值為0）
+        else
+        {
+            // 不顯示架勢條，讓隱藏計時器處理
         }
 
         // 根據架勢值的比例，設定架勢條的寬度
@@ -160,8 +221,8 @@ public class HealthPostureUI : MonoBehaviour
             postureBarHighlightGameObject.SetActive(true);
         }
 
-        // 架勢條減少時隱藏高亮特效
-        if (!isPostureIncreasing)
+        // 架勢條減少時隱藏高亮特效（但玩家架勢值大於50%時不隱藏）
+        if (!isPostureIncreasing && (!isPlayer || postureNormalized <= 0.5f))
         {
             postureBarHighlightGameObject.SetActive(false);
         }
@@ -182,6 +243,13 @@ public class HealthPostureUI : MonoBehaviour
     // 隱藏架勢條
     private void HidePostureBar()
     {
+        // 檢查是否為玩家（玩家UI在GUI父物件底下，需要特殊判斷）
+        bool isPlayer = IsPlayerUI();
+        float postureNormalized = healthPostureSystem.GetPostureNormalized();
+        if (isPlayer && postureNormalized > 0.5f)
+        {
+            return;
+        }
         if (postureBarGameObject != null)
         {
             postureBarGameObject.SetActive(false);
@@ -214,6 +282,35 @@ public class HealthPostureUI : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         postureBarHighlightGameObject.SetActive(false);
+    }
+
+    // 判斷是否為玩家UI
+    private bool IsPlayerUI()
+    {
+        // 方法1：檢查是否有PlayerStatus組件（如果UI在玩家底下）
+        bool hasPlayerStatus = GetComponentInParent<HealthPostureController>()?.GetComponent<PlayerStatus>() != null;
+        if (hasPlayerStatus) return true;
+        
+        // 方法2：檢查物件名稱或標籤（如果UI在GUI父物件底下）
+        // 你可以根據你的UI命名規則來判斷
+        if (gameObject.name.Contains("Player") || gameObject.name.Contains("player"))
+            return true;
+        
+        // 方法3：檢查父物件名稱
+        Transform parent = transform.parent;
+        while (parent != null)
+        {
+            if (parent.name.Contains("Player") || parent.name.Contains("player"))
+                return true;
+            parent = parent.parent;
+        }
+        
+        // 方法4：檢查是否有特定的組件或標記
+        // 你可以在玩家UI上掛一個特殊的組件來標記
+        if (GetComponent<PlayerUIMarker>() != null)
+            return true;
+        
+        return false;
     }
 }
 
