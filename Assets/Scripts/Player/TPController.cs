@@ -185,10 +185,11 @@ public class TPContraller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_animator == null) return;
-
         AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
-        if (stateInfo.IsTag("Attack") || stateInfo.IsTag("Hit") || stateInfo.IsTag("Stagger"))
+
+        if (_animator == null || (_playerGrapple != null && _playerGrapple.IsGrappling()) || (_playerStatus != null && _playerStatus.isDeath == true) || stateInfo.IsTag("Sit")) return;
+
+        if (stateInfo.IsTag("Attack") || stateInfo.IsTag("Hit") || stateInfo.IsTag("Stagger") || stateInfo.IsTag("Heal"))
         {
             canMove = false;
         }
@@ -197,7 +198,6 @@ public class TPContraller : MonoBehaviour
             canMove = true;
         }
         //Debug.Log(comboTimer);
-        if (_playerGrapple != null && _playerGrapple.IsGrappling() || (_playerStatus != null && _playerStatus.isDeath == true)) return;
         if (TPCamera != null)
         {
             TPCamera.isLock = isLocked;
