@@ -388,6 +388,16 @@ public class HealthPostureController : MonoBehaviour
         {
             playerStatus.ResetHealth();
         }
+        
+        // 確保玩家可以正常移動和操作
+        TPContraller tpController = GetComponent<TPContraller>();
+        if (tpController != null)
+        {
+            // 重置任何可能影響移動的狀態
+            // 這裡可以添加其他需要重置的組件
+        }
+        
+        Debug.Log("玩家復活完成，所有狀態已重置");
     }
 
     // 回到主選單

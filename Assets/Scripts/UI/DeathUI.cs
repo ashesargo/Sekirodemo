@@ -178,6 +178,11 @@ public class DeathUI : MonoBehaviour
         {
             backgroundImage.color = startBgColor;
         }
+        
+        // 確保UI完全隱藏
+        gameObject.SetActive(false);
+        
+        Debug.Log("DeathUI 已重置並隱藏");
     }
     
     // 更新所有文字顏色（用於動畫）

@@ -97,6 +97,19 @@ public class PlayerStatus : MonoBehaviour
             healthController.ResetHealth();
         }
         isDeath = false;
+        
+        // 重置動畫狀態，確保玩家可以正常操作
+        if (_animator != null)
+        {
+            // 重置所有可能影響操作的動畫參數
+            _animator.ResetTrigger("Death");
+            _animator.ResetTrigger("Hit");
+            _animator.ResetTrigger("GuardHit");
+            _animator.ResetTrigger("Stagger");
+            
+            // 確保動畫回到正常狀態
+            _animator.SetBool("isGrounded", true);
+        }
     }
     public void Sragger()
     {
