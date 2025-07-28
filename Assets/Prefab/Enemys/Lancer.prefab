@@ -8355,12 +8355,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: ae721c767fcd6664ca1cf46b36bb56b7, type: 2}
-  duration: 1
+  duration: 0.8
   corner: 30
   loop: 0
   points:
-  - {x: 0.00008827337, y: -0.46295246, z: -0.0009478441}
   - {x: -0.0010897741, y: 0.21477057, z: 0.0011325555}
+  - {x: 0.00008827337, y: -0.46295246, z: -0.0009478441}
 --- !u!114 &2311704357348635347
 MonoBehaviour:
   m_ObjectHideFlags: 0

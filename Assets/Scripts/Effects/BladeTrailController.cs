@@ -11,6 +11,7 @@ public class BladeTrailController : MonoBehaviour
 
     void Start()
     {
+        // 初始化 Trail
         bladeTrail.Clear();
         bladeTrail.enabled = false;
     }
