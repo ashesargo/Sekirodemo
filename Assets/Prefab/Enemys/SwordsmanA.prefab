@@ -6164,7 +6164,7 @@ MonoBehaviour:
   animator: {fileID: 8253529524297296019}
   characterController: {fileID: 2144371471560533037}
   visionRange: 100
-  attackRange: 8
+  attackRange: 10
   maxSpeed: 20
   avoidDistance: 20
   avoidStrength: 30
