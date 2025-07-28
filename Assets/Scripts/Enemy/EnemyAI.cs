@@ -98,7 +98,7 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    void Start()
+    protected virtual void Start()
     {
         SwitchState(new IdleState());
         
@@ -149,7 +149,7 @@ public class EnemyAI : MonoBehaviour
         return Vector3.Distance(transform.position, player.position) < visionRange;
     }
 
-    public bool IsInAttackRange()
+    public virtual bool IsInAttackRange()
     {
         return Vector3.Distance(transform.position, player.position) < attackRange;
     }
