@@ -10,7 +10,7 @@ public class RetreatState : BaseEnemyState
     public override void EnterState(EnemyAI enemy)
     {
         base.EnterState(enemy);
-        Debug.Log("RetreatState: 進入橫移狀態");
+        //Debug.Log("RetreatState: 進入橫移狀態");
         // 隨機決定橫移方向
         strafeSign = Random.value < 0.5f ? 1 : -1;
         strafeAnim = strafeSign == 1 ? "StrafeR" : "StrafeL";
@@ -53,13 +53,13 @@ public class RetreatState : BaseEnemyState
             BossAI bossAI = enemy.GetComponent<BossAI>();
             if (bossAI != null)
             {
-                Debug.Log("RetreatState: Boss橫移結束，切換到 BossChaseState");
+                // Debug.Log("RetreatState: Boss橫移結束，切換到 BossChaseState");
                 enemy.canAutoAttack = true;
                 enemy.SwitchState(new BossChaseState());
             }
             else
             {
-                Debug.Log("RetreatState: 橫移結束，切換到 ChaseState");
+                // Debug.Log("RetreatState: 橫移結束，切換到 ChaseState");
                 enemy.canAutoAttack = true;
                 enemy.SwitchState(new ChaseState());
             }
@@ -69,7 +69,7 @@ public class RetreatState : BaseEnemyState
     public override void ExitState(EnemyAI enemy)
     {
         base.ExitState(enemy);
-        Debug.Log("RetreatState: 退出後退狀態");
+        // Debug.Log("RetreatState: 退出後退狀態");
         enemy.Stop();
     }
     
@@ -79,7 +79,7 @@ public class RetreatState : BaseEnemyState
     [ContextMenu("Test Retreat Direction")]
     public void TestRetreatDirection()
     {
-        Debug.Log("=== 撤退方向測試 ===");
+        // Debug.Log("=== 撤退方向測試 ===");
         
         // 模擬敵人位置和玩家位置
         Vector3 enemyPos = Vector3.zero;

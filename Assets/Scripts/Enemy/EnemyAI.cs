@@ -103,16 +103,16 @@ public class EnemyAI : MonoBehaviour
         SwitchState(new IdleState());
         
         // 調試：檢查各種設置
-        Debug.Log($"EnemyAI Start - obstacleMask: {obstacleMask.value}, groundMask: {groundMask.value}, avoidDistance: {avoidDistance}");
+        // Debug.Log($"EnemyAI Start - obstacleMask: {obstacleMask.value}, groundMask: {groundMask.value}, avoidDistance: {avoidDistance}");
         
         // 檢查CharacterController
         if (characterController == null)
         {
-            Debug.LogError($"敵人 {gameObject.name} 沒有 CharacterController 組件！");
+            // Debug.LogError($"敵人 {gameObject.name} 沒有 CharacterController 組件！");
         }
         else
         {
-            Debug.Log($"敵人 {gameObject.name} 有 CharacterController, Layer: {gameObject.layer}");
+            // Debug.Log($"敵人 {gameObject.name} 有 CharacterController, Layer: {gameObject.layer}");
         }
         
         // 強制對齊地面
@@ -121,7 +121,7 @@ public class EnemyAI : MonoBehaviour
         // 延遲再次對齊地面，確保CharacterController已經初始化
         StartCoroutine(DelayedGroundAlign());
         
-        Debug.Log("EnemyAI: 敵人初始化完成");
+        // Debug.Log("EnemyAI: 敵人初始化完成");
     }
 
     void Update()
@@ -183,7 +183,7 @@ public class EnemyAI : MonoBehaviour
         
         if (showDebugInfo)
         {
-            Debug.Log($"ObstacleAvoid - 前方立方體中心: {boxCenter}, 大小: {detectionBoxSize}, 檢測到 {hitColliders.Length} 個 Collider");
+            // Debug.Log($"ObstacleAvoid - 前方立方體中心: {boxCenter}, 大小: {detectionBoxSize}, 檢測到 {hitColliders.Length} 個 Collider");
         }
         
         if (hitColliders.Length > 0)
@@ -198,7 +198,7 @@ public class EnemyAI : MonoBehaviour
                 {
                     if (showDebugInfo)
                     {
-                        Debug.Log($"ObstacleAvoid - 跳過自己的 Collider: {hitCollider.name}");
+                        // Debug.Log($"ObstacleAvoid - 跳過自己的 Collider: {hitCollider.name}");
                     }
                     continue;
                 }
@@ -222,7 +222,7 @@ public class EnemyAI : MonoBehaviour
                         
                         if (showDebugInfo)
                         {
-                            Debug.Log($"ObstacleAvoid - 檢測到玩家/敵人: {hitCollider.name}, 距離: {distance:F2}, 避障力: {awayFromTarget * adjustedStrength}");
+                            // Debug.Log($"ObstacleAvoid - 檢測到玩家/敵人: {hitCollider.name}, 距離: {distance:F2}, 避障力: {awayFromTarget * adjustedStrength}");
                         }
                     }
                     continue;
@@ -244,7 +244,7 @@ public class EnemyAI : MonoBehaviour
                     
                     if (showDebugInfo)
                     {
-                        Debug.Log($"ObstacleAvoid - 檢測到前方障礙物: {hitCollider.name}, 距離: {distance:F2}, 避障力: {awayFromObstacle * adjustedStrength}");
+                        // Debug.Log($"ObstacleAvoid - 檢測到前方障礙物: {hitCollider.name}, 距離: {distance:F2}, 避障力: {awayFromObstacle * adjustedStrength}");
                     }
                 }
             }
@@ -259,13 +259,13 @@ public class EnemyAI : MonoBehaviour
         {
             if (showDebugInfo)
             {
-                Debug.Log("ObstacleAvoid - 沒有檢測到前方障礙物");
+                // Debug.Log("ObstacleAvoid - 沒有檢測到前方障礙物");
             }
         }
         
         if (showDebugInfo && avoid.magnitude > 0.1f)
         {
-            Debug.Log($"ObstacleAvoid - 前方總避障力: {avoid}");
+            // Debug.Log($"ObstacleAvoid - 前方總避障力: {avoid}");
         }
         
         return avoid;
@@ -278,7 +278,7 @@ public class EnemyAI : MonoBehaviour
         // 調試：檢查敵人避障設置
         if (showDebugInfo)
         {
-            Debug.Log($"EnemyAvoid - enemyAvoidDistance: {enemyAvoidDistance}, enemyAvoidStrength: {enemyAvoidStrength}, enemyLayerMask: {enemyLayerMask.value}");
+            // Debug.Log($"EnemyAvoid - enemyAvoidDistance: {enemyAvoidDistance}, enemyAvoidStrength: {enemyAvoidStrength}, enemyLayerMask: {enemyLayerMask.value}");
         }
         
         // 檢測周圍的敵人
@@ -286,7 +286,7 @@ public class EnemyAI : MonoBehaviour
         
         if (showDebugInfo)
         {
-            Debug.Log($"EnemyAvoid - 檢測到 {nearbyEnemies.Length} 個附近的 Collider");
+            // Debug.Log($"EnemyAvoid - 檢測到 {nearbyEnemies.Length} 個附近的 Collider");
         }
         
         foreach (var enemyCollider in nearbyEnemies)
@@ -316,7 +316,7 @@ public class EnemyAI : MonoBehaviour
                 
                 if (showDebugInfo)
                 {
-                    Debug.Log($"EnemyAvoid - 檢測到敵人: {otherEnemy.name}, 距離: {distance:F2}, 避障力: {awayFromEnemy * adjustedStrength}");
+                    // Debug.Log($"EnemyAvoid - 檢測到敵人: {otherEnemy.name}, 距離: {distance:F2}, 避障力: {awayFromEnemy * adjustedStrength}");
                 }
             }
         }
@@ -329,7 +329,7 @@ public class EnemyAI : MonoBehaviour
         
         if (showDebugInfo && avoid.magnitude > 0.1f)
         {
-            Debug.Log($"EnemyAvoid - 總避障力: {avoid}");
+            // Debug.Log($"EnemyAvoid - 總避障力: {avoid}");
         }
         
         return avoid;

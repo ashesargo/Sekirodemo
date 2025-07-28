@@ -5,7 +5,7 @@ public class ChaseState : BaseEnemyState
     public override void EnterState(EnemyAI enemy)
     {
         base.EnterState(enemy);
-        Debug.Log("Entering ChaseState");
+        // Debug.Log("Entering ChaseState");
         enemy.animator.Play("Run");
         // 移除 canAutoAttack 設置，由 RetreatState 控制
     }
@@ -19,12 +19,12 @@ public class ChaseState : BaseEnemyState
             var rangedEnemy = enemy.GetComponent<RangedEnemy>();
             if (rangedEnemy != null)
             {
-                Debug.Log("ChaseState: 進入攻擊範圍，切換到 AimState (遠程兵種)");
+                // Debug.Log("ChaseState: 進入攻擊範圍，切換到 AimState (遠程兵種)");
                 enemy.SwitchState(new AimState());
             }
             else
             {
-                Debug.Log("ChaseState: 進入攻擊範圍，切換到 AttackState (近戰兵種)");
+                // Debug.Log("ChaseState: 進入攻擊範圍，切換到 AttackState (近戰兵種)");
                 enemy.SwitchState(new AttackState());
             }
             return;

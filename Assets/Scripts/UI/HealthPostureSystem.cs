@@ -41,6 +41,12 @@ public class HealthPostureSystem
         return (float)postureAmount / postureAmountMax;
     }
 
+    // 獲取最大架勢值
+    public int GetMaxPosture()
+    {
+        return postureAmountMax;
+    }
+
     // 設定架勢恢復參數
     public void SetPostureRecoverySettings(float interval, int amount)
     {
@@ -79,10 +85,23 @@ public class HealthPostureSystem
     }
 
     // 增加架勢值
-    public void PostureIncrease(int amount)
+    public void PostureIncrease(int amount, bool isParry = false)
     {
+        int previousPosture = postureAmount;
         postureAmount += amount;
-        postureAmount = Mathf.Clamp(postureAmount, 0, postureAmountMax);
+        
+        // 如果是 Parry，限制最大值為 99%
+        if (isParry)
+        {
+            int maxParryPosture = Mathf.RoundToInt(postureAmountMax * 0.99f);
+            postureAmount = Mathf.Clamp(postureAmount, 0, maxParryPosture);
+            Debug.Log($"Parry架勢: {previousPosture} → {postureAmount} (+{amount})");
+        }
+        else
+        {
+            postureAmount = Mathf.Clamp(postureAmount, 0, postureAmountMax);
+            Debug.Log($"一般架勢: {previousPosture} → {postureAmount} (+{amount})");
+        }
 
         // 重置架勢恢復計時器
         postureRecoveryTimer = 0f;
@@ -90,9 +109,10 @@ public class HealthPostureSystem
         // 觸發架勢值增減事件
         OnPostureChanged?.Invoke(this, EventArgs.Empty);
 
-        // 檢查架勢是否集滿
-        if (postureAmount == postureAmountMax)
+        // 檢查架勢是否集滿（只有非 Parry 時才會觸發）
+        if (postureAmount == postureAmountMax && !isParry)
         {
+            Debug.Log("架勢已集滿！");
             OnPostureBroken?.Invoke(this, EventArgs.Empty);
         }
     }
@@ -100,6 +120,7 @@ public class HealthPostureSystem
     // 減少架勢值
     public void PostureDecrease(int amount)
     {
+        int previousPosture = postureAmount;
         postureAmount -= amount;
         postureAmount = Mathf.Clamp(postureAmount, 0, postureAmountMax);
 
@@ -114,11 +135,6 @@ public class HealthPostureSystem
         
         if (postureRecoveryTimer >= postureRecoveryInterval)
         {
-            // 檢查是否為玩家且架勢值大於50%
-            bool isPlayer = false;
-            // 這裡需要檢查是否為玩家，但 HealthPostureSystem 沒有直接訪問 PlayerStatus 的方法
-            // 我們將在 HealthPostureUI 中處理這個邏輯
-            
             // 執行架勢恢復（暫時保持原邏輯）
             PostureDecrease(postureRecoveryAmount);
             

@@ -80,6 +80,13 @@ public class HealthPostureController : MonoBehaviour
     // 受到傷害
     public void TakeDamage(int amount, PlayerStatus.HitState hitState)
     {
+        // 檢查 healthPostureSystem 是否已初始化
+        if (healthPostureSystem == null)
+        {
+            Debug.LogWarning("[架勢控制器] healthPostureSystem 尚未初始化，跳過傷害處理");
+            return;
+        }
+
         healthPostureSystem.HealthDamage(amount);
 
         // 檢查是否可以增加架勢值
@@ -93,24 +100,48 @@ public class HealthPostureController : MonoBehaviour
                 postureReductionRate = itemSystem.GetPostureReductionRate();
             }
             
+            // 根據攻擊狀態決定架勢增加量（基於最大架勢值的百分比）
+            int basePostureAmount = 0;
+            bool isParry = (hitState == PlayerStatus.HitState.Parry);
+            
+            switch (hitState)
+            {
+                case PlayerStatus.HitState.Hit:
+                    basePostureAmount = Mathf.RoundToInt(healthPostureSystem.GetMaxPosture() * 1f); // 受到傷害 +40%
+                    break;
+                case PlayerStatus.HitState.Guard:
+                    basePostureAmount = Mathf.RoundToInt(healthPostureSystem.GetMaxPosture() * 0.3f); // 防禦 +20%
+                    break;
+                case PlayerStatus.HitState.Parry:
+                    basePostureAmount = Mathf.RoundToInt(healthPostureSystem.GetMaxPosture() * 0.1f); // Parry +2%
+                    break;
+            }
+            
             // 根據剛幹糖效果調整架勢增加量
-            int adjustedPostureAmount = Mathf.RoundToInt(20 * postureReductionRate);
-            healthPostureSystem.PostureIncrease(adjustedPostureAmount);
+            int adjustedPostureAmount = Mathf.RoundToInt(basePostureAmount * postureReductionRate);
+            
+            healthPostureSystem.PostureIncrease(adjustedPostureAmount, isParry);
         }
         // 顯示血條並設定為最後一個被攻擊的敵人
         ShowHealthBar();
     }
 
     // 增加架勢
-    public void AddPosture(int amount)
+    public void AddPosture(int amount, bool isParry = false)
     {
+        // 檢查 healthPostureSystem 是否已初始化
+        if (healthPostureSystem == null)
+        {
+            return;
+        }
+
         // 檢查是否可以增加架勢值
         if (!canIncreasePosture)
         {
             return; // 如果架勢被打破，暫時不能增加架勢值
         }
 
-        healthPostureSystem.PostureIncrease(amount);
+        healthPostureSystem.PostureIncrease(amount, isParry);
 
         // 顯示血條並設定為最後一個被攻擊的敵人
         ShowHealthBar();

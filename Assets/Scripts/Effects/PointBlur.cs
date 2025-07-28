@@ -132,7 +132,7 @@ public class PointBlur : MonoBehaviour
             // 檢測格擋成功狀態變化（從false變為true時觸發）
             if (tpController.parrySuccess && !lastParrySuccess)
             {
-                Debug.Log("[PointBlur] 備用方案：觸發 Parry 特效");
+                // Debug.Log("[PointBlur] 備用方案：觸發 Parry 特效");
                 TriggerParryEffect();
             }
             
@@ -143,7 +143,7 @@ public class PointBlur : MonoBehaviour
     // 處理 Parry 成功事件
     private void HandleParrySuccess(Vector3 parryPosition)
     {
-        Debug.Log("[PointBlur] 收到 Parry 成功事件，位置: " + parryPosition);
+        // Debug.Log("[PointBlur] 收到 Parry 成功事件，位置: " + parryPosition);
         TriggerParryEffectAtPosition(parryPosition);
     }
     
@@ -163,7 +163,7 @@ public class PointBlur : MonoBehaviour
     // 在指定位置觸發 Parry 特效
     private void TriggerParryEffectAtPosition(Vector3 position)
     {
-        Debug.Log("[PointBlur] 在指定位置觸發 Parry 特效: " + position);
+        // Debug.Log("[PointBlur] 在指定位置觸發 Parry 特效: " + position);
         t = 0; // 重置時間計數器
         
         // 設置格擋成功的模糊強度
@@ -173,11 +173,11 @@ public class PointBlur : MonoBehaviour
         if (Spark != null)
         {
             GameObject effect = Instantiate(Spark, position, Quaternion.identity);
-            Debug.Log("[PointBlur] 生成 Parry 特效: " + effect.name);
+            // Debug.Log("[PointBlur] 生成 Parry 特效: " + effect.name);
         }
         else
         {
-            Debug.LogWarning("[PointBlur] Spark 特效為 null");
+            //Debug.LogWarning("[PointBlur] Spark 特效為 null");
         }
         
         // 將世界座標轉換為螢幕UV座標
@@ -199,16 +199,16 @@ public class PointBlur : MonoBehaviour
         
         if (collisionPoint.HasValue) // 如果找到碰撞點
         {
-            Debug.Log("[PointBlur] 找到碰撞點: " + collisionPoint.Value);
+            // Debug.Log("[PointBlur] 找到碰撞點: " + collisionPoint.Value);
             // 使用格擋成功的火花特效
             if (Spark != null)
             {
                 GameObject effect = Instantiate(Spark, collisionPoint.Value, Quaternion.identity);
-                Debug.Log("[PointBlur] 生成 Parry 特效: " + effect.name);
+                // Debug.Log("[PointBlur] 生成 Parry 特效: " + effect.name);
             }
             else
             {
-                Debug.LogWarning("[PointBlur] Spark 特效為 null");
+                // Debug.LogWarning("[PointBlur] Spark 特效為 null");
             }
             
             // 將世界座標轉換為螢幕UV座標
@@ -217,7 +217,7 @@ public class PointBlur : MonoBehaviour
         }
         else // 如果沒有找到碰撞點，使用射線檢測作為備用
         {
-            Debug.Log("[PointBlur] 未找到碰撞點，使用射線檢測備用");
+            // Debug.Log("[PointBlur] 未找到碰撞點，使用射線檢測備用");
             UseRaycastFallback();
         }
     }
@@ -273,7 +273,7 @@ public class PointBlur : MonoBehaviour
     {
         if (weaponCollider == null) 
         {
-            Debug.LogWarning("[PointBlur] weaponCollider 為 null");
+            // Debug.LogWarning("[PointBlur] weaponCollider 為 null");
             return null; // 如果沒有武器碰撞器則返回null
         }
         
@@ -304,11 +304,11 @@ public class PointBlur : MonoBehaviour
         
         if (closestPoint.HasValue)
         {
-            Debug.Log("[PointBlur] 找到最近碰撞點: " + closestPoint.Value + ", 距離: " + closestDistance);
+            // Debug.Log("[PointBlur] 找到最近碰撞點: " + closestPoint.Value + ", 距離: " + closestDistance);
         }
         else
         {
-            Debug.Log("[PointBlur] 未找到碰撞點");
+            // Debug.Log("[PointBlur] 未找到碰撞點");
         }
         
         return closestPoint; // 返回最近的碰撞點
@@ -317,16 +317,16 @@ public class PointBlur : MonoBehaviour
     // 使用射線檢測作為備用
     private void UseRaycastFallback()
     {
-        Debug.Log("[PointBlur] 使用射線檢測備用方案");
+        // Debug.Log("[PointBlur] 使用射線檢測備用方案");
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0)); // 從螢幕中心發射射線
         if(Physics.Raycast(ray, out hit)) // 如果射線擊中物體
         {
-            Debug.Log("[PointBlur] 射線擊中物體: " + hit.point);
+            // Debug.Log("[PointBlur] 射線擊中物體: " + hit.point);
             if (Spark != null)
             {
                 GameObject effect = Instantiate(Spark, new Vector3(hit.point.x, hit.point.y, 0), Quaternion.identity); // 在擊中點生成火花特效
-                Debug.Log("[PointBlur] 生成備用 Parry 特效: " + effect.name);
+                // Debug.Log("[PointBlur] 生成備用 Parry 特效: " + effect.name);
             }
             
             // 將世界座標轉換為螢幕UV座標
@@ -335,7 +335,7 @@ public class PointBlur : MonoBehaviour
         }
         else // 如果射線沒有擊中任何物體
         {
-            Debug.Log("[PointBlur] 射線未擊中物體，使用螢幕中心");
+            // Debug.Log("[PointBlur] 射線未擊中物體，使用螢幕中心");
             BlurCenter = new Vector2(0.5f, 0.5f); // 使用螢幕中心作為模糊中心
         }
     }

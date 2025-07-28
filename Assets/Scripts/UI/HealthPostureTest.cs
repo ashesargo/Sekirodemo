@@ -102,7 +102,7 @@ public class HealthPostureTest : MonoBehaviour
     // 增加架勢按鈕點擊
     private void OnIncreasePostureButtonClicked()
     {
-        healthPostureSystem.PostureIncrease(postureIncreaseAmount);
+        healthPostureSystem.PostureIncrease(postureIncreaseAmount, false);
         Debug.Log($"增加 {postureIncreaseAmount} 點架勢值！當前架勢值: {healthPostureSystem.GetPostureNormalized() * 100:F1}%");
     }
     
