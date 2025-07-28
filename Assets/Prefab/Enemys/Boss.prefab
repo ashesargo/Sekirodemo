@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2592737532880117844}
     m_Modifications:
+    - target: {fileID: 1823014076688538465, guid: 94720485ea1cc0243959cd34b4532faf, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8627139117915373825, guid: 94720485ea1cc0243959cd34b4532faf, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -7367,6 +7371,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6869600998273829490, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7658690381631198487}
+    - targetCorrespondingSourceObject: {fileID: 6869600998273829490, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -1830463696213571030}
   m_SourcePrefab: {fileID: 100100000, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
 --- !u!143 &2151013661169599612 stripped
 CharacterController:
@@ -7408,7 +7415,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3403077399576037378}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ede9019da687ddd46b1547c1fb033561, type: 3}
   m_Name: 
@@ -7416,14 +7423,14 @@ MonoBehaviour:
   animator: {fileID: 8255613398275737794}
   characterController: {fileID: 2151013661169599612}
   visionRange: 100
-  attackRange: 15
+  attackRange: 20
   maxSpeed: 20
   avoidDistance: 20
   avoidStrength: 40
   obstacleMask:
     serializedVersion: 2
     m_Bits: 512
-  retreatTime: 2
+  retreatTime: 0.5
   enemyAvoidDistance: 10
   enemyAvoidStrength: 30
   enemyLayerMask:
@@ -7469,6 +7476,65 @@ MonoBehaviour:
   combo3Duration: 1
   leftWeapon: {fileID: 0}
   rightWeapon: {fileID: 0}
+--- !u!114 &-1830463696213571030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3403077399576037378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e8a316595470eb48aaf25970d055a0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 0}
+  characterController: {fileID: 0}
+  visionRange: 100
+  attackRange: 20
+  maxSpeed: 20
+  avoidDistance: 20
+  avoidStrength: 40
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 512
+  retreatTime: 0.8
+  enemyAvoidDistance: 10
+  enemyAvoidStrength: 30
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  detectionBoxSize: {x: 5, y: 10, z: 10}
+  detectionBoxOffset: 5
+  detectionBoxYOffset: 5
+  showDetectionBox: 1
+  retreatBoxSize: {x: 5, y: 10, z: 10}
+  retreatBoxOffset: 5
+  retreatBoxYOffset: 5
+  retreatObstacleMask:
+    serializedVersion: 2
+    m_Bits: 576
+  showDebugInfo: 0
+  lookAtTurnSpeed: 2
+  minDistanceToPlayer: 5
+  groundCheckDistance: 5
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 8
+  maxSlopeAngle: 60
+  slopeCheckDistance: 1
+  maxStepHeight: 0.5
+  stepSmooth: 5
+  downSlopeSpeed: 20
+  velocity: {x: 0, y: 0, z: 0}
+  canAutoAttack: 1
+  canBeParried: 0
+  useComboAttack: 1
+  comboAnimations:
+  - Combo1
+  - Combo2
+  - Combo3
+  comboAttackRange: 2.5
 --- !u!95 &8255613398275737794 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 215686583444720306, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
