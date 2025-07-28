@@ -3793,9 +3793,17 @@ PrefabInstance:
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3096965204288466699, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: weaponRange
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3096965204288466699, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: weaponCollider
       value: 
       objectReference: {fileID: 905128411136321190}
+    - target: {fileID: 3096965204288466699, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: playerLayer.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
     - target: {fileID: 3098556963569235404, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -8063,18 +8071,18 @@ MonoBehaviour:
   characterController: {fileID: 5125634401423986934}
   visionRange: 100
   attackRange: 20
-  maxSpeed: 20
+  maxSpeed: 25
   avoidDistance: 20
   avoidStrength: 40
   obstacleMask:
     serializedVersion: 2
     m_Bits: 512
   retreatTime: 1
-  enemyAvoidDistance: 10
-  enemyAvoidStrength: 30
+  enemyAvoidDistance: 20
+  enemyAvoidStrength: 10
   enemyLayerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 128
   detectionBoxSize: {x: 5, y: 10, z: 10}
   detectionBoxOffset: 5
   detectionBoxYOffset: 5
@@ -8084,10 +8092,10 @@ MonoBehaviour:
   retreatBoxYOffset: 5
   retreatObstacleMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 640
   showDebugInfo: 0
   lookAtTurnSpeed: 2
-  minDistanceToPlayer: 5
+  minDistanceToPlayer: 8
   groundCheckDistance: 5
   groundMask:
     serializedVersion: 2
@@ -8304,6 +8312,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4749354469079687155, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7578950436501379183}
+    - targetCorrespondingSourceObject: {fileID: 4749354469079687155, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2311704357348635347}
   m_SourcePrefab: {fileID: 100100000, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
 --- !u!1 &2601229347952428254 stripped
 GameObject:
@@ -8329,8 +8340,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.059335858, y: 0.4259638, z: 0.032724902}
-  m_Center: {x: -0.000003585592, y: -2.389755e-14, z: -0.000000001862646}
+  m_Size: {x: 0.059335858, y: 1.9053496, z: 0.032724902}
+  m_Center: {x: -0.0000041964418, y: -0.73970747, z: -0.0000015365245}
 --- !u!114 &7578950436501379183
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8345,12 +8356,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: ae721c767fcd6664ca1cf46b36bb56b7, type: 2}
   duration: 1
-  corner: 10
+  corner: 30
   loop: 0
   points:
-  - {x: 0.0030168917, y: -0.33928695, z: 0.004437336}
-  - {x: 0.0023519164, y: -0.20070025, z: 0.009236482}
-  - {x: 0.0033531564, y: 0.22762173, z: 0.010212742}
+  - {x: 0.00008827337, y: -0.46295246, z: -0.0009478441}
+  - {x: -0.0010897741, y: 0.21477057, z: 0.0011325555}
+--- !u!114 &2311704357348635347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2601229347952428254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eb7e0624ddd6fc4da04d66fa31d050f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bladeTrail: {fileID: 7578950436501379183}
+  animator: {fileID: 2912090041193765960}
 --- !u!4 &7096210163640794310 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: cd2469bc307504746b088dcaa481ee63, type: 3}

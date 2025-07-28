@@ -107,13 +107,13 @@ public class HealthPostureController : MonoBehaviour
             switch (hitState)
             {
                 case PlayerStatus.HitState.Hit:
-                    basePostureAmount = Mathf.RoundToInt(healthPostureSystem.GetMaxPosture() * 1f); // 受到傷害 +40%
+                    basePostureAmount = Mathf.RoundToInt(healthPostureSystem.GetMaxPosture() * 1f); 
                     break;
                 case PlayerStatus.HitState.Guard:
-                    basePostureAmount = Mathf.RoundToInt(healthPostureSystem.GetMaxPosture() * 0.3f); // 防禦 +20%
+                    basePostureAmount = Mathf.RoundToInt(healthPostureSystem.GetMaxPosture() * 0.3f); 
                     break;
                 case PlayerStatus.HitState.Parry:
-                    basePostureAmount = Mathf.RoundToInt(healthPostureSystem.GetMaxPosture() * 0.1f); // Parry +2%
+                    basePostureAmount = Mathf.RoundToInt(healthPostureSystem.GetMaxPosture() * 0.1f); 
                     break;
             }
             

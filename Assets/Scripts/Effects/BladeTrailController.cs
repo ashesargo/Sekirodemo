@@ -3,17 +3,23 @@ using UnityEngine;
 
 public class BladeTrailController : MonoBehaviour
 {
-    [Header("Trail ³]©w")]
-    public Trail bladeTrail; // ¸j©w Mini Trail ²Õ¥ó
-    public Animator animator; // ¸j©w¨¤¦â Animator
+    [Header("Trail è¨­å®š")]
+    public Trail bladeTrail; // è¨­å®š Mini Trail
+    public Animator animator; // è¨­å®š Animator
 
     private bool isInAttackState = false;
+
+    void Start()
+    {
+        bladeTrail.Clear();
+        bladeTrail.enabled = false;
+    }
 
     void Update()
     {
         if (animator == null || bladeTrail == null) return;
 
-        // ÀË¬d¥Ø«e°Êµeª¬ºA¬O§_¬° Attack
+        // æª¢æŸ¥æ˜¯å¦ç‚ºæ”»æ“Šç‹€æ…‹
         AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
         bool isAttack = state.IsTag("Attack");
 
@@ -30,13 +36,13 @@ public class BladeTrailController : MonoBehaviour
     void EnterAttackState()
     {
         isInAttackState = true;
-        bladeTrail.Clear();           // ²M°£¤W¦¸ªº­y¸ñ
-        bladeTrail.enabled = true;   // ±Ò¥Î©ì§À¯S®Ä
+        bladeTrail.Clear();           // æ¸…é™¤ Trail
+        bladeTrail.enabled = true;   // å•Ÿç”¨ Trail
     }
 
     void ExitAttackState()
     {
         isInAttackState = false;
-        bladeTrail.enabled = false;  // °±¤î©ì§À¯S®Ä
+        bladeTrail.enabled = false;  // åœç”¨ Trail
     }
 }

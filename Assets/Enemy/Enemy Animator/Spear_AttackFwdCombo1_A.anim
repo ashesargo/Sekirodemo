@@ -41921,13 +41921,6 @@ AnimationClip:
   m_HasMotionFloatCurves: 1
   m_Events:
   - time: 0
-    functionName: StartDetection
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.15
     functionName: ParryWindowStart
     data: 
     objectReferenceParameter: {fileID: 0}
@@ -41935,6 +41928,13 @@ AnimationClip:
     intParameter: 0
     messageOptions: 0
   - time: 0.31666666
+    functionName: StartDetection
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.33333334
     functionName: ParryWindowEnd
     data: 
     objectReferenceParameter: {fileID: 0}
@@ -41948,7 +41948,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.96666664
+  - time: 0.5
     functionName: StopDetection
     data: 
     objectReferenceParameter: {fileID: 0}

@@ -3545,7 +3545,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3096965204288466699, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: weaponRange
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3096965204288466699, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: weaponCollider
@@ -6105,13 +6105,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: ae721c767fcd6664ca1cf46b36bb56b7, type: 2}
-  duration: 0.5
+  duration: 1
   corner: 30
   loop: 0
   points:
-  - {x: -0.0071666543, y: -0.8517357, z: -0.043888673}
-  - {x: -0.009687993, y: -0.48616067, z: -0.0070360075}
-  - {x: -0.00060755113, y: -0.1805373, z: 0.0016369144}
+  - {x: -0.0028229624, y: -0.85764796, z: -0.04222051}
+  - {x: 0.00617629, y: -0.46839952, z: 0.020526823}
+  - {x: -0.003562284, y: -0.1526027, z: -0.0032003473}
 --- !u!114 &3692774976015023292
 MonoBehaviour:
   m_ObjectHideFlags: 0
