@@ -23,11 +23,8 @@ public class BossRangedAttackState : BaseEnemyState
         var bossAI = enemy.GetComponent<BossAI>();
         if (bossAI != null)
             bossAI.hasJustRangedOrRushed = true;
-        var bossRanged = enemy.GetComponent<BossRangedAttack>();
-        if (bossRanged != null)
-        {
-            bossRanged.FireBossProjectile();
-        }
+        // 移除自動射擊，改為在動畫事件中射擊
+        Debug.Log("BossRangedAttackState: 等待動畫事件觸發射擊");
     }
 
     public override void UpdateState(EnemyAI enemy)

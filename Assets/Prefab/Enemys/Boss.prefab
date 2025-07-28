@@ -7370,16 +7370,8 @@ PrefabInstance:
       addedObject: {fileID: 7013022994317564026}
     - targetCorrespondingSourceObject: {fileID: 6869600998273829490, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7658690381631198487}
-    - targetCorrespondingSourceObject: {fileID: 6869600998273829490, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
-      insertIndex: -1
       addedObject: {fileID: -1830463696213571030}
   m_SourcePrefab: {fileID: 100100000, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
---- !u!143 &2151013661169599612 stripped
-CharacterController:
-  m_CorrespondingSourceObject: {fileID: 7905645749971633676, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
-  m_PrefabInstance: {fileID: 8101854144654213744}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2592737532880117844 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6022667746007867940, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
@@ -7408,74 +7400,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isDead: 0
---- !u!114 &7658690381631198487
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3403077399576037378}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ede9019da687ddd46b1547c1fb033561, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animator: {fileID: 8255613398275737794}
-  characterController: {fileID: 2151013661169599612}
-  visionRange: 100
-  attackRange: 20
-  maxSpeed: 20
-  avoidDistance: 20
-  avoidStrength: 40
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 512
-  retreatTime: 0.5
-  enemyAvoidDistance: 10
-  enemyAvoidStrength: 30
-  enemyLayerMask:
-    serializedVersion: 2
-    m_Bits: 64
-  detectionBoxSize: {x: 5, y: 10, z: 10}
-  detectionBoxOffset: 5
-  detectionBoxYOffset: 5
-  showDetectionBox: 1
-  retreatBoxSize: {x: 5, y: 10, z: 10}
-  retreatBoxOffset: 5
-  retreatBoxYOffset: 5
-  retreatObstacleMask:
-    serializedVersion: 2
-    m_Bits: 512
-  showDebugInfo: 0
-  lookAtTurnSpeed: 2
-  minDistanceToPlayer: 5
-  groundCheckDistance: 5
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 2147483656
-  maxSlopeAngle: 45
-  slopeCheckDistance: 1
-  maxStepHeight: 0.5
-  stepSmooth: 5
-  downSlopeSpeed: 20
-  velocity: {x: 0, y: 0, z: 0}
-  canAutoAttack: 1
-  canBeParried: 0
-  currentComboCount: 0
-  maxComboCount: 3
-  hasDoneIntroCombo: 0
-  hasJustRangedOrRushed: 0
-  pendingIntroComboStep: -1
-  pendingJumpAttack: 0
-  comboAnimations:
-  - Combo1
-  - Combo2
-  - Combo3
-  combo1Duration: 6
-  combo2Duration: 1
-  combo3Duration: 1
-  leftWeapon: {fileID: 0}
-  rightWeapon: {fileID: 0}
 --- !u!114 &-1830463696213571030
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7534,9 +7458,5 @@ MonoBehaviour:
   - Combo1
   - Combo2
   - Combo3
-  comboAttackRange: 2.5
---- !u!95 &8255613398275737794 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 215686583444720306, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
-  m_PrefabInstance: {fileID: 8101854144654213744}
-  m_PrefabAsset: {fileID: 0}
+  comboAttackRange: 20
+  hasDoneFirstCombo: 0

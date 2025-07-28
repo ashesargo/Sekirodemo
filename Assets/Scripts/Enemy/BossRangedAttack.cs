@@ -77,4 +77,69 @@ public class BossRangedAttack : MonoBehaviour
         }
         Debug.Log("BossRangedAttack: Boss發射遠程攻擊");
     }
+    
+    // 動畫事件調用的射擊方法
+    public void OnShootEvent()
+    {
+        Debug.Log("BossRangedAttack: 動畫事件觸發射擊");
+        FireBossProjectile();
+    }
+    
+    // 動畫事件調用的射擊方法（帶參數）
+    public void OnShootEventWithOffset(float heightOffset)
+    {
+        Debug.Log($"BossRangedAttack: 動畫事件觸發射擊，高度偏移: {heightOffset}");
+        
+        if (projectilePrefab == null)
+        {
+            Debug.LogWarning("BossRangedAttack: 沒有設定子彈預製體！");
+            return;
+        }
+        
+        // 生成子彈
+        GameObject projectile = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
+        
+        // 設定子彈方向（朝向玩家或指定目標）
+        Vector3 targetPos;
+        if (projectileTarget != null)
+        {
+            targetPos = projectileTarget.position;
+        }
+        else if (enemyAI.player != null)
+        {
+            targetPos = enemyAI.player.position + Vector3.up * heightOffset;
+        }
+        else
+        {
+            targetPos = firePoint.position + firePoint.forward * 10f;
+        }
+        
+        Vector3 direction = (targetPos - firePoint.position).normalized;
+        projectile.transform.forward = direction;
+        
+        Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
+        if (projectileRb != null)
+        {
+            projectileRb.velocity = direction * projectileSpeed;
+        }
+        
+        // 設定子彈傷害
+        Projectile projectileScript = projectile.GetComponent<Projectile>();
+        if (projectileScript != null)
+        {
+            projectileScript.damage = projectileDamage;
+        }
+        
+        // 播放發射音效
+        if (shootSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(shootSound);
+        }
+        
+        // 播放發射特效
+        if (muzzleFlash != null)
+        {
+            muzzleFlash.Play();
+        }
+    }
 } 

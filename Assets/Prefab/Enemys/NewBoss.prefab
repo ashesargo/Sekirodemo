@@ -4576,6 +4576,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1245062765284686098, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
       insertIndex: -1
       addedObject: {fileID: -2264536825696089340}
+    - targetCorrespondingSourceObject: {fileID: 1245062765284686098, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -7456824477671596709}
   m_SourcePrefab: {fileID: 100100000, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
 --- !u!137 &167012479499398312 stripped
 SkinnedMeshRenderer:
@@ -4996,6 +4999,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2147483656
   maxSlopeAngle: 45
+  slopeCheckDistance: 1
+  maxStepHeight: 0.5
+  stepSmooth: 5
+  downSlopeSpeed: 20
   velocity: {x: 0, y: 0, z: 0}
   canAutoAttack: 1
   canBeParried: 0
@@ -5033,6 +5040,26 @@ MonoBehaviour:
   shootSound: {fileID: 0}
   muzzleFlash: {fileID: 0}
   projectileTarget: {fileID: 0}
+--- !u!114 &-7456824477671596709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5557789131163203382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 067c409c14c4d1b4396d38084c809f03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  arrowPrefab: {fileID: 1024314072249428972, guid: 110204d657d48974ea281a579b4441a2, type: 3}
+  firePoint: {fileID: 0}
+  arrowSpeed: 150
+  arrowDamage: 30
+  arrowRotationOffset: {x: -90, y: 0, z: 0}
+  useCustomRotation: 0
+  shootSound: {fileID: 0}
+  shootEffect: {fileID: 0}
 --- !u!137 &5630134567351512465 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 1316216258256692149, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}

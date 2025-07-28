@@ -11,6 +11,9 @@ GameObject:
   - component: {fileID: 5791887033299285944}
   - component: {fileID: 6358665441495226215}
   - component: {fileID: 5945685168686333879}
+  - component: {fileID: 5621274166121910873}
+  - component: {fileID: 6046402221626746293}
+  - component: {fileID: 8234772103987759103}
   m_Layer: 0
   m_Name: SM_Arrow_01
   m_TagString: Untagged
@@ -85,3 +88,74 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5621274166121910873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1024314072249428972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc463c1ec5cfc574a81f7f9908a5be3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 30
+  lifetime: 10
+  speed: 10
+  hitEffect: {fileID: 0}
+  hitSound: {fileID: 0}
+  targetLayers:
+    serializedVersion: 2
+    m_Bits: 128
+  destroyOnHit: 1
+--- !u!54 &6046402221626746293
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1024314072249428972}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!136 &8234772103987759103
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1024314072249428972}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.021450037
+  m_Height: 0.86848253
+  m_Direction: 1
+  m_Center: {x: 0.0055830856, y: -0.4342424, z: 0.0001837593}
