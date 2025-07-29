@@ -85,7 +85,7 @@ public class ItemSystem : MonoBehaviour
                 type = ItemType.MedicinePill,
                 name = "藥丸",
                 quantity = 3,
-                effectValue = 3f,
+                effectValue = 5f, // 提高每秒恢復量到5點
                 duration = 30f, 
                 cooldown = 30f,
                 description = "緩慢恢復生命值"
@@ -295,12 +295,15 @@ public class ItemSystem : MonoBehaviour
         {
             case ItemType.MedicinePill:
                 StartCoroutine(HealOverTime(item.effectValue, item.duration)); // 緩慢恢復生命值
+                Debug.Log($"[ItemSystem] 使用藥丸，每秒恢復 {item.effectValue} 點生命值，持續 {item.duration} 秒");
                 break;
             case ItemType.SteelSugar:
                 StartCoroutine(ReducePostureGain(item.effectValue, item.duration)); // 減少架勢增加
+                Debug.Log($"[ItemSystem] 使用剛幹糖，減少架勢增加 {item.effectValue}，持續 {item.duration} 秒");
                 break;
             case ItemType.HealingGourd:
                 healthController.HealHealth((int)item.effectValue); // 立即恢復生命值
+                Debug.Log($"[ItemSystem] 使用傷藥葫蘆，立即恢復 {item.effectValue} 點生命值");
                 break;
             default:
                 Debug.LogWarning($"[ItemSystem] 未知的道具類型: {item.type}");
@@ -311,21 +314,54 @@ public class ItemSystem : MonoBehaviour
     IEnumerator HealOverTime(float healPerSecond, float duration)
     {
         float elapsed = 0f;
+        float accumulatedHeal = 0f; // 累積的治療量
+        int totalHealed = 0; // 總治療量（用於調試）
+        
+        Debug.Log($"[ItemSystem] 開始緩慢治療：每秒 {healPerSecond} 點，持續 {duration} 秒");
+        
         while (elapsed < duration)
         {
             if (healthController != null)
             {
-                healthController.HealHealth((int)(healPerSecond * Time.deltaTime));
+                // 累積治療量
+                accumulatedHeal += healPerSecond * Time.deltaTime;
+                
+                // 當累積量達到1或以上時，進行治療
+                if (accumulatedHeal >= 1f)
+                {
+                    int healAmount = Mathf.FloorToInt(accumulatedHeal);
+                    healthController.HealHealth(healAmount);
+                    totalHealed += healAmount;
+                    accumulatedHeal -= healAmount; // 減去已治療的量
+                    
+                    Debug.Log($"[ItemSystem] 治療中：恢復 {healAmount} 點生命值，累計恢復 {totalHealed} 點");
+                }
             }
             elapsed += Time.deltaTime;
             yield return null;
+        }
+        
+        // 治療結束時，處理剩餘的治療量
+        if (healthController != null && accumulatedHeal > 0f)
+        {
+            int finalHeal = Mathf.FloorToInt(accumulatedHeal);
+            healthController.HealHealth(finalHeal);
+            totalHealed += finalHeal;
+            Debug.Log($"[ItemSystem] 治療結束：最後恢復 {finalHeal} 點生命值，總共恢復 {totalHealed} 點");
         }
     }
     
     IEnumerator ReducePostureGain(float reduction, float duration)
     {
-        // 這裡可以設置架勢減少效果
+        // 設置架勢減少效果
+        // 這裡可以通過修改 ItemData 的 duration 來標記效果是否啟用
+        // 當 duration > 0 時，表示效果正在啟用中
+        
+        // 等待效果持續時間
         yield return new WaitForSeconds(duration);
+        
+        // 效果結束後，可以重置相關狀態
+        Debug.Log("[ItemSystem] 剛幹糖效果結束");
     }
     
     void PlayUseEffect(ItemData item)
