@@ -7444,7 +7444,7 @@ MonoBehaviour:
   groundCheckDistance: 5
   groundMask:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 2147483656
   maxSlopeAngle: 60
   slopeCheckDistance: 1
   maxStepHeight: 0.5
