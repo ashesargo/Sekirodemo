@@ -3794,12 +3794,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3096965204288466699, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: weaponRange
-      value: 2
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3096965204288466699, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: weaponCollider
       value: 
-      objectReference: {fileID: 905128411136321190}
+      objectReference: {fileID: 9038012156409827981}
     - target: {fileID: 3096965204288466699, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: playerLayer.m_Bits
       value: 128
@@ -8078,7 +8078,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   retreatTime: 1
-  enemyAvoidDistance: 20
+  enemyAvoidDistance: 10
   enemyAvoidStrength: 10
   enemyLayerMask:
     serializedVersion: 2
@@ -8140,15 +8140,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.011
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.769
+      value: 0.544
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0
+      value: 0.115
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
       propertyPath: m_LocalRotation.w
@@ -8306,9 +8306,9 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4749354469079687155, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
+    - targetCorrespondingSourceObject: {fileID: -1840145632609415686, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 905128411136321190}
+      addedObject: {fileID: 9038012156409827981}
     - targetCorrespondingSourceObject: {fileID: 4749354469079687155, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7578950436501379183}
@@ -8316,18 +8316,18 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 2311704357348635347}
   m_SourcePrefab: {fileID: 100100000, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
---- !u!1 &2601229347952428254 stripped
+--- !u!1 &253901138103523031 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 4749354469079687155, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
+  m_CorrespondingSourceObject: {fileID: -1840145632609415686, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
   m_PrefabInstance: {fileID: 7345499594734574381}
   m_PrefabAsset: {fileID: 0}
---- !u!65 &905128411136321190
-BoxCollider:
+--- !u!136 &9038012156409827981
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2601229347952428254}
+  m_GameObject: {fileID: 253901138103523031}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -8339,9 +8339,16 @@ BoxCollider:
   m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.059335858, y: 1.2400966, z: 0.032724902}
-  m_Center: {x: -0.0000041755593, y: -0.40708116, z: -0.0000031383972}
+  serializedVersion: 2
+  m_Radius: 0.3
+  m_Height: 2.1805372
+  m_Direction: 1
+  m_Center: {x: 0.00000078569633, y: 0.63285035, z: 0.0000024602205}
+--- !u!1 &2601229347952428254 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4749354469079687155, guid: cd2469bc307504746b088dcaa481ee63, type: 3}
+  m_PrefabInstance: {fileID: 7345499594734574381}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &7578950436501379183
 MonoBehaviour:
   m_ObjectHideFlags: 0

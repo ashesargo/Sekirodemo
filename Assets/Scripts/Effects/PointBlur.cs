@@ -215,10 +215,26 @@ public class PointBlur : MonoBehaviour
             BlurCenter = Camera.main.WorldToScreenPoint(collisionPoint.Value); // 世界座標轉螢幕座標
             BlurCenter.Set(BlurCenter.x / Screen.width, BlurCenter.y / Screen.height); // 螢幕座標轉UV座標
         }
-        else // 如果沒有找到碰撞點，使用射線檢測作為備用
+        else // 如果沒有找到碰撞點，在主角前方生成特效
         {
-            // Debug.Log("[PointBlur] 未找到碰撞點，使用射線檢測備用");
-            UseRaycastFallback();
+            // Debug.Log("[PointBlur] 未找到碰撞點，在主角前方生成特效");
+            
+            // 獲取主角位置和方向
+            Vector3 playerPosition = tpController != null ? tpController.transform.position : transform.position;
+            Vector3 playerForward = tpController != null ? tpController.transform.forward : transform.forward;
+            
+            // 在主角前方生成特效
+            Vector3 spawnPosition = playerPosition + playerForward * 2f; // 距離主角2單位
+            
+            if (Spark != null)
+            {
+                GameObject effect = Instantiate(Spark, spawnPosition, Quaternion.identity);
+                // Debug.Log("[PointBlur] 在主角前方生成 Parry 特效: " + effect.name);
+            }
+            
+            // 將世界座標轉換為螢幕UV座標
+            BlurCenter = Camera.main.WorldToScreenPoint(spawnPosition);
+            BlurCenter.Set(BlurCenter.x / Screen.width, BlurCenter.y / Screen.height);
         }
     }
 
@@ -245,9 +261,24 @@ public class PointBlur : MonoBehaviour
             BlurCenter = Camera.main.WorldToScreenPoint(collisionPoint.Value); // 世界座標轉螢幕座標
             BlurCenter.Set(BlurCenter.x / Screen.width, BlurCenter.y / Screen.height); // 螢幕座標轉UV座標
         }
-        else // 如果沒有找到碰撞點，使用射線檢測作為備用
+        else // 如果沒有找到碰撞點，在主角前方生成特效
         {
-            UseRaycastFallback();
+            // 獲取主角位置和方向
+            Vector3 playerPosition = tpController != null ? tpController.transform.position : transform.position;
+            Vector3 playerForward = tpController != null ? tpController.transform.forward : transform.forward;
+            
+            // 在主角前方生成特效
+            Vector3 spawnPosition = playerPosition + playerForward * 2f; // 距離主角2單位
+            
+            if (GuardSpark != null)
+            {
+                GameObject effect = Instantiate(GuardSpark, spawnPosition, Quaternion.identity);
+                // Debug.Log("[PointBlur] 在主角前方生成防禦特效: " + effect.name);
+            }
+            
+            // 將世界座標轉換為螢幕UV座標
+            BlurCenter = Camera.main.WorldToScreenPoint(spawnPosition);
+            BlurCenter.Set(BlurCenter.x / Screen.width, BlurCenter.y / Screen.height);
         }
     }
 
@@ -333,10 +364,26 @@ public class PointBlur : MonoBehaviour
             BlurCenter = Camera.main.WorldToScreenPoint(new Vector3(hit.point.x, hit.point.y, 0));
             BlurCenter.Set(BlurCenter.x / Screen.width, BlurCenter.y / Screen.height);
         }
-        else // 如果射線沒有擊中任何物體
+        else // 如果射線沒有擊中任何物體，在主角前方生成特效
         {
-            // Debug.Log("[PointBlur] 射線未擊中物體，使用螢幕中心");
-            BlurCenter = new Vector2(0.5f, 0.5f); // 使用螢幕中心作為模糊中心
+            // Debug.Log("[PointBlur] 射線未擊中物體，在主角前方生成特效");
+            
+            // 獲取主角位置和方向
+            Vector3 playerPosition = tpController != null ? tpController.transform.position : transform.position;
+            Vector3 playerForward = tpController != null ? tpController.transform.forward : transform.forward;
+            
+            // 在主角前方生成特效
+            Vector3 spawnPosition = playerPosition + playerForward * 2f; // 距離主角2單位
+            
+            if (Spark != null)
+            {
+                GameObject effect = Instantiate(Spark, spawnPosition, Quaternion.identity);
+                // Debug.Log("[PointBlur] 在主角前方生成備用 Parry 特效: " + effect.name);
+            }
+            
+            // 將世界座標轉換為螢幕UV座標
+            BlurCenter = Camera.main.WorldToScreenPoint(spawnPosition);
+            BlurCenter.Set(BlurCenter.x / Screen.width, BlurCenter.y / Screen.height);
         }
     }
 }
