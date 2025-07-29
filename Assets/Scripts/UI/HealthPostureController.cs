@@ -429,6 +429,13 @@ public class HealthPostureController : MonoBehaviour
             enemyCollider.enabled = false;
             colliderDisabled = true;
         }
+        
+        // 關閉敵人 CharacterController
+        CharacterController characterController = GetComponent<CharacterController>();
+        if (characterController != null && characterController.enabled)
+        {
+            characterController.enabled = false;
+        }
     }
 
     // 架勢被打破
@@ -496,6 +503,13 @@ public class HealthPostureController : MonoBehaviour
         if (enemyCollider != null)
         {
             enemyCollider.enabled = true;
+        }
+        
+        // 重新啟用 CharacterController
+        CharacterController characterController = GetComponent<CharacterController>();
+        if (characterController != null)
+        {
+            characterController.enabled = true;
         }
     }
 
