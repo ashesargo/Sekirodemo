@@ -7,6 +7,7 @@ using System.Collections;
 public class HealthPostureController : MonoBehaviour
 {
     public int live = 1;   // 復活次數
+    [SerializeField] private int maxLive = 1; // 最大生命球數
     [SerializeField] private int maxHealth = 100;   // 最大生命值
     [SerializeField] private int maxPosture = 100;  // 最大架勢值
     [SerializeField] private HealthPostureUI healthPostureUI;   // 生命值與架勢 UI 顯示
@@ -33,11 +34,13 @@ public class HealthPostureController : MonoBehaviour
         if (healthPostureUI != null)
         {
             healthPostureUI.SetHealthPostureSystem(healthPostureSystem);
+            healthPostureUI.UpdateLifeBalls(live, maxLive);
         }
 
         // 訂閱事件
         healthPostureSystem.OnDead += OnDead;
         healthPostureSystem.OnPostureBroken += OnPostureBroken;
+        live = maxLive;
     }
 
     void Update()
@@ -289,6 +292,8 @@ public class HealthPostureController : MonoBehaviour
             // 關閉碰撞器
             StartCoroutine(DisableColliderAfterEffect());
         }
+        if (healthPostureUI != null)
+            healthPostureUI.UpdateLifeBalls(live, maxLive);
     }
 
     // 失衡
@@ -398,6 +403,8 @@ public class HealthPostureController : MonoBehaviour
         }
         
         Debug.Log("玩家復活完成，所有狀態已重置");
+        if (healthPostureUI != null)
+            healthPostureUI.UpdateLifeBalls(live, maxLive);
     }
 
     // 回到主選單
@@ -428,6 +435,13 @@ public class HealthPostureController : MonoBehaviour
         {
             enemyCollider.enabled = false;
             colliderDisabled = true;
+        }
+        
+        // 關閉敵人 CharacterController
+        CharacterController characterController = GetComponent<CharacterController>();
+        if (characterController != null && characterController.enabled)
+        {
+            characterController.enabled = false;
         }
     }
 
@@ -471,6 +485,7 @@ public class HealthPostureController : MonoBehaviour
             if (healthPostureUI != null)
             {
                 healthPostureUI.SetHealthPostureSystem(healthPostureSystem);
+                healthPostureUI.UpdateLifeBalls(live, maxLive);
             }
 
             // 重新訂閱事件
@@ -497,6 +512,15 @@ public class HealthPostureController : MonoBehaviour
         {
             enemyCollider.enabled = true;
         }
+        
+        // 重新啟用 CharacterController
+        CharacterController characterController = GetComponent<CharacterController>();
+        if (characterController != null)
+        {
+            characterController.enabled = true;
+        }
+        if (healthPostureUI != null)
+            healthPostureUI.UpdateLifeBalls(live, maxLive);
     }
 
     // 當物件被銷毀時清理

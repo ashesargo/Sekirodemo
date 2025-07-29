@@ -26,6 +26,14 @@ public class HealthPostureUI : MonoBehaviour
     [SerializeField] private GameObject postureBarHighlightGameObject; // 架勢條滿了之後的高亮特效
     [SerializeField] private RectTransform postureBarRectTransform; // 架勢條的 RectTransform
     [SerializeField] private GameObject postureBarGameObject;   // 架勢條 GameObject
+    
+    // 生命球UI
+    [Header("生命球UI")]
+    [SerializeField] private Transform lifeBallContainer; // 生命球的父物件
+    [SerializeField] private GameObject lifeBallPrefab;   // 生命球Prefab（Image元件）
+    [SerializeField] private Sprite lifeBallNormalSprite; // 正常生命球圖
+    [SerializeField] private Sprite lifeBallCrossSprite;  // 打叉生命球圖
+    private List<Image> lifeBallImages = new List<Image>();
 
     private void Update()
     {
@@ -282,6 +290,27 @@ public class HealthPostureUI : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         postureBarHighlightGameObject.SetActive(false);
+    }
+
+    // 更新生命球顯示
+    public void UpdateLifeBalls(int live, int maxLive)
+    {
+        // 先清空舊的
+        foreach (var img in lifeBallImages)
+            Destroy(img.gameObject);
+        lifeBallImages.Clear();
+
+        // 重新生成
+        for (int i = 0; i < maxLive; i++)
+        {
+            GameObject go = Instantiate(lifeBallPrefab, lifeBallContainer);
+            Image img = go.GetComponent<Image>();
+            if (i < live)
+                img.sprite = lifeBallNormalSprite;
+            else
+                img.sprite = lifeBallCrossSprite;
+            lifeBallImages.Add(img);
+        }
     }
 
     // 判斷是否為玩家UI
