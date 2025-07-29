@@ -98,6 +98,8 @@ public class WeaponEffect : MonoBehaviour
         hasTriggeredEffectThisAttack = false; // 重置特效觸發標記
         effectCountThisAttack = 0; // 重置特效計數器
         
+        Debug.Log("[WeaponEffect] 停止檢測，本次攻擊生成特效數量: " + effectCountThisAttack);
+        
         // 開始監控特效完成
         StartCoroutine(MonitorEffectsCompletion());
     }
@@ -154,6 +156,8 @@ public class WeaponEffect : MonoBehaviour
         bool hasGeneratedEffect = false; // 記錄是否已生成特效
         HashSet<GameObject> processedObjects = new HashSet<GameObject>(); // 記錄已處理的遊戲物件
 
+        Debug.Log("[WeaponEffect] 檢測到 " + hitColliders.Length + " 個碰撞體");
+
         foreach (Collider col in hitColliders)
         {
             if (hitCollidersThisAttack.Contains(col)) continue; // 跳過本段攻擊中已經處理過的 Collider
@@ -163,21 +167,30 @@ public class WeaponEffect : MonoBehaviour
             bool isEnemy = ((1 << colliderLayer) & enemyLayer) != 0;
             bool isPlayer = ((1 << colliderLayer) & playerLayer) != 0;
 
+            Debug.Log("[WeaponEffect] 處理碰撞體: " + col.name + "，層級: " + LayerMask.LayerToName(colliderLayer) + 
+                     "，是否敵人: " + isEnemy + "，是否玩家: " + isPlayer);
+
             // 記錄是否有玩家碰撞
             if (isPlayer)
             {
                 hasPlayerHit = true;
+                Debug.Log("[WeaponEffect] 檢測到玩家碰撞: " + col.name);
             }
 
             // 如果是敵人 Collider，檢查是否在 Weapon 組件的攻擊範圍內
             if (isEnemy)
             {
-                if (!IsInWeaponAttackRange(col)) continue; // 如果不在攻擊範圍內則跳過
+                if (!IsInWeaponAttackRange(col)) 
+                {
+                    Debug.Log("[WeaponEffect] 敵人碰撞體 " + col.name + " 不在攻擊範圍內，跳過");
+                    continue; // 如果不在攻擊範圍內則跳過
+                }
             }
 
             // 檢查是否已經處理過這個遊戲物件的特效（避免同一敵人觸發多個特效）
             if (processedObjects.Contains(col.gameObject))
             {
+                Debug.Log("[WeaponEffect] 已處理過遊戲物件 " + col.gameObject.name + "，跳過");
                 hitCollidersThisAttack.Add(col); // 仍然記錄已處理的 Collider
                 continue;
             }
@@ -187,6 +200,11 @@ public class WeaponEffect : MonoBehaviour
             {
                 hasGeneratedEffect = true;
                 processedObjects.Add(col.gameObject); // 記錄已處理的遊戲物件
+                Debug.Log("[WeaponEffect] 成功為 " + col.name + " 生成特效");
+            }
+            else
+            {
+                Debug.Log("[WeaponEffect] 為 " + col.name + " 生成特效失敗");
             }
             hitCollidersThisAttack.Add(col); // 記錄已處理 Collider，避免重複觸發
         }
@@ -194,7 +212,16 @@ public class WeaponEffect : MonoBehaviour
         // 如果有玩家碰撞但沒有生成特效，強制在主角前方生成 playerLayer 特效
         if (hasPlayerHit && !hasGeneratedEffect)
         {
+            Debug.Log("[WeaponEffect] 檢測到玩家碰撞但未生成特效，強制生成 playerLayer 特效");
             ForceSpawnPlayerLayerEffect();
+        }
+        else if (hasPlayerHit && hasGeneratedEffect)
+        {
+            Debug.Log("[WeaponEffect] 檢測到玩家碰撞且已生成特效");
+        }
+        else if (!hasPlayerHit)
+        {
+            Debug.Log("[WeaponEffect] 未檢測到玩家碰撞");
         }
     }
 
@@ -283,14 +310,19 @@ public class WeaponEffect : MonoBehaviour
     // 獲取對應層級的特效 Prefab
     private GameObject GetEffectPrefabForLayer(int layer)
     {
+        string layerName = LayerMask.LayerToName(layer);
+        Debug.Log("[WeaponEffect] 查找層級 " + layerName + " (ID: " + layer + ") 的特效預製體");
+        
         foreach (LayerEffectMapping mapping in layerEffectMappings)
         {
             if (((1 << layer) & mapping.layerMask) != 0)
             {
+                Debug.Log("[WeaponEffect] 找到層級 " + layerName + " 的特效預製體: " + (mapping.effectPrefab != null ? mapping.effectPrefab.name : "null"));
                 return mapping.effectPrefab;
             }
         }
         
+        Debug.LogWarning("[WeaponEffect] 未找到層級 " + layerName + " 的特效預製體，使用預設特效");
         // 如果沒有找到對應的特效，返回預設特效
         return defaultSparkPrefab;
     }
@@ -301,6 +333,7 @@ public class WeaponEffect : MonoBehaviour
         // 檢查特效數量限制
         if (effectCountThisAttack >= MAX_EFFECTS_PER_ATTACK)
         {
+            Debug.Log("[WeaponEffect] 特效數量已達上限，無法強制生成 playerLayer 特效");
             return;
         }
         
@@ -308,6 +341,8 @@ public class WeaponEffect : MonoBehaviour
         Vector3 playerForward = transform.forward;
         Vector3 spawnPosition = transform.position + playerForward * weaponRange;
         Vector3 fallbackNormal = -playerForward; // 法向量指向主角
+        
+        Debug.Log("[WeaponEffect] 嘗試強制生成 playerLayer 特效，位置: " + spawnPosition);
         
         // 使用 playerLayer 的特效
         GameObject playerEffectPrefab = GetEffectPrefabForLayer(LayerMask.NameToLayer("Player"));
@@ -320,10 +355,12 @@ public class WeaponEffect : MonoBehaviour
             effectCountThisAttack++;
             hasTriggeredEffectThisAttack = true;
             
-            Debug.Log("[WeaponEffect] 強制在主角前方生成 playerLayer 特效");
+            Debug.Log("[WeaponEffect] 成功強制在主角前方生成 playerLayer 特效");
         }
         else
         {
+            Debug.LogWarning("[WeaponEffect] 未找到 playerLayer 特效預製體，嘗試使用預設特效");
+            
             // 如果沒有找到 playerLayer 特效，使用預設特效
             if (defaultSparkPrefab != null)
             {
@@ -334,7 +371,11 @@ public class WeaponEffect : MonoBehaviour
                 effectCountThisAttack++;
                 hasTriggeredEffectThisAttack = true;
                 
-                Debug.Log("[WeaponEffect] 強制在主角前方生成預設特效");
+                Debug.Log("[WeaponEffect] 成功強制在主角前方生成預設特效");
+            }
+            else
+            {
+                Debug.LogError("[WeaponEffect] 無法生成任何特效：playerLayer 和預設特效都為 null");
             }
         }
     }
