@@ -31,9 +31,9 @@ public class HealthPostureUI : MonoBehaviour
     [Header("生命球UI")]
     [SerializeField] private Transform lifeBallContainer; // 生命球的父物件
     [SerializeField] private GameObject lifeBallPrefab;   // 生命球Prefab（Image元件）
-    [SerializeField] private Sprite lifeBallNormalSprite; // 正常生命球圖
-    [SerializeField] private Sprite lifeBallCrossSprite;  // 打叉生命球圖
-    private List<Image> lifeBallImages = new List<Image>();
+    [SerializeField] private GameObject lifeBallCrossPrefab;  // 打叉生命球Prefab
+    [SerializeField] private float lifeBallSpacing = 50f; // 生命球之間的間距
+    private List<GameObject> lifeBallObjects = new List<GameObject>();
 
     private void Update()
     {
@@ -293,23 +293,45 @@ public class HealthPostureUI : MonoBehaviour
     }
 
     // 更新生命球顯示
-    public void UpdateLifeBalls(int live, int maxLive)
+    public void UpdateLifeBalls(int healthAmount, int healthAmountMax)
     {
         // 先清空舊的
-        foreach (var img in lifeBallImages)
-            Destroy(img.gameObject);
-        lifeBallImages.Clear();
+        foreach (var obj in lifeBallObjects)
+            Destroy(obj);
+        lifeBallObjects.Clear();
 
-        // 重新生成
-        for (int i = 0; i < maxLive; i++)
+        // 如果最大生命值為0，不顯示任何球
+        if (healthAmountMax <= 0)
+            return;
+
+        // 計算總寬度，讓生命球居中
+        float totalWidth = (healthAmountMax - 1) * lifeBallSpacing;
+        float startX = -totalWidth / 2f;
+
+        // 根據最大生命值生成對應數量的球
+        for (int i = 0; i < healthAmountMax; i++)
         {
-            GameObject go = Instantiate(lifeBallPrefab, lifeBallContainer);
-            Image img = go.GetComponent<Image>();
-            if (i < live)
-                img.sprite = lifeBallNormalSprite;
+            GameObject go;
+            
+            if (i < healthAmount)
+            {
+                // 正常生命球使用原本的 Prefab
+                go = Instantiate(lifeBallPrefab, lifeBallContainer);
+            }
             else
-                img.sprite = lifeBallCrossSprite;
-            lifeBallImages.Add(img);
+            {
+                // 減命時使用打叉 Prefab 替換
+                go = Instantiate(lifeBallCrossPrefab, lifeBallContainer);
+            }
+
+            // 設定生命球位置，讓它們並排顯示
+            RectTransform rectTransform = go.GetComponent<RectTransform>();
+            if (rectTransform != null)
+            {
+                rectTransform.anchoredPosition = new Vector2(startX + i * lifeBallSpacing, 0f);
+            }
+
+            lifeBallObjects.Add(go);
         }
     }
 

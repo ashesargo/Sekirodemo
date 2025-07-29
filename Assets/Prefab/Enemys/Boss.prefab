@@ -5074,6 +5074,14 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 7cacc587e9ceabd428ce8e2d4a883770, type: 2}
+    - target: {fileID: 5157647425813147406, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: live
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5157647425813147406, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: maxLive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5158487280102864925, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_Layer
       value: 6
