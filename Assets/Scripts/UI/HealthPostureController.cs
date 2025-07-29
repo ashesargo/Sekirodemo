@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
@@ -23,6 +23,7 @@ public class HealthPostureController : MonoBehaviour
     private bool canIncreasePosture = true;  // 是否可以增加架勢值
     private bool canRevive = false; // 是否可復活
     private Coroutine deathCountdownCoroutine; // 死亡倒數協程
+    Animator playerAnimator;
 
     void Awake()
     {
@@ -43,12 +44,16 @@ public class HealthPostureController : MonoBehaviour
         healthPostureSystem.OnDead += OnDead;
         healthPostureSystem.OnPostureBroken += OnPostureBroken;
         live = maxLive;
+
+        playerAnimator = GetComponent<Animator>();
+
     }
 
     void Update()
     {
         // 檢查是否為玩家且已死亡
         bool isPlayer = GetComponent<PlayerStatus>() != null;
+
         if (isPlayer && isPlayerDead)
         {
             // 只有可復活時才可操作
@@ -151,7 +156,6 @@ public class HealthPostureController : MonoBehaviour
         // 顯示血條並設定為最後一個被攻擊的敵人
         ShowHealthBar();
     }
-
     // 顯示血條
     private void ShowHealthBar()
     {
@@ -160,10 +164,8 @@ public class HealthPostureController : MonoBehaviour
         {
             return;
         }
-
         // 檢查是否為玩家
         bool isPlayer = GetComponent<PlayerStatus>() != null;
-
         if (isPlayer)
         {
             // 檢查架勢值是否大於50%，如果是則常駐顯示
@@ -284,6 +286,7 @@ public class HealthPostureController : MonoBehaviour
         {
             // 設定玩家死亡狀態
             isPlayerDead = true;
+            isPlayerDead = true;
             // 玩家死亡時延後一秒顯示死亡 UI
             StartCoroutine(ShowDeathUIAfterDelay(1f));
         }
@@ -297,7 +300,6 @@ public class HealthPostureController : MonoBehaviour
         if (healthPostureUI != null)
             healthPostureUI.UpdateLifeBalls(live, maxLive);
     }
-
     // 失衡
     private void OnUnbalance(object sender, System.EventArgs e)
     {
@@ -306,8 +308,7 @@ public class HealthPostureController : MonoBehaviour
         if (playerStatus != null)
         {
             playerStatus.Sragger();
-        }
-        
+        }        
         // 移除敵人操控
         EnemyTest enemyTest = GetComponent<EnemyTest>();
         if (enemyTest != null)
@@ -377,6 +378,7 @@ public class HealthPostureController : MonoBehaviour
     // 復活玩家
     private void ResurrectPlayer()
     {
+        
         // 減少一個復活次數
         live--;
 
@@ -406,7 +408,7 @@ public class HealthPostureController : MonoBehaviour
         
         // 播放復活特效
         PlayReviveEffect();
-        
+        playerAnimator.SetBool("Death", false);
         Debug.Log("玩家復活完成，所有狀態已重置");
         if (healthPostureUI != null)
             healthPostureUI.UpdateLifeBalls(live, maxLive);

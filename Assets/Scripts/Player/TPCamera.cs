@@ -1,15 +1,18 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 // TPCamera：第三人稱攝影機控制腳本，支援一般跟隨與鎖定目標模式
 public class TPCamera : MonoBehaviour
 {
+    public Animator playerAnimator;
     // 跟隨點（攝影機會跟隨此點）
     public Transform mFollowPoint;
     // 跟隨點的參考（通常為玩家）
     public Transform mFollowPointRef;
-
+    public Transform executionFollowPointRef;
+    public Transform executionLockPoint;
     // 攝影機與跟隨點的距離
     public float mFollowDistance;
     public float mMinFollowDistance;
@@ -59,10 +62,11 @@ public class TPCamera : MonoBehaviour
     public Canvas uiCanvas; // 在 Inspector 拖入你的 Canvas
     // 超過此距離自動解除鎖定
     public float lockOffDistance = 15.0f;
-    
+    AnimatorStateInfo stateInfo;
     // 初始化攝影機位置與方向
     void Awake()
     {
+        stateInfo = playerAnimator.GetCurrentAnimatorStateInfo(0);
         mFollowPoint.position = mFollowPointRef.position;
         mFollowPoint.rotation = mFollowPointRef.rotation;
         transform.position = mFollowPoint.position - mFollowDistance * mFollowPoint.forward;
@@ -71,7 +75,7 @@ public class TPCamera : MonoBehaviour
         mHorizontalVector.y = 0.0f;
         mHorizontalVector.Normalize();
     }
-    
+
     // 更新攝影機位置與旋轉
     public void UpdateCameraTransform()
     {
@@ -115,24 +119,34 @@ public class TPCamera : MonoBehaviour
         }
         else if (lockTarget != null)
         {
-            // 鎖定模式：攝影機會對準目標
-            mFollowPoint.position = Vector3.Lerp(mFollowPoint.position, mFollowPointRef.position, followSpeed * Time.deltaTime);
-            
+            Transform currentlockTarget;
+
+            if (stateInfo.IsTag("Execution"))
+            {
+                mFollowPoint.position = Vector3.Lerp(mFollowPoint.position, executionFollowPointRef.position, followSpeed * Time.deltaTime);
+                currentlockTarget = executionLockPoint;
+            }
+            else
+            {
+                currentlockTarget = lockTarget;
+                // 鎖定模式：攝影機會對準目標
+                mFollowPoint.position = Vector3.Lerp(mFollowPoint.position, mFollowPointRef.position, followSpeed * Time.deltaTime);
+            }
             // 計算角色與目標的1/3分點，讓鏡頭更靠近自己
-            Vector3 centerBetween = mFollowPoint.position * (2.0f / 3.0f) + lockTarget.position * (1.0f / 3.0f);
+            Vector3 centerBetween = mFollowPoint.position * (2.0f / 3.0f) + currentlockTarget.position * (1.0f / 3.0f);
             centerBetween.y += lockCameraHeight;  // 增加高度，讓鏡頭在目標上方
-            
+
             // 計算水平方向（忽略Y軸）
             Vector3 lockDirection = centerBetween - mFollowPoint.position;
             lockDirection.y = 0;
             lockDirection.Normalize();
-            
+
             // 計算攝影機最終位置（加上高度後往後拉，並增加額外的後退距離）
             Vector3 offset = Vector3.up * lockCameraHeight;
             // 增加額外的後退距離，讓視角更遠
             float extraDistance = mFollowDistance * lockExtraDistanceMultiplier;
             Vector3 vFinalPosition = mFollowPoint.position + offset - lockDirection * (mFollowDistance + extraDistance);
-            
+
             // 檢查攝影機與角色間是否有障礙物
             Vector3 vDir = mFollowPoint.position - vFinalPosition;
             vDir.Normalize();
@@ -142,14 +156,14 @@ public class TPCamera : MonoBehaviour
             {
                 vFinalPosition = mFollowPoint.position - vDir * (rh.distance - 0.1f);
             }
-            
+
             // 使用平滑過渡到鎖定位置
             float transitionProgress = Mathf.Clamp01(lockTransitionTime / lockTransitionDuration);
             float smoothFactor = Mathf.SmoothStep(0, 1, transitionProgress);
-            
+
             // 攝影機平滑移動到目標位置
             transform.position = Vector3.Lerp(transform.position, vFinalPosition, Time.deltaTime * followSpeed * (1 + smoothFactor));
-            
+
             // 平滑過渡攝影機朝向，加入俯視角度
             Vector3 targetForward = (centerBetween - transform.position).normalized;
             // 計算俯視角度
@@ -160,8 +174,9 @@ public class TPCamera : MonoBehaviour
             Vector3 tiltedForward = Quaternion.AngleAxis(lockTiltAngle, Vector3.Cross(horizontalForward, Vector3.up)) * horizontalForward;
             transform.forward = Vector3.Slerp(transform.forward, tiltedForward, Time.deltaTime * followSpeed * (1 + smoothFactor));
         }
+
     }
-    
+
     // 更新鎖定圖示（LockOn Icon）
     public void UpdateLockOnIcon()
     {
@@ -215,7 +230,7 @@ public class TPCamera : MonoBehaviour
             }
         }
     }
-    
+
     // 嘗試自動鎖定最近的敵人（假設敵人有 "Enemy" tag）
     public void TryLockNearestEnemy()
     {
@@ -237,18 +252,23 @@ public class TPCamera : MonoBehaviour
             isLock = true;
         }
     }
-    
+
     // 每幀更新（建議用 LateUpdate 以確保角色移動後再更新攝影機）
     void LateUpdate()
     {
+        stateInfo = playerAnimator.GetCurrentAnimatorStateInfo(0);
+
         // 按下 Tab 鍵自動鎖定最近敵人
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             TryLockNearestEnemy();
         }
         // 每幀重設跟隨點位置
-        mFollowPoint.position = mFollowPointRef.position;
-
+        if (stateInfo.IsTag("Execution"))
+        {
+            mFollowPoint.position = executionFollowPointRef.position;
+        }
+        else mFollowPoint.position = mFollowPointRef.position;
         // 若鎖定中且有目標，檢查距離是否超過閾值
         if (isLock && lockTarget != null)
         {
@@ -265,7 +285,7 @@ public class TPCamera : MonoBehaviour
         {
             // 重置過渡時間
             lockTransitionTime = 0.0f;
-            
+
             // 只在進入鎖定時重設，解除鎖定時不重設攝影機位置，保留原本指向
             if (isLock)
             {
@@ -285,7 +305,7 @@ public class TPCamera : MonoBehaviour
                 mVerticalDegree = angle;
             }
         }
-        
+
         // 更新過渡時間
         if (isLock && lockTarget != null)
         {

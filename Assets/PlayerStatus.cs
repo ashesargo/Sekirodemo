@@ -49,7 +49,7 @@ public class PlayerStatus : MonoBehaviour
         if (GetCurrentHP() <= 0 && !isDeath)
         {
             isDeath = true;
-            _animator.SetTrigger("Death");
+            _animator.SetBool("Death", true);
         }
         else if (GetCurrentHP() > 0)
         {
@@ -102,11 +102,9 @@ public class PlayerStatus : MonoBehaviour
         if (_animator != null)
         {
             // 重置所有可能影響操作的動畫參數
-            _animator.ResetTrigger("Death");
             _animator.ResetTrigger("Hit");
             _animator.ResetTrigger("GuardHit");
-            _animator.ResetTrigger("Stagger");
-            
+            _animator.ResetTrigger("Stagger");            
             // 確保動畫回到正常狀態
             _animator.SetBool("isGrounded", true);
         }
