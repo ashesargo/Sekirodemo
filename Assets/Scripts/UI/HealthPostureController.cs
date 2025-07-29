@@ -12,6 +12,8 @@ public class HealthPostureController : MonoBehaviour
     [SerializeField] private int maxPosture = 100;  // 最大架勢值
     [SerializeField] private HealthPostureUI healthPostureUI;   // 生命值與架勢 UI 顯示
     [SerializeField] private GameObject deathUI;   // 死亡UI
+    [SerializeField] private GameObject reviveEffectPrefab;   // 復活特效Prefab
+    [SerializeField] private Transform reviveEffectPosition;   // 復活特效生成位置
 
     private HealthPostureSystem healthPostureSystem;    // 引用生命值與架勢系統
     private Coroutine hideUICoroutine;  // 隱藏 UI 的協程
@@ -402,6 +404,9 @@ public class HealthPostureController : MonoBehaviour
             // 這裡可以添加其他需要重置的組件
         }
         
+        // 播放復活特效
+        PlayReviveEffect();
+        
         Debug.Log("玩家復活完成，所有狀態已重置");
         if (healthPostureUI != null)
             healthPostureUI.UpdateLifeBalls(live, maxLive);
@@ -581,6 +586,35 @@ public class HealthPostureController : MonoBehaviour
         
         // 確保最終值為 0
         SetPostureValue(0f);
+    }
+
+    // 播放復活特效
+    private void PlayReviveEffect()
+    {
+        if (reviveEffectPrefab != null)
+        {
+            // 使用指定的特效生成位置，如果沒有設定則使用玩家位置
+            Vector3 effectPosition;
+            if (reviveEffectPosition != null)
+            {
+                effectPosition = reviveEffectPosition.position;
+            }
+            else
+            {
+                effectPosition = transform.position;
+            }
+            
+            GameObject reviveEffect = Instantiate(reviveEffectPrefab, effectPosition, Quaternion.identity);
+            
+            // 3秒後自動銷毀特效
+            Destroy(reviveEffect, 3f);
+            
+            Debug.Log("播放復活特效");
+        }
+        else
+        {
+            Debug.LogWarning("復活特效Prefab未設定");
+        }
     }
 
     // 設定架勢值的方法

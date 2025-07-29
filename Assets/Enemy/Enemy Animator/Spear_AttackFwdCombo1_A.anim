@@ -41927,7 +41927,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.31666666
+  - time: 0.016666668
     functionName: StartDetection
     data: 
     objectReferenceParameter: {fileID: 0}
@@ -41948,7 +41948,7 @@ AnimationClip:
     floatParameter: 10
     intParameter: 0
     messageOptions: 0
-  - time: 0.33333334
+  - time: 0.6666667
     functionName: StopDetection
     data: 
     objectReferenceParameter: {fileID: 0}
