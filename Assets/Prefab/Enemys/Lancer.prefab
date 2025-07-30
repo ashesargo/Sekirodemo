@@ -8089,7 +8089,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isDead: 0
   defendChance: 0.3
-  defendPostureIncrease: 0
+  defendPostureIncrease: 10
   hitPostureIncrease: 0
 --- !u!114 &-2270255891413558201
 MonoBehaviour:

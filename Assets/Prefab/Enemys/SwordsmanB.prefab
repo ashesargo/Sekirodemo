@@ -6447,7 +6447,7 @@ PrefabInstance:
     - target: {fileID: 8185417083674443760, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: enemyWeaponCollider
       value: 
-      objectReference: {fileID: 8243866949734579699}
+      objectReference: {fileID: 650492525681827714}
     - target: {fileID: 8190954153417699706, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -6906,11 +6906,6 @@ CharacterController:
   m_CorrespondingSourceObject: {fileID: 7905645749971633676, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
   m_PrefabInstance: {fileID: 3188138096956498468}
   m_PrefabAsset: {fileID: 0}
---- !u!136 &8243866949734579699 stripped
-CapsuleCollider:
-  m_CorrespondingSourceObject: {fileID: 6797783300149108695, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
-  m_PrefabInstance: {fileID: 3188138096956498468}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &8316797225807947862 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6869600998273829490, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
@@ -6930,7 +6925,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isDead: 0
   defendChance: 0.5
-  defendPostureIncrease: 0
+  defendPostureIncrease: 10
   hitPostureIncrease: 0
 --- !u!114 &-1160162506741361965
 MonoBehaviour:
