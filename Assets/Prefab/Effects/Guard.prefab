@@ -14595,7 +14595,7 @@ GameObject:
   - component: {fileID: 6665634207730078056}
   - component: {fileID: 2323784192090532416}
   - component: {fileID: 8960966298374740845}
-  - component: {fileID: -4115170394499741269}
+  - component: {fileID: 4757543677640855964}
   - component: {fileID: 694834235998814383}
   m_Layer: 0
   m_Name: Guard
@@ -19486,18 +19486,38 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OnlyDeactivate: 0
---- !u!114 &-4115170394499741269
+--- !u!114 &4757543677640855964
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6572068886274405076}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f25a0475556d9847b707c0ad81baa64, type: 3}
+  m_Script: {fileID: 11500000, guid: f8514eff26527d44897262c922304429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioClips:
+  - {fileID: 8300000, guid: 5e70dd36d55203d4f8c9e9fe9fb26a97, type: 3}
+  - {fileID: 8300000, guid: 98a631e5e439c35488de7bb3b453d1f4, type: 3}
+  - {fileID: 8300000, guid: a4dc5b2ea1bd3ad478e6a414d1820621, type: 3}
+  - {fileID: 8300000, guid: b609cc3543751864a8e1637b15019fb0, type: 3}
+  - {fileID: 8300000, guid: 138e39ffd70e5b34d8e6566bf9610de4, type: 3}
+  - {fileID: 8300000, guid: c703afcd098d72e4cbdcf7fa0793f532, type: 3}
+  - {fileID: 8300000, guid: 260876b50c325d64ba70f6096976f733, type: 3}
+  - {fileID: 8300000, guid: 6edfce453319cf444b5f626edd41f51b, type: 3}
+  - {fileID: 8300000, guid: c2c9bb6663c36d84f84a4667a6b3dd14, type: 3}
+  playOnParticleStart: 1
+  playOnParticleEnd: 0
+  avoidRepeat: 1
+  volume: 0.5
+  randomVolume: 1
+  minVolume: 0.5
+  maxVolume: 0.8
+  randomPitch: 0
+  minPitch: 0.9
+  maxPitch: 1.1
 --- !u!82 &694834235998814383
 AudioSource:
   m_ObjectHideFlags: 0
@@ -19508,9 +19528,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: c94f1e67104207f41bb176fe04e6b18c, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.2
+  m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -19554,7 +19574,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.5
+      value: 0
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -19622,7 +19642,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 3111748068310340963}

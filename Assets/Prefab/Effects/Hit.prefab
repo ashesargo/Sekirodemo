@@ -14595,7 +14595,7 @@ GameObject:
   - component: {fileID: 6665634207730078056}
   - component: {fileID: 2323784192090532416}
   - component: {fileID: 8960966298374740845}
-  - component: {fileID: -4115170394499741269}
+  - component: {fileID: 4644922052064908639}
   - component: {fileID: 669237427629827407}
   m_Layer: 0
   m_Name: Hit
@@ -14878,7 +14878,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 8
+      scalar: 3
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -19486,18 +19486,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OnlyDeactivate: 0
---- !u!114 &-4115170394499741269
+--- !u!114 &4644922052064908639
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6572068886274405076}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f25a0475556d9847b707c0ad81baa64, type: 3}
+  m_Script: {fileID: 11500000, guid: f8514eff26527d44897262c922304429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioClips:
+  - {fileID: 8300000, guid: d05baff9e5ca53847824b4cc1c48eb74, type: 3}
+  - {fileID: 8300000, guid: 5175c1db57e441e499b37f24336293eb, type: 3}
+  - {fileID: 8300000, guid: 23660af262f655340a3e367008f3ac64, type: 3}
+  - {fileID: 8300000, guid: 4ca50cd786fb0e945b0f0c44030fb7d0, type: 3}
+  - {fileID: 8300000, guid: 5c8f2b52c53d0df42911472599fec5b8, type: 3}
+  - {fileID: 8300000, guid: eaaedca18cbd05943aa767a947dacb58, type: 3}
+  - {fileID: 8300000, guid: 926876fd17b188f44a1ec2f4660da348, type: 3}
+  playOnParticleStart: 1
+  playOnParticleEnd: 0
+  avoidRepeat: 1
+  volume: 0.3
+  randomVolume: 0
+  minVolume: 0.5
+  maxVolume: 0.8
+  randomPitch: 0
+  minPitch: 0.9
+  maxPitch: 1.1
 --- !u!82 &669237427629827407
 AudioSource:
   m_ObjectHideFlags: 0
@@ -19508,9 +19526,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: b9ef025cbaae7cb45985b02ed8adb8e8, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.2
+  m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -19521,7 +19539,7 @@ AudioSource:
   MinDistance: 1
   MaxDistance: 500
   Pan2D: 0
-  rolloffMode: 2
+  rolloffMode: 0
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -19529,14 +19547,23 @@ AudioSource:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.22140968
-      value: 0.99843216
-      inSlope: -0.4884772
-      outSlope: -0.4884772
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -19545,7 +19572,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -19560,7 +19587,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0
       inSlope: 0
       outSlope: 0
       tangentMode: 0
