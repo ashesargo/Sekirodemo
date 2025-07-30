@@ -123,7 +123,9 @@ public class HealthPostureController : MonoBehaviour
                     basePostureAmount = Mathf.RoundToInt(healthPostureSystem.GetMaxPosture() * 0.1f); 
                     break;
                 case PlayerStatus.HitState.Parry:
-                    basePostureAmount = Mathf.RoundToInt(healthPostureSystem.GetMaxPosture() * 0.02f); 
+                    // 當玩家處於Parry狀態時，不增加架勢值
+                    // 因為玩家Parry敵人時，只有被Parry的敵人應該增加架勢值
+                    basePostureAmount = 0; 
                     break;
             }
             
@@ -142,16 +144,33 @@ public class HealthPostureController : MonoBehaviour
         // 檢查 healthPostureSystem 是否已初始化
         if (healthPostureSystem == null)
         {
+            Debug.LogWarning($"[HealthPostureController] 警告：{gameObject.name} 的 healthPostureSystem 尚未初始化");
             return;
         }
 
         // 檢查是否可以增加架勢值
         if (!canIncreasePosture)
         {
+            Debug.Log($"[HealthPostureController] {gameObject.name} 架勢被打破，暫時不能增加架勢值");
             return; // 如果架勢被打破，暫時不能增加架勢值
         }
 
+        // 記錄架勢值增加前的狀態
+        float previousPosturePercentage = healthPostureSystem.GetPostureNormalized();
+        int previousPostureAmount = Mathf.RoundToInt(previousPosturePercentage * healthPostureSystem.GetMaxPosture());
+        
+        Debug.Log($"[HealthPostureController] {gameObject.name} 架勢值增加開始");
+        Debug.Log($"[HealthPostureController] 增加前架勢值: {previousPostureAmount}/{healthPostureSystem.GetMaxPosture()} ({previousPosturePercentage:P1})");
+        Debug.Log($"[HealthPostureController] 增加數值: {amount}, 是否為Parry: {isParry}");
+        Debug.Log($"[HealthPostureController] 調用來源: {System.Environment.StackTrace}");
+
         healthPostureSystem.PostureIncrease(amount, isParry);
+
+        // 記錄架勢值增加後的狀態
+        float currentPosturePercentage = healthPostureSystem.GetPostureNormalized();
+        int currentPostureAmount = Mathf.RoundToInt(currentPosturePercentage * healthPostureSystem.GetMaxPosture());
+        Debug.Log($"[HealthPostureController] 增加後架勢值: {currentPostureAmount}/{healthPostureSystem.GetMaxPosture()} ({currentPosturePercentage:P1})");
+        Debug.Log($"[HealthPostureController] {gameObject.name} 架勢值增加完成");
 
         // 顯示血條並設定為最後一個被攻擊的敵人
         ShowHealthBar();

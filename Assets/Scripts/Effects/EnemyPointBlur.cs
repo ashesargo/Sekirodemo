@@ -164,16 +164,8 @@ public class EnemyPointBlur : MonoBehaviour
         // 設置敵人格擋成功的模糊強度
         BlurStrength = ParryBlurStrength;
         
-        // 使用敵人格擋成功的火花特效
-        if (EnemySpark != null)
-        {
-            GameObject effect = Instantiate(EnemySpark, position, Quaternion.identity);
-            Debug.Log("[EnemyPointBlur] 生成敵人 Parry 特效: " + effect.name);
-        }
-        else
-        {
-            Debug.LogWarning("[EnemyPointBlur] EnemySpark 特效為 null");
-        }
+        // 注意：當玩家Parry敵人時，不產生敵人的特效，只產生模糊效果
+        // 敵人的EnemySpark特效只應該在敵人被攻擊時產生
         
         // 將世界座標轉換為螢幕UV座標
         BlurCenter = Camera.main.WorldToScreenPoint(position); // 世界座標轉螢幕座標

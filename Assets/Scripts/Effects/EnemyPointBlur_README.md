@@ -57,6 +57,7 @@
 ### 敵人Parry事件 (OnEnemyParrySuccess)
 - **觸發時機**: 當玩家成功Parry敵人攻擊時
 - **觸發位置**: 敵人位置
+- **特效**: 不產生EnemySpark特效，只產生模糊效果
 - **模糊效果**: 使用 `ParryBlurStrength` (0.25f)
 
 ### 敵人攻擊成功事件 (OnEnemyAttackSuccess)

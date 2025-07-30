@@ -40,6 +40,17 @@ public class PlayerStatus : MonoBehaviour
         if (stateInfo.IsTag("Parry"))
         {
             currentHitState = HitState.Parry; damage = 0;
+            
+            // 注意：當玩家處於Parry狀態時，表示玩家正在Parry敵人
+            // 此時不應該增加玩家自己的架勢值，只有被Parry的敵人會增加架勢值
+            // 玩家被敵人Parry的情況會在敵人的攻擊邏輯中處理
+            
+            // 觸發玩家Parry的特效事件
+            if (OnHitOccurred != null)
+            {
+                Vector3 parryPosition = transform.position + transform.forward * 2f; // 在玩家前方生成特效
+                OnHitOccurred.Invoke(parryPosition);
+            }
         }
         else if (_TPContraller.isGuard) { currentHitState = HitState.Guard; damage = 0; }
         else currentHitState = HitState.Hit;
