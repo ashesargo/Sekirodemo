@@ -19,6 +19,16 @@ public class BossAI : EnemyAI
     public float combo2Duration = 12f; // Combo2 總持續時間  
     public float combo3Duration = 10f; // Combo3 總持續時間
     
+    [Header("Boss 防禦設定")]
+    [Range(0f, 1f)]
+    public float bossDefendChance = 0.8f; // Boss防禦機率，可在Inspector中調整
+    
+    [Header("Boss 架勢值設定")]
+    [Range(0, 100)]
+    public int bossDefendPostureIncrease = 15; // Boss防禦時增加的架勢值
+    [Range(0, 100)]
+    public int bossHitPostureIncrease = 25; // Boss受傷時增加的架勢值
+
     // === 左右手武器切換動畫事件用 ===
     public GameObject leftWeapon;   // 左手武器（弓/遠程）
     public GameObject rightWeapon;  // 右手武器（刀/近戰）

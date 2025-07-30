@@ -9,6 +9,16 @@ public class EnemyTest : MonoBehaviour
     private Animator _animator;
     public bool isDead = false;
     
+    [Header("防禦設定")]
+    [Range(0f, 1f)]
+    public float defendChance = 0.7f; // 防禦機率，可在Inspector中調整
+    
+    [Header("架勢值設定")]
+    [Range(0, 100)]
+    public int defendPostureIncrease = 20; // 防禦時增加的架勢值
+    [Range(0, 100)]
+    public int hitPostureIncrease = 30; // 受傷時增加的架勢值
+
     private HealthPostureController healthController;  // 引用生命值控制器
 
     void Start()
@@ -41,13 +51,33 @@ public class EnemyTest : MonoBehaviour
             }
         }
 
-        // 決定是否受傷（70%防禦，30%受傷）
+        // 決定是否受傷（使用Inspector中設定的防禦機率）
         float randomValue = Random.value;
-        bool shouldTakeDamage = randomValue >= 0.7f; // 30%機率受傷
+        float currentDefendChance = defendChance; // 預設使用一般敵人的防禦機率
+        
+        // 檢查是否為Boss，如果是則使用Boss的防禦機率和架勢值設定
+        BossAI bossAI = GetComponent<BossAI>();
+        if (bossAI != null)
+        {
+            currentDefendChance = bossAI.bossDefendChance;
+        }
+        
+        bool shouldTakeDamage = randomValue >= currentDefendChance; // 使用對應的防禦機率
 
         if (!shouldTakeDamage)
         {
-            Debug.Log($"敵人成功防禦，不受傷害！(70%機率)");
+            string enemyType = bossAI != null ? "Boss" : "一般敵人";
+            Debug.Log($"{enemyType}成功防禦，不受傷害！({currentDefendChance * 100:F0}%機率)");
+            
+            // 防禦時增加架勢值（使用HealthPostureController）
+            if (healthController != null)
+            {
+                // 根據敵人類型決定架勢值增加量
+                int postureIncrease = bossAI != null ? bossAI.bossDefendPostureIncrease : defendPostureIncrease;
+                healthController.AddPosture(postureIncrease, false); // 防禦時增加架勢值，不是Parry
+                Debug.Log($"{enemyType}防禦時增加架勢值 {postureIncrease} 點！");
+            }
+            
             // 設置HitState應該播放防禦動畫
             HitState.shouldDefend = true;
             // 即使防禦也要進入HitState來播放防禦動畫
@@ -56,14 +86,21 @@ public class EnemyTest : MonoBehaviour
             return;
         }
 
-        Debug.Log($"敵人受傷！(30%機率)");
+        string enemyType2 = bossAI != null ? "Boss" : "一般敵人";
+        Debug.Log($"{enemyType2}受傷！({(1f - currentDefendChance) * 100:F0}%機率)");
         // 設置HitState應該播放受傷動畫
         HitState.shouldDefend = false;
 
-        // 使用 HealthPostureController 處理傷害
+        // 使用 HealthPostureController 處理傷害和架勢值
         if (healthController != null)
         {
-            healthController.TakeDamage(damage,0);
+            // 受傷時扣血並增加架勢值
+            healthController.TakeDamage(damage, PlayerStatus.HitState.Hit);
+            
+            // 根據敵人類型決定額外的架勢值增加量
+            int additionalPostureIncrease = bossAI != null ? bossAI.bossHitPostureIncrease : hitPostureIncrease;
+            healthController.AddPosture(additionalPostureIncrease, false);
+            Debug.Log($"{enemyType2}受傷時增加架勢值 {additionalPostureIncrease} 點！");
         }
         // 檢查是否死亡
         if (GetCurrentHP() <= 0 && !isDead)
