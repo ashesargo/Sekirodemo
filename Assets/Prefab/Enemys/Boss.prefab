@@ -7453,6 +7453,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isDead: 0
   defendChance: 0.7
+  defendPostureIncrease: 0
+  hitPostureIncrease: 0
 --- !u!114 &-1830463696213571030
 MonoBehaviour:
   m_ObjectHideFlags: 0

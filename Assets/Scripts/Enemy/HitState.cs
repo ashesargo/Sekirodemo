@@ -130,8 +130,8 @@ public class HitState : BaseEnemyState
                 BossAI bossAI = enemy.GetComponent<BossAI>();
                 if (bossAI != null)
                 {
-                    bossAI.ResetComboCount();
-                    Debug.Log("HitState: Boss受傷後直接進入追擊狀態");
+                    // 移除防禦後的重置連擊計數，保持連擊順序
+                    Debug.Log("HitState: Boss防禦後保持連擊計數，直接進入追擊狀態");
                     enemy.SwitchState(new BossChaseState());
                 }
                 else

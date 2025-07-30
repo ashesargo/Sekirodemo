@@ -56,8 +56,8 @@ public class TPContraller : MonoBehaviour
     public System.Action<Vector3> OnGuardSuccess; // 當 Guard 成功時觸發，參數為碰撞點
     // 新增：Hit 特效事件
     public System.Action<Vector3> OnHitOccurred; // 當受傷時觸發，參數為碰撞點
-    public float attackRadius = 9f;
-    public float attackAngle = 90f;
+    public float attackRadius = 15f;
+    public float attackAngle = 120f;
     public LayerMask targetLayer;
 
     public void StartAttack()
