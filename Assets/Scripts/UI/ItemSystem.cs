@@ -50,6 +50,7 @@ public class ItemSystem : MonoBehaviour
     private AudioSource audioSource;
     private List<ItemSlotUI> slots = new List<ItemSlotUI>();
     private Animator animator; // 動畫控制器
+    private bool isSteelSugarActive = false; // 追蹤剛幹糖效果是否啟用
     
     // 事件
     public System.Action<ItemData> OnItemUsed;
@@ -354,13 +355,14 @@ public class ItemSystem : MonoBehaviour
     IEnumerator ReducePostureGain(float reduction, float duration)
     {
         // 設置架勢減少效果
-        // 這裡可以通過修改 ItemData 的 duration 來標記效果是否啟用
-        // 當 duration > 0 時，表示效果正在啟用中
+        isSteelSugarActive = true;
+        Debug.Log($"[ItemSystem] 剛幹糖效果啟用，減少架勢增加 {reduction}，持續 {duration} 秒");
         
         // 等待效果持續時間
         yield return new WaitForSeconds(duration);
         
-        // 效果結束後，可以重置相關狀態
+        // 效果結束後，重置相關狀態
+        isSteelSugarActive = false;
         Debug.Log("[ItemSystem] 剛幹糖效果結束");
     }
     
@@ -477,17 +479,17 @@ public class ItemSystem : MonoBehaviour
 
     public float GetPostureReductionRate()
     {
-        // 暫時禁用剛幹糖效果，總是返回 1.0f（無效果）
-        return 1f;
-        
-        // 原始代碼（已註解）：
-        // 這裡假設 SteelSugar 效果啟用時，duration > 0
-        // var steelSugar = items.Find(x => x.type == ItemType.SteelSugar && x.duration > 0);
-        // if (steelSugar != null)
-        // {
-        //     return steelSugar.effectValue;
-        // }
-        // return 1f;
+        // 檢查剛幹糖效果是否啟用
+        if (isSteelSugarActive)
+        {
+            // 找到剛幹糖道具來獲取效果值
+            var steelSugar = items.Find(x => x.type == ItemType.SteelSugar);
+            if (steelSugar != null)
+            {
+                return steelSugar.effectValue;
+            }
+        }
+        return 1f; // 無效果時返回1.0f
     }
     
 

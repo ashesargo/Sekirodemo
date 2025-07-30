@@ -5639,6 +5639,38 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 8185417083674443760, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: enemyAI
+      value: 
+      objectReference: {fileID: 1687266463544770986}
+    - target: {fileID: 8185417083674443760, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: BlurSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8185417083674443760, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: BlurStrength
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8185417083674443760, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: EnemyHitSpark
+      value: 
+      objectReference: {fileID: 6572068886274405076, guid: c0cd25a7ab1284a4891d063f149df3e8, type: 3}
+    - target: {fileID: 8185417083674443760, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: HitBlurStrength
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8185417083674443760, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: GuardBlurStrength
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8185417083674443760, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: ParryBlurStrength
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8185417083674443760, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: enemyWeaponCollider
+      value: 
+      objectReference: {fileID: 850079304113082800}
     - target: {fileID: 8190954153417699706, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -6146,6 +6178,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isDead: 0
+  defendChance: 0.7
+  defendPostureIncrease: 20
+  hitPostureIncrease: 30
 --- !u!114 &1687266463544770986
 MonoBehaviour:
   m_ObjectHideFlags: 0
