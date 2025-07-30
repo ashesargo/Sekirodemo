@@ -12293,6 +12293,8 @@ MonoBehaviour:
   maxPosture: 100
   healthPostureUI: {fileID: 4393573506154213519}
   deathUI: {fileID: 0}
+  reviveEffectPrefab: {fileID: 0}
+  reviveEffectPosition: {fileID: 0}
 --- !u!114 &1740071847312567996
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12361,11 +12363,7 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 0
-  layerEffectMappings:
-  - layerMask:
-      serializedVersion: 2
-      m_Bits: 128
-    effectPrefab: {fileID: 6572068886274405076, guid: c0cd25a7ab1284a4891d063f149df3e8, type: 3}
+  layerEffectMappings: []
   defaultSparkPrefab: {fileID: 0}
 --- !u!143 &7905645749971633676
 CharacterController:

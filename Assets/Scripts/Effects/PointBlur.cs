@@ -12,12 +12,14 @@ public class PointBlur : MonoBehaviour
     public AnimationCurve curve; // 模糊強度動畫曲線
     public GameObject Spark; // 火花特效 Prefab（用於格擋成功）
     public GameObject GuardSpark; // 防禦火花特效 Prefab（用於防禦）
+    public GameObject HitSpark; // 受傷火花特效 Prefab（用於受傷）
     
     [Header("Blur Effect")]
     [Range(0, 1)]
     public float BlurStrength = 1f; // 徑向模糊強度（默認值）
     public float ParryBlurStrength = 0.5f; // 格擋成功時的模糊強度
     public float GuardBlurStrength = 0.3f; // 防禦時的模糊強度
+    public float HitBlurStrength = 0.4f; // 受傷時的模糊強度
     public float BlurSpeed = 1; // 模糊動畫速度
     public float BlurRange = 0.3f; // 模糊範圍
     public float BlurRadius = 1; // 模糊圓圈半徑
@@ -34,6 +36,7 @@ public class PointBlur : MonoBehaviour
     private Texture2D gradTexture; // 梯度貼圖
     private float t = 1000; // 時間計數器
     private bool lastParrySuccess = false; // 記錄上一次的格擋成功狀態
+    private PlayerStatus.HitState lastHitState = PlayerStatus.HitState.Hit; // 記錄上一次的受傷狀態
 
     void Start()
     {
@@ -77,6 +80,7 @@ public class PointBlur : MonoBehaviour
         
         CheckParrySuccess();
         CheckGuardState();
+        CheckHitState();
     }
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
@@ -156,7 +160,22 @@ public class PointBlur : MonoBehaviour
             {
                 TriggerGuardEffect();
             }
-            playerStatus.currentHitState = PlayerStatus.HitState.Hit;
+        }
+    }
+
+    // 檢查受傷狀態
+    private void CheckHitState()
+    {
+        if (playerStatus != null)
+        {
+            // 檢測受傷狀態變化（從其他狀態變為Hit時觸發）
+            if (playerStatus.currentHitState == PlayerStatus.HitState.Hit && lastHitState != PlayerStatus.HitState.Hit)
+            {
+                Debug.Log("[PointBlur] 檢測到受傷狀態變化，觸發 Hit 特效");
+                TriggerHitEffect();
+            }
+            
+            lastHitState = playerStatus.currentHitState; // 更新上一次的受傷狀態
         }
     }
 
@@ -274,6 +293,63 @@ public class PointBlur : MonoBehaviour
             {
                 GameObject effect = Instantiate(GuardSpark, spawnPosition, Quaternion.identity);
                 // Debug.Log("[PointBlur] 在主角前方生成防禦特效: " + effect.name);
+            }
+            
+            // 將世界座標轉換為螢幕UV座標
+            BlurCenter = Camera.main.WorldToScreenPoint(spawnPosition);
+            BlurCenter.Set(BlurCenter.x / Screen.width, BlurCenter.y / Screen.height);
+        }
+    }
+
+    // 觸發受傷特效
+    private void TriggerHitEffect()
+    {
+        Debug.Log("[PointBlur] 開始觸發 Hit 特效");
+        t = 0; // 重置時間計數器
+        
+        // 設置受傷的模糊強度
+        BlurStrength = HitBlurStrength;
+        
+        // 計算武器碰撞最近點
+        Vector3? collisionPoint = CalculateClosestCollisionPoint();
+        
+        if (collisionPoint.HasValue) // 如果找到碰撞點
+        {
+            Debug.Log("[PointBlur] 找到碰撞點: " + collisionPoint.Value);
+            // 使用受傷的火花特效
+            if (HitSpark != null)
+            {
+                GameObject effect = Instantiate(HitSpark, collisionPoint.Value, Quaternion.identity);
+                Debug.Log("[PointBlur] 生成 Hit 特效: " + effect.name);
+            }
+            else
+            {
+                Debug.LogWarning("[PointBlur] HitSpark 特效為 null");
+            }
+            
+            // 將世界座標轉換為螢幕UV座標
+            BlurCenter = Camera.main.WorldToScreenPoint(collisionPoint.Value); // 世界座標轉螢幕座標
+            BlurCenter.Set(BlurCenter.x / Screen.width, BlurCenter.y / Screen.height); // 螢幕座標轉UV座標
+        }
+        else // 如果沒有找到碰撞點，在主角前方生成特效
+        {
+            Debug.Log("[PointBlur] 未找到碰撞點，在主角前方生成特效");
+            
+            // 獲取主角位置和方向
+            Vector3 playerPosition = tpController != null ? tpController.transform.position : transform.position;
+            Vector3 playerForward = tpController != null ? tpController.transform.forward : transform.forward;
+            
+            // 在主角前方生成特效
+            Vector3 spawnPosition = playerPosition + playerForward * 2f; // 距離主角2單位
+            
+            if (HitSpark != null)
+            {
+                GameObject effect = Instantiate(HitSpark, spawnPosition, Quaternion.identity);
+                Debug.Log("[PointBlur] 在主角前方生成 Hit 特效: " + effect.name);
+            }
+            else
+            {
+                Debug.LogWarning("[PointBlur] HitSpark 特效為 null");
             }
             
             // 將世界座標轉換為螢幕UV座標
