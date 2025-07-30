@@ -110,6 +110,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8627139117915373825, guid: 94720485ea1cc0243959cd34b4532faf, type: 3}
   m_PrefabInstance: {fileID: 7527018447170301580}
   m_PrefabAsset: {fileID: 0}
+--- !u!65 &8158819110783514093 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 1823014076688538465, guid: 94720485ea1cc0243959cd34b4532faf, type: 3}
+  m_PrefabInstance: {fileID: 7527018447170301580}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8101854144654213744
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6962,6 +6967,14 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 8185417083674443760, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: enemyAI
+      value: 
+      objectReference: {fileID: -1830463696213571030}
+    - target: {fileID: 8185417083674443760, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: enemyWeaponCollider
+      value: 
+      objectReference: {fileID: 8158819110783514093}
     - target: {fileID: 8190954153417699706, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -7453,6 +7466,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isDead: 0
   defendChance: 0.7
+  defendPostureIncrease: 20
+  hitPostureIncrease: 30
 --- !u!114 &-1830463696213571030
 MonoBehaviour:
   m_ObjectHideFlags: 0
