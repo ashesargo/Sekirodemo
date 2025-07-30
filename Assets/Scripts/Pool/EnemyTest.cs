@@ -30,6 +30,36 @@ public class EnemyTest : MonoBehaviour
         Debug.Log($"TakeDamage called! HP: {GetCurrentHP()}, isDead: {isDead}, state: {GetComponent<EnemyAI>()?.CurrentState?.GetType().Name}");
         if (isDead) return; // 死亡後不再受傷
 
+        // 檢查是否正在防禦
+        EnemyAI ai = GetComponent<EnemyAI>();
+        if (ai != null && ai.CurrentState is HitState hitState)
+        {
+            if (hitState.IsDefending())
+            {
+                Debug.Log($"敵人正在防禦，不受傷害！");
+                return; // 防禦時不受傷
+            }
+        }
+
+        // 決定是否受傷（70%防禦，30%受傷）
+        float randomValue = Random.value;
+        bool shouldTakeDamage = randomValue >= 0.7f; // 30%機率受傷
+
+        if (!shouldTakeDamage)
+        {
+            Debug.Log($"敵人成功防禦，不受傷害！(70%機率)");
+            // 設置HitState應該播放防禦動畫
+            HitState.shouldDefend = true;
+            // 即使防禦也要進入HitState來播放防禦動畫
+            if (ai != null)
+                ai.SwitchState(new HitState());
+            return;
+        }
+
+        Debug.Log($"敵人受傷！(30%機率)");
+        // 設置HitState應該播放受傷動畫
+        HitState.shouldDefend = false;
+
         // 使用 HealthPostureController 處理傷害
         if (healthController != null)
         {
@@ -39,7 +69,6 @@ public class EnemyTest : MonoBehaviour
         if (GetCurrentHP() <= 0 && !isDead)
         {
             isDead = true;
-            EnemyAI ai = GetComponent<EnemyAI>();
             if (ai != null)
                 ai.SwitchState(new DieState());
             StartCoroutine(ReturnToPoolAfterDeath());
@@ -47,7 +76,6 @@ public class EnemyTest : MonoBehaviour
         else if (GetCurrentHP() > 0)
         {
             // 受傷但未死亡
-            EnemyAI ai = GetComponent<EnemyAI>();
             if (ai != null)
                 ai.SwitchState(new HitState());
         }

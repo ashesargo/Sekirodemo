@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using System.Collections;
@@ -42,6 +42,8 @@ public class MainMenuController : MonoBehaviour
         // {
         //     fadePanel.SetActive(false);
         // }
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     void Update()
