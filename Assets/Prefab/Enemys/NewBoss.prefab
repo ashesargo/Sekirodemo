@@ -5033,8 +5033,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isDead: 0
   defendChance: 0.7
-  defendPostureIncrease: 5
-  hitPostureIncrease: 5
+  defendPostureIncrease: 0
+  hitPostureIncrease: 0
 --- !u!114 &-2384988033914571718
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5102,7 +5102,7 @@ MonoBehaviour:
   combo2Duration: 6
   combo3Duration: 6
   bossDefendChance: 0.8
-  bossDefendPostureIncrease: 5
+  bossDefendPostureIncrease: 10
   bossHitPostureIncrease: 5
   leftWeapon: {fileID: 0}
   rightWeapon: {fileID: 0}

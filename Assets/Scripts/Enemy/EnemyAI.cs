@@ -662,11 +662,11 @@ public class EnemyAI : MonoBehaviour
         Vector3 toPlayer = (player.position - transform.position);
         toPlayer.y = 0f;
         float distance = toPlayer.magnitude;
-        if (distance < attackRange + 1f) // 距離判定
+        if (distance < attackRange + 9f) // 距離判定
         {
             Vector3 forward = transform.forward;
             float angle = Vector3.Angle(forward, toPlayer);
-            if (angle <= 45f) // 前方90度扇形
+            if (angle <= 60f) // 前方90度扇形
             {
                 var status = player.GetComponent<PlayerStatus>();
                 if (status != null)
