@@ -37,7 +37,10 @@ public class EnemyTest : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        Debug.Log($"TakeDamage called! HP: {GetCurrentHP()}, isDead: {isDead}, state: {GetComponent<EnemyAI>()?.CurrentState?.GetType().Name}");
+        Debug.Log($"[EnemyTest] {gameObject.name} 接收到傷害: {damage} - 時間: {Time.time:F3}");
+        Debug.Log($"[EnemyTest] 當前狀態 - HP: {GetCurrentHP()}, isDead: {isDead}, state: {GetComponent<EnemyAI>()?.CurrentState?.GetType().Name}");
+        Debug.Log($"[EnemyTest] 調用堆疊: {System.Environment.StackTrace}");
+        
         if (isDead) return; // 死亡後不再受傷
 
         // 檢查是否正在防禦
@@ -74,6 +77,8 @@ public class EnemyTest : MonoBehaviour
             {
                 // 根據敵人類型決定架勢值增加量
                 int postureIncrease = bossAI != null ? bossAI.bossDefendPostureIncrease : defendPostureIncrease;
+                Debug.Log($"[EnemyTest] {enemyType} 防禦成功！架勢值增加來源: EnemyTest.cs (敵人防禦)");
+                Debug.Log($"[EnemyTest] 增加數值: {postureIncrease}, 是否為Parry: false");
                 healthController.AddPosture(postureIncrease, false); // 防禦時增加架勢值，不是Parry
                 Debug.Log($"{enemyType}防禦時增加架勢值 {postureIncrease} 點！");
             }
@@ -104,10 +109,9 @@ public class EnemyTest : MonoBehaviour
             // 受傷時扣血並增加架勢值
             healthController.TakeDamage(damage, PlayerStatus.HitState.Hit);
             
-            // 根據敵人類型決定額外的架勢值增加量
-            int additionalPostureIncrease = bossAI != null ? bossAI.bossHitPostureIncrease : hitPostureIncrease;
-            healthController.AddPosture(additionalPostureIncrease, false);
-            Debug.Log($"{enemyType2}受傷時增加架勢值 {additionalPostureIncrease} 點！");
+            // 注意：HealthPostureController.TakeDamage 已經會根據 HitState.Hit 增加架勢值
+            // 不需要再額外調用 AddPosture，避免重複增加架勢值
+            Debug.Log($"[EnemyTest] {enemyType2} 受傷！架勢值已通過 HealthPostureController.TakeDamage 增加");
         }
         // 觸發敵人受傷事件（用於模糊效果）
         Vector3 hitPosition = transform.position + transform.forward * 2f;

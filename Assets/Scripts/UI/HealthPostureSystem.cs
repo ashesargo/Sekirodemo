@@ -88,6 +88,9 @@ public class HealthPostureSystem
     public void PostureIncrease(int amount, bool isParry = false)
     {
         int previousPosture = postureAmount;
+        Debug.Log($"[HealthPostureSystem] 架勢值增加開始: {previousPosture} → {previousPosture + amount}");
+        Debug.Log($"[HealthPostureSystem] 增加數值: {amount}, 是否為Parry: {isParry}");
+        
         postureAmount += amount;
         
         // 如果是 Parry，限制最大值為 99%
@@ -95,12 +98,12 @@ public class HealthPostureSystem
         {
             int maxParryPosture = Mathf.RoundToInt(postureAmountMax * 0.99f);
             postureAmount = Mathf.Clamp(postureAmount, 0, maxParryPosture);
-            Debug.Log($"Parry架勢: {previousPosture} → {postureAmount} (+{amount})");
+            Debug.Log($"[HealthPostureSystem] Parry架勢限制: {previousPosture + amount} → {postureAmount} (最大值: {maxParryPosture})");
         }
         else
         {
             postureAmount = Mathf.Clamp(postureAmount, 0, postureAmountMax);
-            Debug.Log($"一般架勢: {previousPosture} → {postureAmount} (+{amount})");
+            Debug.Log($"[HealthPostureSystem] 一般架勢: {previousPosture} → {postureAmount} (+{amount})");
         }
 
         // 重置架勢恢復計時器
@@ -112,9 +115,11 @@ public class HealthPostureSystem
         // 檢查架勢是否集滿（只有非 Parry 時才會觸發）
         if (postureAmount == postureAmountMax && !isParry)
         {
-            Debug.Log("架勢已集滿！");
+            Debug.Log("[HealthPostureSystem] 架勢已集滿！");
             OnPostureBroken?.Invoke(this, EventArgs.Empty);
         }
+        
+        Debug.Log($"[HealthPostureSystem] 架勢值增加完成: {previousPosture} → {postureAmount} (最終值: {postureAmount}/{postureAmountMax})");
     }
 
     // 減少架勢值

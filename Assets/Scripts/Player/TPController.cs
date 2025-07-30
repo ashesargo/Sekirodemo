@@ -280,18 +280,33 @@ public class TPContraller : MonoBehaviour
                             // 標記特效已觸發
                             parryEffectTriggered = true;
 
-                            // 觸發 Parry 特效事件
+                            // 觸發 Parry 特效事件（只觸發玩家的特效）
                             if (OnParrySuccess != null)
                             {
                                 Vector3 parryPosition = hit.transform.position;
                                 OnParrySuccess.Invoke(parryPosition);
                             }
                             
-                            // 觸發敵人 Parry 成功事件（用於敵人模糊效果）
+                            // 觸發敵人 Parry 成功事件（只用於模糊效果，不產生特效）
                             if (enemyAI.OnEnemyParrySuccess != null)
                             {
                                 Vector3 enemyParryPosition = hit.transform.position;
                                 enemyAI.OnEnemyParrySuccess.Invoke(enemyParryPosition);
+                            }
+                            
+                            // 被Parry的敵人增加架勢值20
+                            HealthPostureController enemyHealthController = hit.GetComponent<HealthPostureController>();
+                            if (enemyHealthController != null)
+                            {
+                                Debug.Log($"[TPController] 玩家Parry敵人成功！敵人: {hit.name}, 位置: {hit.transform.position}");
+                                Debug.Log($"[TPController] 敵人架勢值增加來源: TPController.cs (玩家Parry敵人)");
+                                Debug.Log($"[TPController] 增加數值: 20, 是否為Parry: false");
+                                enemyHealthController.AddPosture(20, false);
+                                Debug.Log("[TPController] 被Parry的敵人架勢值增加20");
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"[TPController] 警告：敵人 {hit.name} 沒有 HealthPostureController 組件");
                             }
                             
                             // 確保特效有足夠時間觸發

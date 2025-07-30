@@ -3552,8 +3552,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 850079304113082800}
     - target: {fileID: 3096965204288466699, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      propertyPath: enemyLayer.m_Bits
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3096965204288466699, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: playerLayer.m_Bits
-      value: 128
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3096965204288466699, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: layerEffectMappings.Array.data[1].layerMask.m_Bits
@@ -6178,9 +6182,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isDead: 0
-  defendChance: 0.7
-  defendPostureIncrease: 20
-  hitPostureIncrease: 30
+  defendChance: 0.5
+  defendPostureIncrease: 0
+  hitPostureIncrease: 0
 --- !u!114 &1687266463544770986
 MonoBehaviour:
   m_ObjectHideFlags: 0
