@@ -83,6 +83,13 @@ public class EnemyTest : MonoBehaviour
             // 即使防禦也要進入HitState來播放防禦動畫
             if (ai != null)
                 ai.SwitchState(new HitState());
+            
+            // 觸發敵人防禦成功事件（用於模糊效果）
+            Vector3 defendPosition = transform.position + transform.forward * 2f;
+            if (ai.OnEnemyGuardSuccess != null)
+            {
+                ai.OnEnemyGuardSuccess.Invoke(defendPosition);
+            }
             return;
         }
 
@@ -102,6 +109,13 @@ public class EnemyTest : MonoBehaviour
             healthController.AddPosture(additionalPostureIncrease, false);
             Debug.Log($"{enemyType2}受傷時增加架勢值 {additionalPostureIncrease} 點！");
         }
+        // 觸發敵人受傷事件（用於模糊效果）
+        Vector3 hitPosition = transform.position + transform.forward * 2f;
+        if (ai != null && ai.OnEnemyHitOccurred != null)
+        {
+            ai.OnEnemyHitOccurred.Invoke(hitPosition);
+        }
+        
         // 檢查是否死亡
         if (GetCurrentHP() <= 0 && !isDead)
         {

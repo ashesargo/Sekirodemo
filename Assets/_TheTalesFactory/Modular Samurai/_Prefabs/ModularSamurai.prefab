@@ -12215,6 +12215,7 @@ GameObject:
   - component: {fileID: 6797783300149108695}
   - component: {fileID: 3096965204288466699}
   - component: {fileID: 7905645749971633676}
+  - component: {fileID: 8185417083674443760}
   m_Layer: 0
   m_Name: ModularSamurai
   m_TagString: Untagged
@@ -12391,6 +12392,86 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &8185417083674443760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6869600998273829490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3596af0ba6634b4b8b4e2f4d910af10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PointBlurShader: {fileID: 4800000, guid: 7354bc317ed4d0a4e9fd2b6ef92c4607, type: 3}
+  curve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.0040816874
+      value: 0.23369211
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.07139496
+      value: 0.7222869
+      inSlope: 5.8499713
+      outSlope: 5.8499713
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 1
+      outWeight: 0.19787188
+    - serializedVersion: 3
+      time: 0.21631652
+      value: 0.9993259
+      inSlope: -0.022931121
+      outSlope: -0.022931121
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.46744558
+      outWeight: 0.95294017
+    - serializedVersion: 3
+      time: 0.5346119
+      value: 0.6450183
+      inSlope: -2.7693415
+      outSlope: -2.7693415
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.4487989
+      outWeight: 0.29327178
+    - serializedVersion: 3
+      time: 0.70626205
+      value: -0.008876704
+      inSlope: -0.008367117
+      outSlope: -0.008367117
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.15039022
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  EnemySpark: {fileID: 6572068886274405076, guid: 9bdb6b5c5a5605d44a16488ea3c6aaba, type: 3}
+  EnemyGuardSpark: {fileID: 6572068886274405076, guid: 13fc912e1bb1e044aa678db91fa92444, type: 3}
+  EnemyHitSpark: {fileID: 6572068886274405076, guid: c0cd25a7ab1284a4891d063f149df3e8, type: 3}
+  BlurStrength: 0.1
+  ParryBlurStrength: 0.4
+  GuardBlurStrength: 0.2
+  HitBlurStrength: 0.1
+  BlurSpeed: 12
+  BlurRange: 0.3
+  BlurRadius: 0.3
+  downSampleFactor: 2
+  enemyAI: {fileID: 0}
+  enemyWeaponCollider: {fileID: 0}
+  detectionLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &6990316013176573253
 GameObject:
   m_ObjectHideFlags: 0

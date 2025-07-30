@@ -286,6 +286,14 @@ public class TPContraller : MonoBehaviour
                                 Vector3 parryPosition = hit.transform.position;
                                 OnParrySuccess.Invoke(parryPosition);
                             }
+                            
+                            // 觸發敵人 Parry 成功事件（用於敵人模糊效果）
+                            if (enemyAI.OnEnemyParrySuccess != null)
+                            {
+                                Vector3 enemyParryPosition = hit.transform.position;
+                                enemyAI.OnEnemyParrySuccess.Invoke(enemyParryPosition);
+                            }
+                            
                             // 確保特效有足夠時間觸發
                             StartCoroutine(ResetParrySuccessAfterDelay(0.2f));
                         }

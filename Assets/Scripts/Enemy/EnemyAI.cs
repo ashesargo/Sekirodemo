@@ -59,6 +59,12 @@ public class EnemyAI : MonoBehaviour
     private bool isObstacleDetected = false; // 是否檢測到障礙物
     public bool canBeParried = false;
 
+    // 新增：敵人模糊效果事件
+    public System.Action<Vector3> OnEnemyParrySuccess; // 當敵人 Parry 成功時觸發，參數為碰撞點
+    public System.Action<Vector3> OnEnemyGuardSuccess; // 當敵人 Guard 成功時觸發，參數為碰撞點
+    public System.Action<Vector3> OnEnemyHitOccurred; // 當敵人受傷時觸發，參數為碰撞點
+    public System.Action<Vector3> OnEnemyAttackSuccess; // 當敵人攻擊成功時觸發，參數為攻擊位置
+
     public BaseEnemyState CurrentState => currentState;
 
     void Awake()
@@ -666,6 +672,7 @@ public class EnemyAI : MonoBehaviour
                 if (status != null)
                 {
                     status.TakeDamage(damage);
+                    // 不要再觸發任何EnemyHitSpark/OnEnemyAttackSuccess
                 }
             }
         }
