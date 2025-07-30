@@ -477,13 +477,17 @@ public class ItemSystem : MonoBehaviour
 
     public float GetPostureReductionRate()
     {
-        // 這裡假設 SteelSugar 效果啟用時，duration > 0
-        var steelSugar = items.Find(x => x.type == ItemType.SteelSugar && x.duration > 0);
-        if (steelSugar != null)
-        {
-            return steelSugar.effectValue;
-        }
+        // 暫時禁用剛幹糖效果，總是返回 1.0f（無效果）
         return 1f;
+        
+        // 原始代碼（已註解）：
+        // 這裡假設 SteelSugar 效果啟用時，duration > 0
+        // var steelSugar = items.Find(x => x.type == ItemType.SteelSugar && x.duration > 0);
+        // if (steelSugar != null)
+        // {
+        //     return steelSugar.effectValue;
+        // }
+        // return 1f;
     }
     
 

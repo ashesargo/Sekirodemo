@@ -284,6 +284,10 @@ PrefabInstance:
       propertyPath: maxLive
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 684904806515530862, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
+      propertyPath: maxPosture
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 685744041794128765, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -4961,6 +4965,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isDead: 0
+  defendChance: 0.7
+  defendPostureIncrease: 5
+  hitPostureIncrease: 5
 --- !u!114 &-2384988033914571718
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5027,6 +5034,9 @@ MonoBehaviour:
   combo1Duration: 6
   combo2Duration: 6
   combo3Duration: 6
+  bossDefendChance: 0.8
+  bossDefendPostureIncrease: 5
+  bossHitPostureIncrease: 5
   leftWeapon: {fileID: 0}
   rightWeapon: {fileID: 0}
 --- !u!114 &-2264536825696089340
