@@ -16,6 +16,9 @@ public class PlayerStatus : MonoBehaviour
         Parry = 2,
     }
 
+    // 新增：受傷事件
+    public System.Action<Vector3> OnHitOccurred; // 當受傷時觸發，參數為受傷位置
+
     void Start()
     {
         _animator = GetComponent<Animator>();
@@ -40,6 +43,21 @@ public class PlayerStatus : MonoBehaviour
         }
         else if (_TPContraller.isGuard) { currentHitState = HitState.Guard; damage = 0; }
         else currentHitState = HitState.Hit;
+        
+        // 觸發受傷事件
+        if (currentHitState == HitState.Hit && OnHitOccurred != null)
+        {
+            Vector3 hitPosition = transform.position + transform.forward * 2f; // 在玩家前方生成特效
+            OnHitOccurred.Invoke(hitPosition);
+        }
+        
+        // 觸發防禦事件（當在防禦狀態下受到攻擊時）
+        if (currentHitState == HitState.Guard && _TPContraller != null && _TPContraller.OnGuardSuccess != null)
+        {
+            Vector3 guardPosition = transform.position + transform.forward * 2f; // 在玩家前方生成特效
+            _TPContraller.OnGuardSuccess.Invoke(guardPosition);
+        }
+        
         // 使用 HealthPostureController 處理傷害
         if (healthController != null)
         {

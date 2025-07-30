@@ -48,9 +48,14 @@ public class TPContraller : MonoBehaviour
     public bool isGuard;
     public bool parrySuccess;
     private bool parryEffectTriggered = false; // 新增：追蹤特效是否已觸發
+    private bool hitEffectTriggered = false; // 新增：追蹤受傷特效是否已觸發
 
     // 新增：Parry 特效事件
     public System.Action<Vector3> OnParrySuccess; // 當 Parry 成功時觸發，參數為碰撞點
+    // 新增：Guard 特效事件
+    public System.Action<Vector3> OnGuardSuccess; // 當 Guard 成功時觸發，參數為碰撞點
+    // 新增：Hit 特效事件
+    public System.Action<Vector3> OnHitOccurred; // 當受傷時觸發，參數為碰撞點
     public float attackRadius = 9f;
     public float attackAngle = 90f;
     public LayerMask targetLayer;
@@ -181,6 +186,12 @@ public class TPContraller : MonoBehaviour
         Cursor.visible = false;
         // 初始化 parrySuccess 為 false
         parrySuccess = false;
+        
+        // 訂閱 PlayerStatus 的受傷事件
+        if (_playerStatus != null)
+        {
+            _playerStatus.OnHitOccurred += HandlePlayerHit;
+        }
     }
     // Update is called once per frame
     void Update()
@@ -460,5 +471,24 @@ public class TPContraller : MonoBehaviour
         parrySuccess = false;
         parryEffectTriggered = false; // 重置特效觸發標記
         Debug.Log("[TPController] Parry 狀態已重置");
+    }
+    
+    // 處理玩家受傷事件
+    private void HandlePlayerHit(Vector3 hitPosition)
+    {
+        if (!hitEffectTriggered && OnHitOccurred != null)
+        {
+            hitEffectTriggered = true;
+            OnHitOccurred.Invoke(hitPosition);
+            StartCoroutine(ResetHitEffectAfterDelay(0.2f));
+        }
+    }
+    
+    // 延遲重置受傷特效觸發標記
+    private IEnumerator ResetHitEffectAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        hitEffectTriggered = false;
+        Debug.Log("[TPController] Hit 特效已重置");
     }
 }
