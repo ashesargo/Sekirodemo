@@ -45,17 +45,13 @@ public class PlayerStatus : MonoBehaviour
             // 此時不應該增加玩家自己的架勢值，只有被Parry的敵人會增加架勢值
             // 玩家被敵人Parry的情況會在敵人的攻擊邏輯中處理
             
-            // 觸發玩家Parry的特效事件
-            if (OnHitOccurred != null)
-            {
-                Vector3 parryPosition = transform.position + transform.forward * 2f; // 在玩家前方生成特效
-                OnHitOccurred.Invoke(parryPosition);
-            }
+            // 移除：不觸發玩家Parry的特效事件，避免與 TPController 的 OnParrySuccess 事件衝突
+            // 特效應該由 TPController 的 OnParrySuccess 事件統一處理
         }
         else if (_TPContraller.isGuard) { currentHitState = HitState.Guard; damage = 0; }
         else currentHitState = HitState.Hit;
         
-        // 觸發受傷事件
+        // 觸發受傷事件（只在非 Parry 狀態下觸發）
         if (currentHitState == HitState.Hit && OnHitOccurred != null)
         {
             Vector3 hitPosition = transform.position + transform.forward * 2f; // 在玩家前方生成特效
