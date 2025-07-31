@@ -37,12 +37,6 @@ public class TPContraller : MonoBehaviour
     public float dashDis;
     private bool isDashing;
     private bool isRunning = false;
-    [Header("Lock")]
-    public Transform lockTarget;
-    private bool isLocked = false;
-    public float lockRange = 10.0f;
-    public LayerMask enemyLayer;
-    public TPCamera TPCamera;
 
     EnemyAI enemyAI;
     public bool isGuard;
@@ -60,6 +54,9 @@ public class TPContraller : MonoBehaviour
     public float attackAngle = 120f;
     public LayerMask targetLayer;
 
+    public TPCamera _TPCamera;
+    Transform lockTarget;
+    bool isLock;
     public void StartAttack()
     {
         currentStep = comboStep;
@@ -109,54 +106,7 @@ public class TPContraller : MonoBehaviour
         {
             _animator.SetBool("isDashing", isDashing);
         }
-    }
-    void FindLockTarget()
-    {
-        Collider[] targets = Physics.OverlapSphere(transform.position, lockRange, enemyLayer);
-        float closestDistance = Mathf.Infinity;
-        Transform closestTarget = null;
-        foreach (Collider col in targets)
-        {
-            // 獲取敵人的 Animator 組件
-            Animator animator = col.GetComponent<Animator>();
-            if (animator != null)
-            {
-                // 檢查敵人是否處於 "Death" 動畫狀態
-                if (!animator.GetCurrentAnimatorStateInfo(0).IsTag("Death"))
-                {
-                    float distance = Vector3.Distance(transform.position, col.transform.position);
-                    if (distance < closestDistance)
-                    {
-                        closestDistance = distance;
-                        closestTarget = col.transform;
-                    }
-                }
-            }
-        }
-        // 更新鎖定目標
-        if (closestTarget != null)
-        {
-            lockTarget = closestTarget;
-            isLocked = true;
-        }
-        else
-        {
-            // 如果沒有可鎖定的目標，解除鎖定
-            lockTarget = null;
-            isLocked = false;
-        }
-        // 檢查當前鎖定目標是否進入 "Death" 狀態
-        if (lockTarget != null)
-        {
-            Animator targetAnimator = lockTarget.GetComponent<Animator>();
-            if (targetAnimator != null && targetAnimator.GetCurrentAnimatorStateInfo(0).IsTag("Death"))
-            {
-                // 如果當前鎖定目標進入 "Death" 狀態，解除鎖定
-                lockTarget = null;
-                isLocked = false;
-            }
-        }
-    }
+    }    
     //Guard
     void EnableGurad()
     {
@@ -202,6 +152,11 @@ public class TPContraller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(_TPCamera!= null)
+        {
+            lockTarget = _TPCamera.lockTarget;
+            isLock = _TPCamera.isLock;
+        }
         AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
 
         if (_animator == null || (_playerGrapple != null && _playerGrapple.IsGrappling()) || (_playerStatus != null && _playerStatus.isDeath == true) || stateInfo.IsTag("Sit")) return;
@@ -215,11 +170,6 @@ public class TPContraller : MonoBehaviour
             canMove = true;
         }
         //Debug.Log(comboTimer);
-        if (TPCamera != null)
-        {
-            TPCamera.isLock = isLocked;
-            TPCamera.lockTarget = lockTarget;
-        }
         if (groundCheck != null)
         {
             isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, Ground);
@@ -239,27 +189,7 @@ public class TPContraller : MonoBehaviour
             {
                 ResetCombo();
             }
-        }
-        if (Input.GetKeyDown(KeyCode.Mouse2))
-        {
-            if (!isLocked)
-            {
-                FindLockTarget();
-                if (_animator != null)
-                {
-                    _animator.SetBool("Lock", isLocked);
-                }
-            }
-            else
-            {
-                isLocked = false;
-                lockTarget = null;
-                if (_animator != null)
-                {
-                    _animator.SetBool("Lock", isLocked);
-                }
-            }
-        }
+        }        
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             Collider[] hits = Physics.OverlapSphere(transform.position, attackRadius, targetLayer);
@@ -348,7 +278,7 @@ public class TPContraller : MonoBehaviour
             Vector2 inputVector = new Vector2(fH, fV);
             float inputMagnitude = inputVector.magnitude;
             Vector3 moveDirection;
-            if (isLocked && lockTarget != null)
+            if (isLock && lockTarget != null)
             {
                 Vector3 directionToTarget = lockTarget.position - transform.position;
                 directionToTarget.y = 0;
@@ -395,12 +325,12 @@ public class TPContraller : MonoBehaviour
                 }
             }
             // Dash �� �]�B
-            if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing && !isLocked && canMove)
+            if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing && !isLock && canMove)
             {
                 StartCoroutine(Dash(transform.forward));
                 isRunning = true;
             }
-            else if (Input.GetKeyDown(KeyCode.LeftShift) && lockTarget != null && !isDashing && isLocked && canMove)
+            else if (Input.GetKeyDown(KeyCode.LeftShift) && lockTarget != null && !isDashing && isLock && canMove)
             {
                 StartCoroutine(Dash(moveDirection));
                 isRunning = true;
@@ -466,7 +396,7 @@ public class TPContraller : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Mouse0) && !isDashing)
         {
             DisableGuard();
-            if (isLocked && lockTarget != null)
+            if (isLock && lockTarget != null)
             {
                 Vector3 directionToTarget = lockTarget.position - transform.position;
                 directionToTarget.y = 0;

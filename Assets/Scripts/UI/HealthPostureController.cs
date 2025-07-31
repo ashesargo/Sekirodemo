@@ -247,29 +247,50 @@ public class HealthPostureController : MonoBehaviour
         }
         else
         {
-            // 敵人血條邏輯：隱藏其他敵人的血條
-            if (lastAttackedEnemy != null && lastAttackedEnemy != this)
+            // 檢查是否為Boss（通過檢查是否有BossTriggerZone引用）
+            bool isBoss = IsBoss();
+            
+            if (isBoss)
             {
-                lastAttackedEnemy.HideHealthBar();
+                // Boss血條邏輯：直接顯示，不隱藏其他敵人
+                if (healthPostureUI != null)
+                {
+                    healthPostureUI.gameObject.SetActive(true);
+                }
+                
+                // 停止隱藏協程
+                if (hideUICoroutine != null)
+                {
+                    StopCoroutine(hideUICoroutine);
+                    hideUICoroutine = null;
+                }
             }
-
-            // 設定為最後一個被攻擊的敵人
-            lastAttackedEnemy = this;
-
-            // 顯示血條 UI
-            if (healthPostureUI != null)
+            else
             {
-                healthPostureUI.gameObject.SetActive(true);
-            }
+                // 普通敵人血條邏輯：隱藏其他敵人的血條
+                if (lastAttackedEnemy != null && lastAttackedEnemy != this)
+                {
+                    lastAttackedEnemy.HideHealthBar();
+                }
 
-            // 停止之前的隱藏協程（如果有的話）
-            if (hideUICoroutine != null)
-            {
-                StopCoroutine(hideUICoroutine);
-            }
+                // 設定為最後一個被攻擊的敵人
+                lastAttackedEnemy = this;
 
-            // 開始新的隱藏協程
-            hideUICoroutine = StartCoroutine(HideHealthBarAfterDelay(5f));
+                // 顯示血條 UI
+                if (healthPostureUI != null)
+                {
+                    healthPostureUI.gameObject.SetActive(true);
+                }
+
+                // 停止之前的隱藏協程（如果有的話）
+                if (hideUICoroutine != null)
+                {
+                    StopCoroutine(hideUICoroutine);
+                }
+
+                // 開始新的隱藏協程
+                hideUICoroutine = StartCoroutine(HideHealthBarAfterDelay(5f));
+            }
         }
     }
 
@@ -323,6 +344,55 @@ public class HealthPostureController : MonoBehaviour
         }
     }
 
+    // 強制顯示血條（用於Boss）
+    public void ForceShowHealthBar()
+    {
+        if (healthPostureUI != null)
+        {
+            healthPostureUI.gameObject.SetActive(true);
+        }
+        
+        // 停止隱藏協程
+        if (hideUICoroutine != null)
+        {
+            StopCoroutine(hideUICoroutine);
+            hideUICoroutine = null;
+        }
+        
+        // 設定為最後一個被攻擊的敵人，防止被其他敵人覆蓋
+        lastAttackedEnemy = this;
+    }
+
+    // 檢查是否為Boss
+    private bool IsBoss()
+    {
+        // 檢查是否有BossTriggerZone引用這個物件
+        BossTriggerZone[] bossZones = FindObjectsOfType<BossTriggerZone>();
+        foreach (BossTriggerZone zone in bossZones)
+        {
+            if (zone.bossObject == gameObject)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // 通知Boss死亡
+    private void NotifyBossDeath()
+    {
+        // 找到所有Boss觸發區域並通知Boss死亡
+        BossTriggerZone[] bossZones = FindObjectsOfType<BossTriggerZone>();
+        foreach (BossTriggerZone zone in bossZones)
+        {
+            if (zone.bossObject == gameObject)
+            {
+                zone.OnBossDeath();
+                break;
+            }
+        }
+    }
+
     // 延遲隱藏血條的協程
     private IEnumerator HideHealthBarAfterDelay(float delay)
     {
@@ -355,8 +425,21 @@ public class HealthPostureController : MonoBehaviour
         }
         else
         {
-            // 敵人死亡時隱藏血條
-            HideHealthBar();
+            // 檢查是否為Boss
+            bool isBoss = IsBoss();
+            
+            if (isBoss)
+            {
+                // Boss死亡時隱藏血條並通知Boss觸發區域
+                HideHealthBar();
+                NotifyBossDeath();
+            }
+            else
+            {
+                // 普通敵人死亡時隱藏血條
+                HideHealthBar();
+            }
+            
             // 關閉碰撞器
             StartCoroutine(DisableColliderAfterEffect());
         }

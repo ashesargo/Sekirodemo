@@ -8,11 +8,14 @@ public class ExecutionSystem : MonoBehaviour
     
     private TPContraller playerController;
     private Animator playerAnimator;
-    
+
+    AudioSource _audioSource;
+    public AudioClip exeAudio;
     void Start()
     {
         playerController = GetComponent<TPContraller>();
         playerAnimator = GetComponent<Animator>();
+        _audioSource = GetComponent<AudioSource>();
     }
     
     void Update()
@@ -23,7 +26,12 @@ public class ExecutionSystem : MonoBehaviour
             TryExecuteEnemy();
         }
     }
-    
+    public void PlayExeSound()
+    {
+        _audioSource.volume = 1f;
+        _audioSource.PlayOneShot(exeAudio);
+    }
+
     private void TryExecuteEnemy()
     {
         // 尋找附近的敵人
