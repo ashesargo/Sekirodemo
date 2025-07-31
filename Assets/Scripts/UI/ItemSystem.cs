@@ -492,6 +492,21 @@ public class ItemSystem : MonoBehaviour
         }
         return 1f; // 無效果時返回1.0f
     }
+
+    // 重置所有道具效果
+    public void ResetItemEffects()
+    {
+        // 停止所有正在進行的道具效果協程
+        StopAllCoroutines();
+        
+        // 重置剛幹糖效果狀態
+        isSteelSugarActive = false;
+        
+        // 重置使用道具狀態
+        isUsingItem = false;
+        
+        Debug.Log("[道具系統] 已重置所有道具效果");
+    }
     
 
 }

@@ -346,6 +346,10 @@ public class HealthPostureController : MonoBehaviour
             // 設定玩家死亡狀態
             isPlayerDead = true;
             isPlayerDead = true;
+            
+            // 移除所有道具效果
+            RemoveAllItemEffects();
+            
             // 玩家死亡時延後一秒顯示死亡 UI
             StartCoroutine(ShowDeathUIAfterDelay(1f));
         }
@@ -693,6 +697,20 @@ public class HealthPostureController : MonoBehaviour
         if (healthPostureSystem != null)
         {
             healthPostureSystem.HealthHeal(healAmount);
+        }
+    }
+
+    // 移除所有道具效果
+    private void RemoveAllItemEffects()
+    {
+        // 獲取道具系統組件
+        ItemSystem itemSystem = GetComponent<ItemSystem>();
+        if (itemSystem != null)
+        {
+            // 重置道具系統狀態（包括停止道具效果協程）
+            itemSystem.ResetItemEffects();
+            
+            Debug.Log("[架勢控制器] 已移除所有道具效果");
         }
     }
 
