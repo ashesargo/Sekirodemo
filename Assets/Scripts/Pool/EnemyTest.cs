@@ -89,11 +89,33 @@ public class EnemyTest : MonoBehaviour
                 Debug.Log($"[EnemyTest] 增加數值: {postureIncrease}, 是否為Parry: false");
                 healthController.AddPosture(postureIncrease, false); // 防禦時增加架勢值，不是Parry
                 Debug.Log($"{enemyType}防禦時增加架勢值 {postureIncrease} 點！");
+                
+                // 優先檢查是否死亡（死亡檢查優先於架勢值檢查）
+                if (GetCurrentHP() <= 0 && !isDead)
+                {
+                    isDead = true;
+                    Debug.Log($"[EnemyTest] 敵人 {gameObject.name} 血量歸零，進入死亡狀態！");
+                    if (ai != null)
+                        ai.SwitchState(new DieState());
+                    // 注意：物件池回收現在在DieState中處理，不需要在這裡調用ReturnToPoolAfterDeath
+                    return;
+                }
+                
+                // 檢查架勢值是否已滿，如果已滿則直接進入失衡狀態
+                float posturePercentage = healthController.GetPosturePercentage();
+                if (posturePercentage >= 1.0f)
+                {
+                    Debug.Log($"[EnemyTest] 架勢值已滿 ({posturePercentage * 100:F1}%)，直接進入失衡狀態！");
+                    if (ai != null)
+                    {
+                        ai.SwitchState(new StaggerState());
+                    }
+                    return;
+                }
             }
             
-            // 設置HitState應該播放防禦動畫
+            // 架勢值未滿，播放防禦動畫
             HitState.shouldDefend = true;
-            // 即使防禦也要進入HitState來播放防禦動畫
             if (ai != null)
                 ai.SwitchState(new HitState());
             
@@ -108,8 +130,6 @@ public class EnemyTest : MonoBehaviour
 
         string enemyType2 = bossAI != null ? "Boss" : "一般敵人";
         Debug.Log($"{enemyType2}受傷！({(1f - currentDefendChance) * 100:F0}%機率)");
-        // 設置HitState應該播放受傷動畫
-        HitState.shouldDefend = false;
 
         // 使用 HealthPostureController 處理傷害和架勢值
         if (healthController != null)
@@ -120,7 +140,34 @@ public class EnemyTest : MonoBehaviour
             // 注意：HealthPostureController.TakeDamage 已經會根據 HitState.Hit 增加架勢值
             // 不需要再額外調用 AddPosture，避免重複增加架勢值
             Debug.Log($"[EnemyTest] {enemyType2} 受傷！架勢值已通過 HealthPostureController.TakeDamage 增加");
+            
+            // 優先檢查是否死亡（死亡檢查優先於架勢值檢查）
+            if (GetCurrentHP() <= 0 && !isDead)
+            {
+                isDead = true;
+                Debug.Log($"[EnemyTest] 敵人 {gameObject.name} 血量歸零，進入死亡狀態！");
+                if (ai != null)
+                    ai.SwitchState(new DieState());
+                // 注意：物件池回收現在在DieState中處理，不需要在這裡調用ReturnToPoolAfterDeath
+                return;
+            }
+            
+            // 檢查架勢值是否已滿，如果已滿則直接進入失衡狀態
+            float posturePercentage = healthController.GetPosturePercentage();
+            if (posturePercentage >= 1.0f)
+            {
+                Debug.Log($"[EnemyTest] 架勢值已滿 ({posturePercentage * 100:F1}%)，直接進入失衡狀態！");
+                if (ai != null)
+                {
+                    ai.SwitchState(new StaggerState());
+                }
+                return;
+            }
         }
+        
+        // 架勢值未滿，播放受傷動畫
+        HitState.shouldDefend = false;
+        
         // 觸發敵人受傷事件（用於模糊效果）
         Vector3 hitPosition = transform.position + transform.forward * 2f;
         if (ai != null && ai.OnEnemyHitOccurred != null)
@@ -128,20 +175,9 @@ public class EnemyTest : MonoBehaviour
             ai.OnEnemyHitOccurred.Invoke(hitPosition);
         }
         
-        // 檢查是否死亡
-        if (GetCurrentHP() <= 0 && !isDead)
-        {
-            isDead = true;
-            if (ai != null)
-                ai.SwitchState(new DieState());
-            StartCoroutine(ReturnToPoolAfterDeath());
-        }
-        else if (GetCurrentHP() > 0)
-        {
-            // 受傷但未死亡
-            if (ai != null)
-                ai.SwitchState(new HitState());
-        }
+        // 受傷但未死亡，且架勢值未滿
+        if (ai != null)
+            ai.SwitchState(new HitState());
     }
 
     // 獲取當前生命值
@@ -154,19 +190,7 @@ public class EnemyTest : MonoBehaviour
         return 0;
     }
 
-    // 敵人死亡後回歸物件池
-    private IEnumerator ReturnToPoolAfterDeath()
-    {
-        // 等待死亡動畫播放完畢（2秒）
-        yield return new WaitForSeconds(2f);
 
-        // 回歸物件池
-        ObjectPool objectPool = ObjectPool.Instance;
-        if (objectPool != null)
-        {
-            objectPool.ReturnPooledObject(gameObject);
-        }
-    }
 
     // 移除敵人控制（架勢被打破時）
     public void RemoveControl()

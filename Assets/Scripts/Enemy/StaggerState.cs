@@ -74,6 +74,24 @@ public class StaggerState : BaseEnemyState
                 enemyTest.isStaggered = false;
             }
             
+            // 優先檢查是否死亡
+            if (enemyTest != null && !enemyTest.isDead)
+            {
+                // 使用HealthPostureController檢查血量百分比
+                float healthPercentage = healthController.GetHealthPercentage();
+                int currentHP = enemyTest.GetCurrentHP();
+                
+                Debug.Log($"[StaggerState] 敵人 {enemy.name} 失衡狀態結束時檢查死亡 - 血量百分比: {healthPercentage * 100:F1}%, 當前HP: {currentHP}");
+                
+                if (healthPercentage <= 0.01f || currentHP <= 0) // 血量小於等於1%或HP小於等於0
+                {
+                    enemyTest.isDead = true;
+                    Debug.Log($"[StaggerState] 敵人 {enemy.name} 失衡狀態結束時血量歸零，進入死亡狀態！");
+                    enemy.SwitchState(new DieState());
+                    return;
+                }
+            }
+            
             // 切換到追擊狀態（如果能看到玩家）或閒置狀態
             if (enemy.CanSeePlayer())
             {
