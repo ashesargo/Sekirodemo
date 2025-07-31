@@ -18,9 +18,9 @@ public class SpawnPoint : MonoBehaviour
     public GameObject text2;
     // 檢測範圍（可調整）
     public float interactionRange = 2.0f;
-
     bool firstSit = true;
-
+    public HealthPostureController playerHealthPostureController;
+    public ItemSystem playerItemSystem;
     void Update()
     {
         // 使用 OverlapSphere 檢測玩家是否在範圍內
@@ -59,6 +59,11 @@ public class SpawnPoint : MonoBehaviour
         }
         return false;
     }
+    private void ResetPlayer()
+    {
+        playerHealthPostureController.InitPlayer();
+        playerItemSystem.InitializeSystem();
+    }
 
     // 坐下邏輯
     private void SitDown()
@@ -80,6 +85,7 @@ public class SpawnPoint : MonoBehaviour
             text2.SetActive(true);
         }
         firstSit = false;
+        ResetPlayer();
     }
 
     // 站起邏輯
