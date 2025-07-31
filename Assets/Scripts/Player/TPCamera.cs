@@ -61,8 +61,12 @@ public class TPCamera : MonoBehaviour
     // UI Canvas（需在 Inspector 指定）
     public Canvas uiCanvas; // 在 Inspector 拖入你的 Canvas
     // 超過此距離自動解除鎖定
-    public float lockOffDistance = 15.0f;
+    public float lockOffDistance = 100.0f;
     AnimatorStateInfo stateInfo;
+    public float lockRange = 10.0f;
+    public LayerMask enemyLayer;
+    Animator _animator;
+    EnemyTest enemyTest;
     // 初始化攝影機位置與方向
     void Awake()
     {
@@ -74,12 +78,49 @@ public class TPCamera : MonoBehaviour
         mHorizontalVector = vDir;
         mHorizontalVector.y = 0.0f;
         mHorizontalVector.Normalize();
+        _animator = GetComponent<Animator>();
     }
 
+    void FindLockTarget()
+    {
+        Collider[] targets = Physics.OverlapSphere(transform.position, lockRange, enemyLayer);
+        float closestDistance = Mathf.Infinity;
+        Transform closestTarget = null;
+        foreach (Collider col in targets)
+        {
+            // 獲取敵人的 Animator 組件
+            Animator animator = col.GetComponent<Animator>();
+            if (animator != null)
+            {
+                // 檢查敵人是否處於 "Death" 動畫狀態
+                if (!animator.GetCurrentAnimatorStateInfo(0).IsTag("Death"))
+                {
+                    float distance = Vector3.Distance(transform.position, col.transform.position);
+                    if (distance < closestDistance)
+                    {
+                        closestDistance = distance;
+                        closestTarget = col.transform;
+                    }
+                }
+            }
+        }
+        // 更新鎖定目標
+        if (closestTarget != null)
+        {
+            lockTarget = closestTarget;
+            isLock = true;
+        }
+        else
+        {
+            // 如果沒有可鎖定的目標，解除鎖定
+            lockTarget = null;
+            isLock = false;
+        } 
+    }
     // 更新攝影機位置與旋轉
     public void UpdateCameraTransform()
     {
-        if (!isLock)
+        if (!isLock && !stateInfo.IsTag("Execution"))
         {
             // 一般模式：根據滑鼠移動旋轉攝影機
             float fMX = Input.GetAxis("Mouse X");
@@ -117,17 +158,16 @@ public class TPCamera : MonoBehaviour
             // 攝影機朝向角色
             transform.forward = vDir;
         }
-        else if (lockTarget != null)
+        else
         {
             Transform currentlockTarget;
-
             if (stateInfo.IsTag("Execution"))
             {
                 mFollowPoint.position = Vector3.Lerp(mFollowPoint.position, executionFollowPointRef.position, followSpeed * Time.deltaTime);
                 currentlockTarget = executionLockPoint;
             }
             else
-            {
+            {                
                 currentlockTarget = lockTarget;
                 // 鎖定模式：攝影機會對準目標
                 mFollowPoint.position = Vector3.Lerp(mFollowPoint.position, mFollowPointRef.position, followSpeed * Time.deltaTime);
@@ -231,38 +271,58 @@ public class TPCamera : MonoBehaviour
         }
     }
 
-    // 嘗試自動鎖定最近的敵人（假設敵人有 "Enemy" tag）
-    public void TryLockNearestEnemy()
-    {
-        float minDist = float.MaxValue;
-        Transform nearest = null;
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        foreach (var enemy in enemies)
-        {
-            float dist = Vector3.Distance(mFollowPointRef.position, enemy.transform.position);
-            if (dist < minDist)
-            {
-                minDist = dist;
-                nearest = enemy.transform;
-            }
-        }
-        if (nearest != null)
-        {
-            lockTarget = nearest;
-            isLock = true;
-        }
-    }
+    //// 嘗試自動鎖定最近的敵人（假設敵人有 "Enemy" tag）
+    //public void TryLockNearestEnemy()
+    //{
+    //    float minDist = float.MaxValue;
+    //    Transform nearest = null;
+    //    GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+    //    foreach (var enemy in enemies)
+    //    {
+    //        float dist = Vector3.Distance(mFollowPointRef.position, enemy.transform.position);
+    //        if (dist < minDist)
+    //        {
+    //            minDist = dist;
+    //            nearest = enemy.transform;
+    //        }
+    //    }
+    //    if (nearest != null)
+    //    {
+    //        lockTarget = nearest;
+    //        isLock = true;
+    //    }
+    //}
 
     // 每幀更新（建議用 LateUpdate 以確保角色移動後再更新攝影機）
     void LateUpdate()
     {
+        if (Input.GetKeyDown(KeyCode.Mouse2))
+        {
+            if (!isLock)
+            {
+                FindLockTarget();
+                if (_animator != null)
+                {
+                    _animator.SetBool("Lock", isLock);
+                }
+            }
+            else
+            {
+                isLock = false;
+                lockTarget = null;
+                if (_animator != null)
+                {
+                    _animator.SetBool("Lock", isLock);
+                }
+            }
+        }
         stateInfo = playerAnimator.GetCurrentAnimatorStateInfo(0);
 
-        // 按下 Tab 鍵自動鎖定最近敵人
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            TryLockNearestEnemy();
-        }
+        //// 按下 Tab 鍵自動鎖定最近敵人
+        //if (Input.GetKeyDown(KeyCode.Tab))
+        //{
+        //    TryLockNearestEnemy();
+        //}
         // 每幀重設跟隨點位置
         if (stateInfo.IsTag("Execution"))
         {
@@ -271,7 +331,8 @@ public class TPCamera : MonoBehaviour
         else mFollowPoint.position = mFollowPointRef.position;
         // 若鎖定中且有目標，檢查距離是否超過閾值
         if (isLock && lockTarget != null)
-        {
+        {        
+            enemyTest = lockTarget.GetComponent<EnemyTest>();
             float dist = Vector3.Distance(mFollowPointRef.position, lockTarget.position);
             if (dist > lockOffDistance)
             {
@@ -279,7 +340,19 @@ public class TPCamera : MonoBehaviour
                 lockTarget = null;
             }
         }
-
+        if (enemyTest != null)
+        {
+            if (enemyTest.isDead)
+            {
+                isLock = false;
+                lockTarget = null;
+                FindLockTarget();
+                if (_animator != null)
+                {
+                    _animator.SetBool("Lock", isLock);
+                }
+            }
+        }
         // 鎖定狀態切換時重設攝影機
         if (wasLock != isLock)
         {
