@@ -165,12 +165,14 @@ public class TPCamera : MonoBehaviour
             {
                 mFollowPoint.position = Vector3.Lerp(mFollowPoint.position, executionFollowPointRef.position, followSpeed * Time.deltaTime);
                 currentlockTarget = executionLockPoint;
+                lockExtraDistanceMultiplier = -0.2f;
             }
             else
             {                
                 currentlockTarget = lockTarget;
                 // 鎖定模式：攝影機會對準目標
                 mFollowPoint.position = Vector3.Lerp(mFollowPoint.position, mFollowPointRef.position, followSpeed * Time.deltaTime);
+                lockExtraDistanceMultiplier = 0.5f;
             }
             // 計算角色與目標的1/3分點，讓鏡頭更靠近自己
             Vector3 centerBetween = mFollowPoint.position * (2.0f / 3.0f) + currentlockTarget.position * (1.0f / 3.0f);
