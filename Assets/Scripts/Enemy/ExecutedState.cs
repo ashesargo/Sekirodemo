@@ -20,10 +20,11 @@ public class ExecutedState : BaseEnemyState
         enemy.canBeParried = false;
         enemy.canAutoAttack = false;
         
-        // 設置敵人為死亡狀態
+        // 清除失衡標記（允許處決）
         EnemyTest enemyTest = enemy.GetComponent<EnemyTest>();
         if (enemyTest != null)
         {
+            enemyTest.isStaggered = false;
             enemyTest.isDead = true;
         }
         
