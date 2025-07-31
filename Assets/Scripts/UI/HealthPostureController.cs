@@ -27,26 +27,34 @@ public class HealthPostureController : MonoBehaviour
 
     void Awake()
     {
-        // 自動檢測並設定最大生命值
-        SetMaxHealthBasedOnComponent();
-
-        // 初始化生命值與架勢系統
-        healthPostureSystem = new HealthPostureSystem(maxHealth, maxPosture);
-
-        // 初始化 HealthPostureUI
-        if (healthPostureUI != null)
+        // 檢查是否為玩家，如果是則調用玩家初始化
+        if (GetComponent<PlayerStatus>() != null)
         {
-            healthPostureUI.SetHealthPostureSystem(healthPostureSystem);
-            healthPostureUI.UpdateLifeBalls(live, maxLive);
+            InitPlayer();
         }
+        else
+        {
+            // 敵人初始化邏輯
+            // 自動檢測並設定最大生命值
+            SetMaxHealthBasedOnComponent();
 
-        // 訂閱事件
-        healthPostureSystem.OnDead += OnDead;
-        healthPostureSystem.OnPostureBroken += OnPostureBroken;
-        live = maxLive;
+            // 初始化生命值與架勢系統
+            healthPostureSystem = new HealthPostureSystem(maxHealth, maxPosture);
 
-        playerAnimator = GetComponent<Animator>();
+            // 初始化 HealthPostureUI
+            if (healthPostureUI != null)
+            {
+                healthPostureUI.SetHealthPostureSystem(healthPostureSystem);
+                healthPostureUI.UpdateLifeBalls(live, maxLive);
+            }
 
+            // 訂閱事件
+            healthPostureSystem.OnDead += OnDead;
+            healthPostureSystem.OnPostureBroken += OnPostureBroken;
+            live = maxLive;
+
+            playerAnimator = GetComponent<Animator>();
+        }
     }
 
     void Update()
@@ -68,6 +76,47 @@ public class HealthPostureController : MonoBehaviour
                     ReturnToMainMenu();
                 }
             }
+        }
+    }
+
+    // 初始化玩家血條架勢條
+    public void InitPlayer()
+    {
+        // 檢查是否有 PlayerStatus 組件（玩家）
+        if (GetComponent<PlayerStatus>() != null)
+        {
+            // 初始化生命球數
+            live = maxLive;
+            
+            // 初始化生命值
+            maxHealth = PlayerStatus.maxHP;
+            
+            // 初始化架勢值
+            maxPosture = 100; // 玩家最大架勢值預設為100
+            
+            // 設定生命值與架勢系統
+            healthPostureSystem = new HealthPostureSystem(maxHealth, maxPosture);
+            
+            // 設定生命值與架勢 UI
+            if (healthPostureUI != null)
+            {
+                healthPostureUI.SetHealthPostureSystem(healthPostureSystem);
+                healthPostureUI.UpdateLifeBalls(live, maxLive);
+            }
+            
+            // 訂閱事件
+            healthPostureSystem.OnDead += OnDead;
+            healthPostureSystem.OnPostureBroken += OnPostureBroken;
+            
+            // 初始化玩家動畫器
+            playerAnimator = GetComponent<Animator>();
+            
+            // 確保玩家初始狀態正常
+            isPlayerDead = false;
+            canIncreasePosture = true;
+            canRevive = false;
+            
+            Debug.Log($"[玩家初始化] 生命值: {maxHealth}, 架勢值: {maxPosture}, 復活次數: {live}");
         }
     }
 
@@ -144,33 +193,24 @@ public class HealthPostureController : MonoBehaviour
         // 檢查 healthPostureSystem 是否已初始化
         if (healthPostureSystem == null)
         {
-            Debug.LogWarning($"[HealthPostureController] 警告：{gameObject.name} 的 healthPostureSystem 尚未初始化");
             return;
         }
 
         // 檢查是否可以增加架勢值
         if (!canIncreasePosture)
         {
-            Debug.Log($"[HealthPostureController] {gameObject.name} 架勢被打破，暫時不能增加架勢值");
             return; // 如果架勢被打破，暫時不能增加架勢值
         }
 
         // 記錄架勢值增加前的狀態
         float previousPosturePercentage = healthPostureSystem.GetPostureNormalized();
         int previousPostureAmount = Mathf.RoundToInt(previousPosturePercentage * healthPostureSystem.GetMaxPosture());
-        
-        Debug.Log($"[HealthPostureController] {gameObject.name} 架勢值增加開始");
-        Debug.Log($"[HealthPostureController] 增加前架勢值: {previousPostureAmount}/{healthPostureSystem.GetMaxPosture()} ({previousPosturePercentage:P1})");
-        Debug.Log($"[HealthPostureController] 增加數值: {amount}, 是否為Parry: {isParry}");
-        Debug.Log($"[HealthPostureController] 調用來源: {System.Environment.StackTrace}");
 
         healthPostureSystem.PostureIncrease(amount, isParry);
 
         // 記錄架勢值增加後的狀態
         float currentPosturePercentage = healthPostureSystem.GetPostureNormalized();
         int currentPostureAmount = Mathf.RoundToInt(currentPosturePercentage * healthPostureSystem.GetMaxPosture());
-        Debug.Log($"[HealthPostureController] 增加後架勢值: {currentPostureAmount}/{healthPostureSystem.GetMaxPosture()} ({currentPosturePercentage:P1})");
-        Debug.Log($"[HealthPostureController] {gameObject.name} 架勢值增加完成");
 
         // 顯示血條並設定為最後一個被攻擊的敵人
         ShowHealthBar();

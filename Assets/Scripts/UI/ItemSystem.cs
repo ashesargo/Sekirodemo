@@ -69,7 +69,8 @@ public class ItemSystem : MonoBehaviour
         UpdateUI();
     }
     
-    void InitializeSystem()
+    // 初始化道具系統
+    public void InitializeSystem()
     {
         healthController = GetComponent<HealthPostureController>();
         audioSource = GetComponent<AudioSource>();
