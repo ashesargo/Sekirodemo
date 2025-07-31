@@ -65,8 +65,8 @@ public class ItemSystem : MonoBehaviour
     
     void Update()
     {
-        HandleInput();
         UpdateUI();
+        HandleInput();
     }
     
     // 初始化道具系統
@@ -260,7 +260,10 @@ public class ItemSystem : MonoBehaviour
         
         // 立即播放效果（按下E鍵的瞬間）
         PlayUseEffect(item);
-        
+
+        // 減少數量
+        item.quantity--;
+
         // 觸發動畫
         if (animator != null)
         {
@@ -272,9 +275,6 @@ public class ItemSystem : MonoBehaviour
         
         // 應用效果
         ApplyItemEffect(item);
-        
-        // 減少數量
-        item.quantity--;
         
         // 開始冷卻
         if (currentIndex < slots.Count)
