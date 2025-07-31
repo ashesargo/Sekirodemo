@@ -172,10 +172,23 @@ public class HealthPostureSystem
         OnPostureChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    // 設定標準化架勢值（0-1）
+    // 設定架勢值（標準化值）
     public void SetPostureNormalized(float normalizedValue)
     {
-        int value = Mathf.RoundToInt(normalizedValue * postureAmountMax);
-        SetPostureValue(value);
+        postureAmount = Mathf.RoundToInt(postureAmountMax * Mathf.Clamp01(normalizedValue));
+        OnPostureChanged?.Invoke(this, EventArgs.Empty);
+    }
+    
+    // 設定生命值（標準化值）
+    public void SetHealthNormalized(float normalizedValue)
+    {
+        healthAmount = Mathf.RoundToInt(healthAmountMax * Mathf.Clamp01(normalizedValue));
+        OnHealthChanged?.Invoke(this, EventArgs.Empty);
+        
+        // 檢查是否死亡
+        if (healthAmount == 0)
+        {
+            OnDead?.Invoke(this, EventArgs.Empty);
+        }
     }
 }
