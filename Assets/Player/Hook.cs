@@ -38,7 +38,8 @@ public class PlayerGrapple : MonoBehaviour
     private Vector3 currentTargetPos;
     private Coroutine extendRopeCoroutine;
     private GrapplePoint selectedPoint;
-
+    AudioSource _audioSource;
+    public AudioClip ropeSound;
     // 新增的目標和圖示管理
     [System.Serializable]
     private class TargetInfo
@@ -71,6 +72,7 @@ public class PlayerGrapple : MonoBehaviour
         {
             canvasScaler = indicatorCanvas.GetComponent<CanvasScaler>();
         }
+        _audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -228,7 +230,10 @@ public class PlayerGrapple : MonoBehaviour
             StartCoroutine(StartGrappleWithTurn(closestPoint));
         }
     }
-
+    public void PlayRopeSound()
+    {
+        _audioSource.PlayOneShot(ropeSound);
+    }
     void UpdateIndicators()
     {
         // 取得攝影機前方向量（忽略 y 軸以專注於水平朝向）

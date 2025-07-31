@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEngine;
 
 public class Weapon : MonoBehaviour
@@ -14,7 +13,7 @@ public class Weapon : MonoBehaviour
     private float lastAttackTime = 0f; // 新增：記錄上次攻擊時間
     private const float ATTACK_COOLDOWN = 0.1f; // 新增：攻擊冷卻時間
     
-    public AudioClip AttackSwingSound;
+    public AudioClip attackSwingSound;
     AudioSource _audioSource;
     
     private void Update()
@@ -89,9 +88,9 @@ public class Weapon : MonoBehaviour
             }
         }
         
-        if (_audioSource != null && AttackSwingSound != null)
+        if (_audioSource != null && attackSwingSound != null)
         {
-            _audioSource.PlayOneShot(AttackSwingSound);
+            _audioSource.PlayOneShot(attackSwingSound);
         }
         
         // 延遲重置攻擊狀態

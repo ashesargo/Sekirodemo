@@ -12,7 +12,7 @@ public class ShinobiEX : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        bossStatus = GameObject.Find("NewBoss1");
+        bossStatus = GameObject.Find("NewBoss");
         boss = bossStatus.GetComponent<EnemyTest>();
         if (targetObject != null)
         {
@@ -26,13 +26,17 @@ public class ShinobiEX : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if ( boss.isDead )
+        if (boss == null) boss = bossStatus.GetComponent<EnemyTest>();
+        if (boss != null)
         {
-            if (targetObject != null)
+            if (boss.isDead)
             {
-                targetObject.SetActive(true);
+                if (targetObject != null)
+                {
+                    targetObject.SetActive(true);
+                }
+
             }
-            
         }
     }
 }
