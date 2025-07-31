@@ -232,6 +232,7 @@ public class PlayerGrapple : MonoBehaviour
     }
     public void PlayRopeSound()
     {
+        _audioSource.volume = 1f;
         _audioSource.PlayOneShot(ropeSound);
     }
     void UpdateIndicators()

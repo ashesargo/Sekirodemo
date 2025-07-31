@@ -90,6 +90,8 @@ public class Weapon : MonoBehaviour
         
         if (_audioSource != null && attackSwingSound != null)
         {
+            _audioSource.volume = 0.2f;
+
             _audioSource.PlayOneShot(attackSwingSound);
         }
         
