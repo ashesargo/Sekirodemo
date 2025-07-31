@@ -126,7 +126,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -5, y: 250}
+  m_AnchoredPosition: {x: -520.2, y: 250}
   m_SizeDelta: {x: 25, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7584874961375085773
@@ -8165,6 +8165,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6869600998273829490, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       insertIndex: -1
       addedObject: {fileID: -1830463696213571030}
+    - targetCorrespondingSourceObject: {fileID: 6869600998273829490, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7488766885501557455}
   m_SourcePrefab: {fileID: 100100000, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
 --- !u!4 &2592737532880117844 stripped
 Transform:
@@ -8258,6 +8261,24 @@ MonoBehaviour:
   - Combo3
   comboAttackRange: 20
   hasDoneFirstCombo: 0
+--- !u!114 &7488766885501557455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3403077399576037378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc9f8bd6358012142bbabc05f63c9724, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bossObject: {fileID: 3403077399576037378}
+  bossMusic: {fileID: 8300000, guid: bb341041e4fa23b4ca35432b9c26ceaa, type: 3}
+  backgroundMusicSource: {fileID: 0}
+  triggerRadius: 100
+  fadeDuration: 2
+  bossMusicVolume: 0.3
 --- !u!4 &3960733007847417694 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5087036526555882798, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
