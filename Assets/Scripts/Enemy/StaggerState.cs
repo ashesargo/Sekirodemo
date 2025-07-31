@@ -28,6 +28,13 @@ public class StaggerState : BaseEnemyState
             healthController.canIncreasePosture = false;
         }
         
+        // 設置失衡標記，防止被攻擊
+        EnemyTest enemyTest = enemy.GetComponent<EnemyTest>();
+        if (enemyTest != null)
+        {
+            enemyTest.isStaggered = true;
+        }
+        
         Debug.Log($"[StaggerState] 敵人 {enemy.name} 進入失衡狀態");
     }
 
@@ -60,9 +67,24 @@ public class StaggerState : BaseEnemyState
                 healthController.ResetPosture();
             }
             
-            // 切換到閒置狀態
-            enemy.SwitchState(new IdleState());
-            Debug.Log($"[StaggerState] 敵人 {enemy.name} 失衡狀態結束，恢復正常");
+            // 清除失衡標記
+            EnemyTest enemyTest = enemy.GetComponent<EnemyTest>();
+            if (enemyTest != null)
+            {
+                enemyTest.isStaggered = false;
+            }
+            
+            // 切換到追擊狀態（如果能看到玩家）或閒置狀態
+            if (enemy.CanSeePlayer())
+            {
+                enemy.SwitchState(new ChaseState());
+                Debug.Log($"[StaggerState] 敵人 {enemy.name} 失衡狀態結束，開始追擊玩家");
+            }
+            else
+            {
+                enemy.SwitchState(new IdleState());
+                Debug.Log($"[StaggerState] 敵人 {enemy.name} 失衡狀態結束，恢復閒置狀態");
+            }
         }
     }
 
@@ -72,6 +94,13 @@ public class StaggerState : BaseEnemyState
         
         // 確保動畫參數被重置
         enemy.animator.ResetTrigger("Stagger");
+        
+        // 確保失衡標記被清除
+        EnemyTest enemyTest = enemy.GetComponent<EnemyTest>();
+        if (enemyTest != null)
+        {
+            enemyTest.isStaggered = false;
+        }
         
         Debug.Log($"[StaggerState] 敵人 {enemy.name} 退出失衡狀態");
     }

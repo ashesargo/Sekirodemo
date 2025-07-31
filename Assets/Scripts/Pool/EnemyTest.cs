@@ -8,6 +8,7 @@ public class EnemyTest : MonoBehaviour
     public static int maxHP = 100;
     private Animator _animator;
     public bool isDead = false;
+    public bool isStaggered = false; // 新增：失衡狀態標記
     
     [Header("防禦設定")]
     [Range(0f, 1f)]
@@ -38,10 +39,17 @@ public class EnemyTest : MonoBehaviour
     public void TakeDamage(int damage)
     {
         Debug.Log($"[EnemyTest] {gameObject.name} 接收到傷害: {damage} - 時間: {Time.time:F3}");
-        Debug.Log($"[EnemyTest] 當前狀態 - HP: {GetCurrentHP()}, isDead: {isDead}, state: {GetComponent<EnemyAI>()?.CurrentState?.GetType().Name}");
+        Debug.Log($"[EnemyTest] 當前狀態 - HP: {GetCurrentHP()}, isDead: {isDead}, isStaggered: {isStaggered}, state: {GetComponent<EnemyAI>()?.CurrentState?.GetType().Name}");
         Debug.Log($"[EnemyTest] 調用堆疊: {System.Environment.StackTrace}");
         
         if (isDead) return; // 死亡後不再受傷
+        
+        // 檢查是否處於失衡狀態，如果是則免疫所有傷害
+        if (isStaggered)
+        {
+            Debug.Log($"[EnemyTest] 敵人 {gameObject.name} 處於失衡狀態，免疫所有傷害！");
+            return;
+        }
 
         // 檢查是否正在防禦
         EnemyAI ai = GetComponent<EnemyAI>();
