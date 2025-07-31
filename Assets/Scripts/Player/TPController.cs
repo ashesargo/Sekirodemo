@@ -187,6 +187,12 @@ public class TPContraller : MonoBehaviour
         // 初始化 parrySuccess 為 false
         parrySuccess = false;
         
+        // 確保有ExecutionSystem組件
+        if (GetComponent<ExecutionSystem>() == null)
+        {
+            gameObject.AddComponent<ExecutionSystem>();
+        }
+        
         // 訂閱 PlayerStatus 的受傷事件
         if (_playerStatus != null)
         {

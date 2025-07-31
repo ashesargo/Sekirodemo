@@ -124,8 +124,24 @@ public class HitState : BaseEnemyState
             }
             else
             {
-                Debug.Log($"[HitState] 動畫結束或超時，切換狀態: {enemy.name}");
+                Debug.Log($"[HitState] 動畫結束或超時，檢查架勢值後切換狀態: {enemy.name}");
                 enemy.canAutoAttack = true; // 受傷結束後重新啟用自動攻擊
+                
+                // 檢查架勢值是否已滿，如果已滿則優先進入失衡狀態
+                HealthPostureController healthController = enemy.GetComponent<HealthPostureController>();
+                if (healthController != null)
+                {
+                    float posturePercentage = healthController.GetPosturePercentage();
+                    Debug.Log($"[HitState] 檢查架勢值: {posturePercentage * 100:F1}%");
+                    
+                    if (posturePercentage >= 1.0f)
+                    {
+                        Debug.Log($"[HitState] 架勢值已滿，優先進入失衡狀態: {enemy.name}");
+                        enemy.SwitchState(new StaggerState());
+                        return;
+                    }
+                }
+                
                 // 檢查是否為Boss
                 BossAI bossAI = enemy.GetComponent<BossAI>();
                 if (bossAI != null)

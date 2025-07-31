@@ -20,7 +20,7 @@ public class HealthPostureController : MonoBehaviour
     private static HealthPostureController lastAttackedEnemy;  // 最後一個被攻擊的敵人
     private bool colliderDisabled = false;  // 標記碰撞器是否已被關閉
     private bool isPlayerDead = false;  // 玩家是否已死亡
-    private bool canIncreasePosture = true;  // 是否可以增加架勢值
+    [HideInInspector] public bool canIncreasePosture = true;  // 是否可以增加架勢值
     private bool canRevive = false; // 是否可復活
     private Coroutine deathCountdownCoroutine; // 死亡倒數協程
     Animator playerAnimator;
@@ -518,14 +518,28 @@ public class HealthPostureController : MonoBehaviour
     // 架勢被打破
     private void OnPostureBroken(object sender, System.EventArgs e)
     {
-        // 呼叫 OnUnbalance 事件
-        OnUnbalance(sender, e);
+        // 檢查是否為敵人
+        EnemyAI enemyAI = GetComponent<EnemyAI>();
+        if (enemyAI != null)
+        {
+            // 敵人進入失衡狀態
+            enemyAI.SwitchState(new StaggerState());
+            Debug.Log($"[HealthPostureController] 敵人 {gameObject.name} 架勢滿，進入失衡狀態");
+        }
+        else
+        {
+            // 玩家架勢滿的處理（保持原有邏輯）
+            OnUnbalance(sender, e);
+        }
+        
         // 禁用架勢增加
         canIncreasePosture = false;
-        // 架勢條緩慢歸零
-        StartCoroutine(RestorePostureAfterDelay(0.01f));
-        // 1 秒後恢復操控
-        StartCoroutine(RestoreControlAfterDelay(1f));
+        // 架勢條緩慢歸零（僅對玩家）
+        if (enemyAI == null)
+        {
+            StartCoroutine(RestorePostureAfterDelay(0.01f));
+            StartCoroutine(RestoreControlAfterDelay(1f));
+        }
     }
 
     // 獲取當前生命值百分比
@@ -683,12 +697,27 @@ public class HealthPostureController : MonoBehaviour
     }
 
     // 設定架勢值的方法
-    private void SetPostureValue(float normalizedValue)
+    public void SetPostureValue(float normalizedValue)
     {
         if (healthPostureSystem != null)
         {
             healthPostureSystem.SetPostureNormalized(normalizedValue);
         }
+    }
+    
+    // 設定生命值的方法
+    public void SetHealthValue(float normalizedValue)
+    {
+        if (healthPostureSystem != null)
+        {
+            healthPostureSystem.SetHealthNormalized(normalizedValue);
+        }
+    }
+    
+    // 重置架勢值為0
+    public void ResetPosture()
+    {
+        SetPostureValue(0f);
     }
 
     // 治療生命值
