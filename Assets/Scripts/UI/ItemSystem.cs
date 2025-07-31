@@ -76,6 +76,9 @@ public class ItemSystem : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
         animator = GetComponent<Animator>();
+        
+        // 回復所有道具數量到最大值
+        RestoreAllItems();
     }
     
     void CreateDefaultItems()
@@ -89,7 +92,7 @@ public class ItemSystem : MonoBehaviour
                 quantity = 3,
                 effectValue = 5f, // 提高每秒恢復量到5點
                 duration = 30f, 
-                cooldown = 30f,
+                cooldown = 1f,
                 description = "緩慢恢復生命值"
             });
             
@@ -506,6 +509,38 @@ public class ItemSystem : MonoBehaviour
         isUsingItem = false;
         
         Debug.Log("[道具系統] 已重置所有道具效果");
+    }
+
+    // 回復所有道具數量到最大值
+    public void RestoreAllItems()
+    {
+        // 確保道具列表已初始化
+        if (items.Count == 0)
+        {
+            CreateDefaultItems();
+        }
+        
+        // 回復所有道具數量到預設最大值
+        foreach (ItemData item in items)
+        {
+            switch (item.type)
+            {
+                case ItemType.MedicinePill:
+                    item.quantity = 3; // 藥丸最大數量
+                    break;
+                case ItemType.SteelSugar:
+                    item.quantity = 3; // 剛幹糖最大數量
+                    break;
+                case ItemType.HealingGourd:
+                    item.quantity = 10; // 傷藥葫蘆最大數量
+                    break;
+            }
+        }
+        
+        // 更新UI顯示
+        UpdateUI();
+        
+        Debug.Log("[道具系統] 已回復所有道具數量");
     }
     
 
