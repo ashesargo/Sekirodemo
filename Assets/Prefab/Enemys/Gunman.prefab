@@ -7189,7 +7189,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 5877804063483958700}
   characterController: {fileID: 4528963733458229522}
-  visionRange: 100
+  visionRange: 120
   attackRange: 80
   maxSpeed: 10
   avoidDistance: 20
