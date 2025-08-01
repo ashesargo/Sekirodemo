@@ -35,8 +35,8 @@ public class PlayerStatus : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        if (isDeath || _playerGrapple.IsGrappling()) return; // 死亡後不再受傷
         AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+        if (isDeath || _playerGrapple.IsGrappling() || stateInfo.IsTag("Execution")) return; // 死亡後不再受傷
         if (stateInfo.IsTag("Parry"))
         {
             currentHitState = HitState.Parry; damage = 0;

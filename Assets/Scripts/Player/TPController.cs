@@ -161,7 +161,7 @@ public class TPContraller : MonoBehaviour
 
         if (_animator == null || (_playerGrapple != null && _playerGrapple.IsGrappling()) || (_playerStatus != null && _playerStatus.isDeath == true) || stateInfo.IsTag("Sit")) return;
 
-        if (stateInfo.IsTag("Attack") || stateInfo.IsTag("Hit") || stateInfo.IsTag("Stagger") || stateInfo.IsTag("Heal"))
+        if (stateInfo.IsTag("Attack") || stateInfo.IsTag("Hit") || stateInfo.IsTag("Stagger") || stateInfo.IsTag("Heal")|| stateInfo.IsTag("Execution"))
         {
             canMove = false;
         }

@@ -273,28 +273,6 @@ public class TPCamera : MonoBehaviour
         }
     }
 
-    //// 嘗試自動鎖定最近的敵人（假設敵人有 "Enemy" tag）
-    //public void TryLockNearestEnemy()
-    //{
-    //    float minDist = float.MaxValue;
-    //    Transform nearest = null;
-    //    GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-    //    foreach (var enemy in enemies)
-    //    {
-    //        float dist = Vector3.Distance(mFollowPointRef.position, enemy.transform.position);
-    //        if (dist < minDist)
-    //        {
-    //            minDist = dist;
-    //            nearest = enemy.transform;
-    //        }
-    //    }
-    //    if (nearest != null)
-    //    {
-    //        lockTarget = nearest;
-    //        isLock = true;
-    //    }
-    //}
-
     // 每幀更新（建議用 LateUpdate 以確保角色移動後再更新攝影機）
     void LateUpdate()
     {
@@ -319,13 +297,6 @@ public class TPCamera : MonoBehaviour
             }
         }
         stateInfo = playerAnimator.GetCurrentAnimatorStateInfo(0);
-
-        //// 按下 Tab 鍵自動鎖定最近敵人
-        //if (Input.GetKeyDown(KeyCode.Tab))
-        //{
-        //    TryLockNearestEnemy();
-        //}
-        // 每幀重設跟隨點位置
         if (stateInfo.IsTag("Execution"))
         {
             mFollowPoint.position = executionFollowPointRef.position;
@@ -348,7 +319,8 @@ public class TPCamera : MonoBehaviour
             {
                 isLock = false;
                 lockTarget = null;
-                FindLockTarget();
+                enemyTest = null;
+                FindLockTarget();              
                 if (_animator != null)
                 {
                     _animator.SetBool("Lock", isLock);
