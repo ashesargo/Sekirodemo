@@ -12,14 +12,14 @@ public class ShinobiEX : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        bossStatus = GameObject.Find("NewBoss");
+        bossStatus = GameObject.Find("Boss");
         if (bossStatus != null)
         {
             boss = bossStatus.GetComponent<EnemyTest>();
         }
         else
         {
-            Debug.LogWarning("ShinobiEX: 找不到名為 'NewBoss' 的遊戲對象");
+            Debug.LogWarning("ShinobiEX: 找不到名為 'Boss' 的遊戲對象");
         }
         
         if (targetObject != null)

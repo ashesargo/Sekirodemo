@@ -413,12 +413,11 @@ public class HealthPostureController : MonoBehaviour
             return;
         }
 
-        // 檢查是否為 Boss，如果是則不隱藏血條
+        // 檢查是否為 Boss，如果是則記錄但不阻止隱藏血條
         bool isBoss = IsBoss();
         if (isBoss)
         {
-            Debug.Log($"[HealthPostureController] {gameObject.name} 是 Boss，不隱藏血條");
-            return;
+            Debug.Log($"[HealthPostureController] {gameObject.name} 是 Boss，允許隱藏血條");
         }
 
         // 敵人血條隱藏邏輯
@@ -574,8 +573,8 @@ public class HealthPostureController : MonoBehaviour
                 string bossObjectName = zone.bossObject.name.Replace("(Clone)", "");
                 
                 if (currentName == bossObjectName || 
-                    (bossObjectName == "NewBoss" || bossObjectName == "Boss") && 
-                    (currentName == "NewBoss" || currentName == "Boss"))
+                    (bossObjectName == "Elite" || bossObjectName == "Boss") && 
+                    (currentName == "Elite" || currentName == "Boss"))
                 {
                     // 使用BossTriggerZone的IsPlayerInZone方法
                     if (zone.IsPlayerInZone())
@@ -623,16 +622,8 @@ public class HealthPostureController : MonoBehaviour
                     Debug.Log($"[HealthPostureController] 通過實例比較確認為同一 Prefab");
                 }
                 
-                // 方法3: 檢查是否是任何 Boss 類型（包括 NewBoss）
-                if (bossObjectName == "NewBoss" || bossObjectName == "Boss")
-                {
-                    // 如果當前物件是 NewBoss 或 Boss 的實例，也認為是 Boss
-                    if (currentName == "NewBoss" || currentName == "Boss")
-                    {
-                        isSamePrefab = true;
-                        Debug.Log($"[HealthPostureController] 通過 Boss 類型匹配確認為 Boss: {currentName}");
-                    }
-                }
+                // 方法3: 檢查是否是精確的 Boss 類型匹配（移除過於寬鬆的檢查）
+                // 只進行精確的名稱匹配，避免錯誤識別
                 
                 if (isSamePrefab)
                 {
@@ -682,11 +673,11 @@ public class HealthPostureController : MonoBehaviour
                     Debug.Log($"[HealthPostureController] 通過實例比較確認為同一 Prefab");
                 }
                 
-                // 方法3: 檢查是否是任何 Boss 類型（包括 NewBoss）
-                if (bossObjectName == "NewBoss" || bossObjectName == "Boss")
+                // 方法3: 檢查是否是任何 Boss 類型（包括 Elite）
+                if (bossObjectName == "Elite" || bossObjectName == "Boss")
                 {
-                    // 如果當前物件是 NewBoss 或 Boss 的實例，也認為是 Boss
-                    if (currentName == "NewBoss" || currentName == "Boss")
+                    // 如果當前物件是 Elite 或 Boss 的實例，也認為是 Boss
+                    if (currentName == "Elite" || currentName == "Boss")
                     {
                         isSamePrefab = true;
                         Debug.Log($"[HealthPostureController] 通過 Boss 類型匹配確認為 Boss: {currentName}");
