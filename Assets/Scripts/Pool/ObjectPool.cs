@@ -66,6 +66,38 @@ public class ObjectPool : MonoBehaviour
             obj.transform.rotation = rotation;
         }
         
+        // 檢查是否為Boss，如果是則確保血條UI正確設置
+        HealthPostureController healthController = obj.GetComponent<HealthPostureController>();
+        if (healthController != null && healthController.IsBoss())
+        {
+            Debug.Log($"[ObjectPool] 生成 Boss: {obj.name}");
+            
+            // 檢查血條UI引用
+            if (healthController.healthPostureUI == null)
+            {
+                Debug.LogWarning($"[ObjectPool] Boss {obj.name} 的 healthPostureUI 為 null，嘗試修復");
+                
+                // 嘗試在Boss物件下找到血條UI
+                HealthPostureUI[] healthUIs = obj.GetComponentsInChildren<HealthPostureUI>(true);
+                if (healthUIs.Length > 0)
+                {
+                    healthController.healthPostureUI = healthUIs[0];
+                    Debug.Log($"[ObjectPool] 已修復 Boss 血條UI引用: {healthUIs[0].gameObject.name}");
+                }
+                else
+                {
+                    Debug.LogError($"[ObjectPool] 無法在 Boss {obj.name} 下找到血條UI");
+                }
+            }
+            
+            // 確保Boss的血條UI是隱藏的（等待玩家進入範圍後才顯示）
+            if (healthController.healthPostureUI != null)
+            {
+                healthController.healthPostureUI.gameObject.SetActive(false);
+                Debug.Log($"[ObjectPool] Boss 血條UI已隱藏，等待玩家進入範圍: {healthController.healthPostureUI.gameObject.name}");
+            }
+        }
+        
         return obj;
     }
 

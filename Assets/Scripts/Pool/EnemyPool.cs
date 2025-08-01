@@ -179,6 +179,37 @@ public class EnemyPool : MonoBehaviour
             if (healthController != null)
             {
                 healthController.ResetHealth();
+                
+                // 檢查是否為Boss，如果是則確保血條UI引用正確設置（但不啟用UI）
+                if (healthController.IsBoss())
+                {
+                    Debug.Log($"[EnemyPool] 生成 Boss: {enemy.name}");
+                    
+                    // 檢查血條UI引用
+                    if (healthController.healthPostureUI == null)
+                    {
+                        Debug.LogWarning($"[EnemyPool] Boss {enemy.name} 的 healthPostureUI 為 null，嘗試修復");
+                        
+                        // 嘗試在Boss物件下找到血條UI
+                        HealthPostureUI[] healthUIs = enemy.GetComponentsInChildren<HealthPostureUI>(true);
+                        if (healthUIs.Length > 0)
+                        {
+                            healthController.healthPostureUI = healthUIs[0];
+                            Debug.Log($"[EnemyPool] 已修復 Boss 血條UI引用: {healthUIs[0].gameObject.name}");
+                        }
+                        else
+                        {
+                            Debug.LogError($"[EnemyPool] 無法在 Boss {enemy.name} 下找到血條UI");
+                        }
+                    }
+                    
+                    // 確保Boss的血條UI是隱藏的（等待玩家進入範圍後才顯示）
+                    if (healthController.healthPostureUI != null)
+                    {
+                        healthController.healthPostureUI.gameObject.SetActive(false);
+                        Debug.Log($"[EnemyPool] Boss 血條UI已隱藏，等待玩家進入範圍: {healthController.healthPostureUI.gameObject.name}");
+                    }
+                }
             }
             
             EnemyTest enemyTest = enemy.GetComponent<EnemyTest>();

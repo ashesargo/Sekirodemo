@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class EnemyActivationManager : MonoBehaviour
 {
-    [Header("¥D¨¤")]
+    [Header("ï¿½Dï¿½ï¿½")]
     public Transform player;
 
-    [Header("¼Ä¤H³]©w")]
+    [Header("ï¿½Ä¤Hï¿½]ï¿½w")]
     public string enemyTag = "Enemy";
     public float activationDistance = 30f;
     public float checkInterval = 1f;
 
-    [Header("¤À§å¸ü¤J³]©w")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½]ï¿½w")]
     public int maxEnemiesPerBatch = 5;
     public float batchDelay = 0.05f;
 

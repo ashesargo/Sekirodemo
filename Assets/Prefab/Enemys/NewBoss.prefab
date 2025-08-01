@@ -601,6 +601,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 664546992466681046, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 666796508761761016, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -5213,9 +5217,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1245062765284686098, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
       insertIndex: -1
       addedObject: {fileID: -7456824477671596709}
-    - targetCorrespondingSourceObject: {fileID: 1245062765284686098, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 3238322442385101040}
     - targetCorrespondingSourceObject: {fileID: 2127440841918773903, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3890029273807365782}
@@ -5740,24 +5741,6 @@ MonoBehaviour:
   useCustomRotation: 0
   shootSound: {fileID: 0}
   shootEffect: {fileID: 0}
---- !u!114 &3238322442385101040
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5557789131163203382}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc9f8bd6358012142bbabc05f63c9724, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bossObject: {fileID: 5557789131163203382}
-  bossMusic: {fileID: 8300000, guid: 6609fdfe5ff76994786581a91afeff75, type: 3}
-  backgroundMusicSource: {fileID: 0}
-  triggerRadius: 150
-  fadeDuration: 2
-  bossMusicVolume: 0.3
 --- !u!137 &5630134567351512465 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 1316216258256692149, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}

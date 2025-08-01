@@ -220,7 +220,10 @@ public class HealthPostureUI : MonoBehaviour
             postureBarHighlightGameObject.SetActive(true);
 
             // 只顯示0.2秒
-            StartCoroutine(HidePostureBarHighlightAfterDelay(0.2f));
+            if (gameObject.activeInHierarchy)
+            {
+                StartCoroutine(HidePostureBarHighlightAfterDelay(0.2f));
+            }
         }
 
         // 當架式條滿了，架式條高光不透明顯示
@@ -267,6 +270,12 @@ public class HealthPostureUI : MonoBehaviour
     // 開始架勢條隱藏計時器
     private void StartPostureBarHideTimer()
     {
+        // 檢查遊戲對象是否處於活動狀態
+        if (!gameObject.activeInHierarchy)
+        {
+            return;
+        }
+
         // 停止之前的隱藏協程
         if (hidePostureBarCoroutine != null)
         {
