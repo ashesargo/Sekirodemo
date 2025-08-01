@@ -14,6 +14,7 @@ public class PlayerStatus : MonoBehaviour
         Hit = 0,
         Guard = 1,
         Parry = 2,
+        DangerousHit = 3, // 新增：危攻擊傷害狀態
     }
 
     // 新增：受傷事件
@@ -81,6 +82,43 @@ public class PlayerStatus : MonoBehaviour
             if (currentHitState == HitState.Parry) return;
             if (currentHitState == HitState.Guard) _animator.SetTrigger("GuardHit");
             else _animator.SetTrigger("Hit");
+        }
+    }
+
+    // 新增：處理危攻擊傷害（無視防禦）
+    public void TakeDangerousDamage(float damage)
+    {
+        AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+        if (isDeath || _playerGrapple.IsGrappling() || stateInfo.IsTag("Execution")) return; // 死亡後不再受傷
+        
+        // 危攻擊無視防禦和Parry狀態
+        currentHitState = HitState.DangerousHit;
+        
+        Debug.Log($"PlayerStatus: 受到危攻擊傷害 {damage}，無視防禦！");
+        
+        // 觸發危攻擊受傷事件
+        if (OnHitOccurred != null)
+        {
+            Vector3 hitPosition = transform.position + transform.forward * 2f; // 在玩家前方生成特效
+            OnHitOccurred.Invoke(hitPosition);
+        }
+        
+        // 使用 HealthPostureController 處理傷害
+        if (healthController != null)
+        {
+            healthController.TakeDamage(Mathf.RoundToInt(damage), currentHitState);
+        }
+        
+        // 檢查是否死亡
+        if (GetCurrentHP() <= 0 && !isDeath)
+        {
+            isDeath = true;
+            _animator.SetBool("Death", true);
+        }
+        else if (GetCurrentHP() > 0)
+        {
+            // 播放危攻擊受傷動畫
+            _animator.SetTrigger("DangerousHit");
         }
     }
 

@@ -35,7 +35,26 @@ public class BossComboState : BaseEnemyState
             if (bossAI != null)
             {
                 bossAI.IncrementComboCount();
+                
+                // 檢查是否應該觸發危攻擊
+                if (bossAI.ShouldTriggerDangerousAttack())
+                {
+                    Debug.Log("BossComboState: 觸發危攻擊！");
+                    
+                    // 如果使用危攻擊轉換器，則啟用它
+                    if (bossAI.useDangerousAttackConverter)
+                    {
+                        bossAI.EnableDangerousAttack();
+                    }
+                    else
+                    {
+                        bossAI.PerformDangerousAttack();
+                    }
+                    return;
+                }
             }
+            
+            // 原有的邏輯
             if (Random.value < 0.5f)
             {
                 if (!enemy.IsInAttackRange())

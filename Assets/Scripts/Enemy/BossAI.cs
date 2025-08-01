@@ -14,6 +14,17 @@ public class BossAI : EnemyAI
     [Header("Boss 攻擊動畫")]
     public string[] comboAnimations = { "Combo1", "Combo2", "Combo3" };
     
+    [Header("Boss 危攻擊設定")]
+    public string[] dangerousAttackAnimations = { "DangerousAttack1", "DangerousAttack2", "DangerousAttack3" };
+    public float dangerousAttackChance = 0.2f; // 危攻擊觸發機率
+    public float dangerousAttackCooldown = 10f; // 危攻擊冷卻時間
+    private float lastDangerousAttackTime = 0f; // 上次危攻擊時間
+    
+    [Header("危攻擊轉換設定")]
+    public bool useDangerousAttackConverter = true; // 是否使用危攻擊轉換器
+    public float dangerousAttackDamage = 30f; // 危攻擊傷害
+    private DangerousAttackConverter dangerousAttackConverter;
+    
     [Header("Combo 動畫持續時間設定")]
     public float combo1Duration = 15f; // Combo1 總持續時間
     public float combo2Duration = 12f; // Combo2 總持續時間  
@@ -70,6 +81,17 @@ public class BossAI : EnemyAI
         animator = GetComponent<Animator>();
         // 不再尋找玩家，直接使用基底類別的CachedPlayer
         SwitchState(new BossIdleState());
+        
+        // 初始化危攻擊轉換器
+        if (useDangerousAttackConverter)
+        {
+            dangerousAttackConverter = GetComponent<DangerousAttackConverter>();
+            if (dangerousAttackConverter == null)
+            {
+                dangerousAttackConverter = gameObject.AddComponent<DangerousAttackConverter>();
+            }
+            dangerousAttackConverter.SetDangerousAttackDamage(dangerousAttackDamage);
+        }
         
         // 調試：檢查 obstacleMask 設置
         Debug.Log($"BossAI Start - obstacleMask: {obstacleMask.value}, avoidDistance: {avoidDistance}");
@@ -180,5 +202,72 @@ public class BossAI : EnemyAI
         Debug.Log($"BossAI Debug - 當前連擊計數: {currentComboCount}, 最大連擊數: {maxComboCount}");
         Debug.Log($"BossAI Debug - 下一個動畫: {GetNextComboAnimation()}");
         Debug.Log($"BossAI Debug - 動畫陣列: [{string.Join(", ", comboAnimations)}]");
+    }
+
+    // 新增：獲取危攻擊動畫
+    public string GetDangerousAttackAnimation()
+    {
+        if (dangerousAttackAnimations.Length > 0)
+        {
+            // 隨機選擇一個危攻擊動畫
+            int randomIndex = Random.Range(0, dangerousAttackAnimations.Length);
+            return dangerousAttackAnimations[randomIndex];
+        }
+        return "DangerousAttack"; // 預設危攻擊動畫
+    }
+
+    // 新增：檢查是否可以執行危攻擊
+    public bool CanPerformDangerousAttack()
+    {
+        return Time.time - lastDangerousAttackTime >= dangerousAttackCooldown;
+    }
+
+    // 新增：執行危攻擊
+    public void PerformDangerousAttack()
+    {
+        if (CanPerformDangerousAttack())
+        {
+            lastDangerousAttackTime = Time.time;
+            SwitchState(new BossDangerousAttackState());
+        }
+    }
+
+    // 新增：檢查是否應該觸發危攻擊
+    public bool ShouldTriggerDangerousAttack()
+    {
+        if (!CanPerformDangerousAttack()) return false;
+        
+        // 根據機率決定是否觸發危攻擊
+        return Random.value < dangerousAttackChance;
+    }
+
+    // 新增：使用危攻擊轉換器啟用危攻擊
+    public void EnableDangerousAttack()
+    {
+        if (useDangerousAttackConverter && dangerousAttackConverter != null)
+        {
+            dangerousAttackConverter.EnableDangerousConversion();
+            Debug.Log("BossAI: 危攻擊轉換已啟用");
+        }
+    }
+
+    // 新增：使用危攻擊轉換器禁用危攻擊
+    public void DisableDangerousAttack()
+    {
+        if (useDangerousAttackConverter && dangerousAttackConverter != null)
+        {
+            dangerousAttackConverter.DisableDangerousConversion();
+            Debug.Log("BossAI: 危攻擊轉換已禁用");
+        }
+    }
+
+    // 新增：設置危攻擊傷害
+    public void SetDangerousAttackDamage(float damage)
+    {
+        dangerousAttackDamage = damage;
+        if (useDangerousAttackConverter && dangerousAttackConverter != null)
+        {
+            dangerousAttackConverter.SetDangerousAttackDamage(damage);
+        }
     }
 } 
