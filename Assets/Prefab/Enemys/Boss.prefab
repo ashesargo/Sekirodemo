@@ -167,6 +167,59 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!1 &5765671883083783349
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5988034381800229379}
+  - component: {fileID: 1768493210209065892}
+  m_Layer: 12
+  m_Name: DangerJump
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5988034381800229379
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5765671883083783349}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.29, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5074126762786565516}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &1768493210209065892
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5765671883083783349}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 4.32, y: 1.69, z: 3.89}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8354315323308684841
 GameObject:
   m_ObjectHideFlags: 0
@@ -1215,15 +1268,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1877026128333087656, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -96.68253
       objectReference: {fileID: 0}
     - target: {fileID: 1877026128333087656, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -203.89467
       objectReference: {fileID: 0}
     - target: {fileID: 1877026128333087656, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 977.95667
       objectReference: {fileID: 0}
     - target: {fileID: 1877026128333087656, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5192,6 +5245,9 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1877026128333087656, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5988034381800229379}
     - targetCorrespondingSourceObject: {fileID: 1744779785851943349, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4321622650754629540}
@@ -5577,6 +5633,11 @@ SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 1884289581354346267, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
   m_PrefabInstance: {fileID: 6658117099092282916}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &5074126762786565516 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1877026128333087656, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
+  m_PrefabInstance: {fileID: 6658117099092282916}
+  m_PrefabAsset: {fileID: 0}
 --- !u!137 &5172539925246212042 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 1994795093882239470, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
@@ -5770,8 +5831,6 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 128
-  dangerousAttackEffect: {fileID: 0}
-  attackPoint: {fileID: 0}
   dangerousAttackTriggers:
   - DangerousAttack
   - Attack
@@ -5782,6 +5841,8 @@ MonoBehaviour:
   - Combo2
   - Combo3
   - Slash
+  danger: {fileID: 0}
+  jump: {fileID: 5765671883083783349}
 --- !u!137 &5630134567351512465 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 1316216258256692149, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}

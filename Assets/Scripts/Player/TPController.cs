@@ -24,7 +24,9 @@ public class TPContraller : MonoBehaviour
     public Transform groundCheck;
     public float groundDistance = 1f;
     public LayerMask Ground;
-    private bool isGrounded;
+    public LayerMask Danger;
+    bool isDanger;
+    bool isGrounded;
 
     int comboStep = 0;
     int currentStep = 0;
@@ -106,7 +108,7 @@ public class TPContraller : MonoBehaviour
         {
             _animator.SetBool("isDashing", isDashing);
         }
-    }    
+    }
     //Guard
     void EnableGurad()
     {
@@ -136,13 +138,13 @@ public class TPContraller : MonoBehaviour
         Cursor.visible = false;
         // 初始化 parrySuccess 為 false
         parrySuccess = false;
-        
+
         // 確保有ExecutionSystem組件
         if (GetComponent<ExecutionSystem>() == null)
         {
             gameObject.AddComponent<ExecutionSystem>();
         }
-        
+
         // 訂閱 PlayerStatus 的受傷事件
         if (_playerStatus != null)
         {
@@ -152,7 +154,7 @@ public class TPContraller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(_TPCamera!= null)
+        if (_TPCamera != null)
         {
             lockTarget = _TPCamera.lockTarget;
             isLock = _TPCamera.isLock;
@@ -161,7 +163,7 @@ public class TPContraller : MonoBehaviour
 
         if (_animator == null || (_playerGrapple != null && _playerGrapple.IsGrappling()) || (_playerStatus != null && _playerStatus.isDeath == true) || stateInfo.IsTag("Sit")) return;
 
-        if (stateInfo.IsTag("Attack") || stateInfo.IsTag("Hit") || stateInfo.IsTag("Stagger") || stateInfo.IsTag("Heal")|| stateInfo.IsTag("Execution"))
+        if (stateInfo.IsTag("Attack") || stateInfo.IsTag("Hit") || stateInfo.IsTag("Stagger") || stateInfo.IsTag("Heal") || stateInfo.IsTag("Execution"))
         {
             canMove = false;
         }
@@ -173,6 +175,7 @@ public class TPContraller : MonoBehaviour
         if (groundCheck != null)
         {
             isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, Ground);
+            isDanger = Physics.CheckSphere(groundCheck.position, groundDistance, Danger);
         }
         else
         {
@@ -189,7 +192,7 @@ public class TPContraller : MonoBehaviour
             {
                 ResetCombo();
             }
-        }        
+        }
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             Collider[] hits = Physics.OverlapSphere(transform.position, attackRadius, targetLayer);
@@ -222,14 +225,14 @@ public class TPContraller : MonoBehaviour
                                 Vector3 parryPosition = hit.transform.position;
                                 OnParrySuccess.Invoke(parryPosition);
                             }
-                            
+
                             // 觸發敵人 Parry 成功事件（只用於模糊效果，不產生特效）
                             if (enemyAI.OnEnemyParrySuccess != null)
                             {
                                 Vector3 enemyParryPosition = hit.transform.position;
                                 enemyAI.OnEnemyParrySuccess.Invoke(enemyParryPosition);
                             }
-                            
+
                             // 被Parry的敵人增加架勢值20
                             HealthPostureController enemyHealthController = hit.GetComponent<HealthPostureController>();
                             if (enemyHealthController != null)
@@ -244,7 +247,7 @@ public class TPContraller : MonoBehaviour
                             {
                                 Debug.LogWarning($"[TPController] 警告：敵人 {hit.name} 沒有 HealthPostureController 組件");
                             }
-                            
+
                             // 確保特效有足夠時間觸發
                             StartCoroutine(ResetParrySuccessAfterDelay(0.2f));
                         }
@@ -358,13 +361,22 @@ public class TPContraller : MonoBehaviour
             {
                 moveSpeed = 0;
             }
-            if (isGrounded && Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                DisableGuard();
-                verticalVelocity = jumpForce;
-                if (_animator != null)
+                if (isGrounded)
                 {
-                    _animator.SetTrigger("Jump");
+                    DisableGuard();
+                    verticalVelocity = jumpForce;
+                    if (_animator != null)
+                    {
+                        _animator.SetTrigger("Jump");
+                    }
+                }
+                else if (isDanger)
+                {
+                    DisableGuard();
+                    verticalVelocity = jumpForce;
+                    _animator.SetTrigger("DangerJump");
                 }
             }
             verticalVelocity += gravity * Time.deltaTime;
@@ -431,7 +443,7 @@ public class TPContraller : MonoBehaviour
         parryEffectTriggered = false; // 重置特效觸發標記
         Debug.Log("[TPController] Parry 狀態已重置");
     }
-    
+
     // 處理玩家受傷事件
     private void HandlePlayerHit(Vector3 hitPosition)
     {
@@ -442,7 +454,7 @@ public class TPContraller : MonoBehaviour
             StartCoroutine(ResetHitEffectAfterDelay(0.2f));
         }
     }
-    
+
     // 延遲重置受傷特效觸發標記
     private IEnumerator ResetHitEffectAfterDelay(float delay)
     {
