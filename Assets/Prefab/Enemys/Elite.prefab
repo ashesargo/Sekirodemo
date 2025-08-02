@@ -6974,7 +6974,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6869600998273829490, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_Name
-      value: Boss
+      value: Elite
       objectReference: {fileID: 0}
     - target: {fileID: 6869600998273829490, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: m_Layer

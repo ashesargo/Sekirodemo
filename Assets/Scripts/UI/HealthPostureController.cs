@@ -7,7 +7,7 @@ using System.Collections;
 public class HealthPostureController : MonoBehaviour
 {
     public int live = 0;   // 復活次數
-    [SerializeField] private int maxLive = 0; // 最大生命球數
+    [SerializeField] public int maxLive = 0; // 最大生命球數
     [SerializeField] private int maxHealth = 100;   // 最大生命值
     [SerializeField] private int maxPosture = 100;  // 最大架勢值
     [SerializeField] public HealthPostureUI healthPostureUI;   // 生命值與架勢 UI 顯示
@@ -448,10 +448,15 @@ public class HealthPostureController : MonoBehaviour
     // 檢查是否為Boss
     public bool IsBoss()
     {
+        Debug.Log($"[HealthPostureController] IsBoss() 被調用，敵人: {gameObject.name}, activeInHierarchy: {gameObject.activeInHierarchy}, enabled: {gameObject.activeSelf}");
+        
         BossTriggerZone[] bossZones = FindObjectsOfType<BossTriggerZone>();
+        Debug.Log($"[HealthPostureController] 找到 {bossZones.Length} 個BossTriggerZone");
         
         foreach (BossTriggerZone zone in bossZones)
         {
+            Debug.Log($"[HealthPostureController] 檢查BossTriggerZone: {zone.name}");
+            
             if (zone.bossObject != null)
             {
                 bool isSamePrefab = false;
@@ -459,49 +464,19 @@ public class HealthPostureController : MonoBehaviour
                 string currentName = gameObject.name.Replace("(Clone)", "");
                 string bossObjectName = zone.bossObject.name.Replace("(Clone)", "");
                 
+                Debug.Log($"[HealthPostureController] 當前敵人名稱: {currentName}, BossZone對象名稱: {bossObjectName}");
+                
                 if (currentName == bossObjectName)
                 {
                     isSamePrefab = true;
+                    Debug.Log($"[HealthPostureController] 名稱匹配成功");
                 }
                 
                 HealthPostureController zoneBossController = zone.bossObject.GetComponent<HealthPostureController>();
                 if (zoneBossController == this)
                 {
                     isSamePrefab = true;
-                }
-                
-                if (isSamePrefab)
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    // 通知Boss死亡
-    private void NotifyBossDeath()
-    {
-        BossTriggerZone[] bossZones = FindObjectsOfType<BossTriggerZone>();
-        
-        foreach (BossTriggerZone zone in bossZones)
-        {
-            if (zone.bossObject != null)
-            {
-                bool isSamePrefab = false;
-                
-                string currentName = gameObject.name.Replace("(Clone)", "");
-                string bossObjectName = zone.bossObject.name.Replace("(Clone)", "");
-                
-                if (currentName == bossObjectName)
-                {
-                    isSamePrefab = true;
-                }
-                
-                HealthPostureController zoneBossController = zone.bossObject.GetComponent<HealthPostureController>();
-                if (zoneBossController == this)
-                {
-                    isSamePrefab = true;
+                    Debug.Log($"[HealthPostureController] 組件引用匹配成功");
                 }
                 
                 if (bossObjectName == "Elite" || bossObjectName == "Boss")
@@ -509,16 +484,91 @@ public class HealthPostureController : MonoBehaviour
                     if (currentName == "Elite" || currentName == "Boss")
                     {
                         isSamePrefab = true;
+                        Debug.Log($"[HealthPostureController] 通用名稱匹配成功");
                     }
                 }
                 
                 if (isSamePrefab)
                 {
+                    Debug.Log($"[HealthPostureController] 確認是Boss: {gameObject.name}");
+                    return true;
+                }
+                else
+                {
+                    Debug.Log($"[HealthPostureController] 不匹配: {gameObject.name} vs {bossObjectName}");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"[HealthPostureController] BossTriggerZone {zone.name} 的bossObject為null");
+            }
+        }
+        
+        Debug.Log($"[HealthPostureController] 確認不是Boss: {gameObject.name}");
+        return false;
+    }
+
+    // 通知Boss死亡
+    public void NotifyBossDeath()
+    {
+        Debug.Log($"[HealthPostureController] NotifyBossDeath 被調用，敵人: {gameObject.name}");
+        
+        BossTriggerZone[] bossZones = FindObjectsOfType<BossTriggerZone>();
+        Debug.Log($"[HealthPostureController] 找到 {bossZones.Length} 個BossTriggerZone");
+        
+        foreach (BossTriggerZone zone in bossZones)
+        {
+            Debug.Log($"[HealthPostureController] 檢查BossTriggerZone: {zone.name}");
+            
+            if (zone.bossObject != null)
+            {
+                bool isSamePrefab = false;
+                
+                string currentName = gameObject.name.Replace("(Clone)", "");
+                string bossObjectName = zone.bossObject.name.Replace("(Clone)", "");
+                
+                Debug.Log($"[HealthPostureController] 當前敵人名稱: {currentName}, BossZone對象名稱: {bossObjectName}");
+                
+                if (currentName == bossObjectName)
+                {
+                    isSamePrefab = true;
+                    Debug.Log($"[HealthPostureController] 名稱匹配");
+                }
+                
+                HealthPostureController zoneBossController = zone.bossObject.GetComponent<HealthPostureController>();
+                if (zoneBossController == this)
+                {
+                    isSamePrefab = true;
+                    Debug.Log($"[HealthPostureController] 組件引用匹配");
+                }
+                
+                if (bossObjectName == "Elite" || bossObjectName == "Boss")
+                {
+                    if (currentName == "Elite" || currentName == "Boss")
+                    {
+                        isSamePrefab = true;
+                        Debug.Log($"[HealthPostureController] 通用名稱匹配");
+                    }
+                }
+                
+                if (isSamePrefab)
+                {
+                    Debug.Log($"[HealthPostureController] 找到匹配的BossTriggerZone，調用OnBossDeath");
                     zone.OnBossDeath();
                     break;
                 }
+                else
+                {
+                    Debug.Log($"[HealthPostureController] BossTriggerZone不匹配");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"[HealthPostureController] BossTriggerZone {zone.name} 的bossObject為null");
             }
         }
+        
+        Debug.Log($"[HealthPostureController] NotifyBossDeath 完成");
     }
 
     // 延遲隱藏血條的協程
@@ -566,6 +616,39 @@ public class HealthPostureController : MonoBehaviour
     private void HandleEnemyDeath()
     {
         bool isBoss = IsBoss();
+        
+        // 檢查是否正在被處決（通過檢查當前狀態）
+        EnemyAI enemyAI = GetComponent<EnemyAI>();
+        bool isBeingExecuted = false;
+        bool isInExecutedDieState = false;
+        if (enemyAI != null)
+        {
+            // 檢查是否在ExecutedState、ReviveState或ExecutedDieState中
+            isBeingExecuted = enemyAI.CurrentState is ExecutedState || 
+                             enemyAI.CurrentState is ReviveState;
+            isInExecutedDieState = enemyAI.CurrentState is ExecutedDieState;
+        }
+        
+        // 如果正在被處決（ExecutedState或ReviveState），不要自動復活，讓ExecutedState自己處理
+        if (isBeingExecuted)
+        {
+            Debug.Log($"[HealthPostureController] 敵人 {gameObject.name} 正在被處決，不自動復活");
+            return;
+        }
+        
+        // 如果已經在ExecutedDieState中，完全跳過處理，讓ExecutedDieState自己處理所有死亡邏輯
+        if (isInExecutedDieState)
+        {
+            Debug.Log($"[HealthPostureController] 敵人 {gameObject.name} 已在ExecutedDieState中，跳過HandleEnemyDeath處理");
+            return;
+        }
+        
+        // 額外檢查：如果敵人被禁用，可能是被處決死亡，跳過處理
+        if (enemyAI != null && !enemyAI.enabled)
+        {
+            Debug.Log($"[HealthPostureController] 敵人 {gameObject.name} 的AI組件已被禁用，可能是被處決死亡，跳過HandleEnemyDeath處理");
+            return;
+        }
         
         if (live > 0)
         {
@@ -984,7 +1067,7 @@ public class HealthPostureController : MonoBehaviour
     }
 
     // 播放復活特效
-    private void PlayReviveEffect()
+    public void PlayReviveEffect()
     {
         if (reviveEffectPrefab != null)
         {
