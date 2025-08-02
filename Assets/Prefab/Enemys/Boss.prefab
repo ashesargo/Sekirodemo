@@ -5711,7 +5711,7 @@ MonoBehaviour:
   characterController: {fileID: 9206198347430853448}
   visionRange: 100
   attackRange: 10
-  maxSpeed: 30
+  maxSpeed: 50
   avoidDistance: 20
   avoidStrength: 40
   obstacleMask:
