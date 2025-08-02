@@ -154,6 +154,7 @@ public class TPContraller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Debug.Log(isLock+"CON");
         if (_TPCamera != null)
         {
             lockTarget = _TPCamera.lockTarget;

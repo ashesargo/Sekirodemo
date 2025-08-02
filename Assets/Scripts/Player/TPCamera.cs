@@ -63,7 +63,6 @@ public class TPCamera : MonoBehaviour
     AnimatorStateInfo stateInfo;
     public float lockRange = 10.0f;
     public LayerMask enemyLayer;
-    Animator _animator;
     EnemyTest enemyTest;
     // 新增：平滑處理 lockTarget 的位置
     private Vector3 smoothedLockTargetPos;
@@ -89,7 +88,6 @@ public class TPCamera : MonoBehaviour
         mHorizontalVector = vDir;
         mHorizontalVector.y = 0.0f;
         mHorizontalVector.Normalize();
-        _animator = GetComponent<Animator>();
         // 初始化平滑位置
         smoothedLockTargetPos = mFollowPointRef.position; // 初始值設為玩家位置
         smoothedCollisionDistance = mFollowDistance; // 初始碰撞距離
@@ -313,28 +311,30 @@ public class TPCamera : MonoBehaviour
     // 每幀更新（建議用 LateUpdate 以確保角色移動後再更新攝影機）
     void LateUpdate()
     {
+        Debug.Log(isLock + "CA");
+
         // 限制 Time.deltaTime 以避免幀率不穩定
         float deltaTime = Mathf.Min(Time.deltaTime, maxDeltaTime);
 
         stateInfo = playerAnimator.GetCurrentAnimatorStateInfo(0);
-
+        playerAnimator.SetBool("Lock", isLock);
         if (Input.GetKeyDown(KeyCode.Mouse2))
         {
             if (!isLock)
             {
                 FindLockTarget();
-                if (_animator != null)
+                if (playerAnimator != null)
                 {
-                    _animator.SetBool("Lock", isLock);
+                    playerAnimator.SetBool("Lock", isLock);
                 }
             }
             else
             {
                 isLock = false;
                 lockTarget = null;
-                if (_animator != null)
+                if (playerAnimator != null)
                 {
-                    _animator.SetBool("Lock", isLock);
+                    playerAnimator.SetBool("Lock", isLock);
                 }
             }
         }
@@ -356,9 +356,9 @@ public class TPCamera : MonoBehaviour
                 isLock = false;
                 lockTarget = null;
                 enemyTest = null;
-                if (_animator != null)
+                if (playerAnimator != null)
                 {
-                    _animator.SetBool("Lock", isLock);
+                    playerAnimator.SetBool("Lock", isLock);
                 }
             }
         }
