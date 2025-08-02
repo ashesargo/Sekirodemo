@@ -45,8 +45,9 @@ public class ExecutedDieState : BaseEnemyState
             {
                 Debug.Log($"[ExecutedDieState] 處理敵人 {enemy.name} 的死亡邏輯");
                 
-                // 不要設置生命值為0，避免觸發OnDead事件
-                // 直接處理死亡邏輯
+                // 設置生命值為0，確保血量歸零（用於場景切換等檢查）
+                healthController.SetHealthValue(0f);
+                Debug.Log($"[ExecutedDieState] 設置敵人 {enemy.name} 生命值為0");
                 
                 // 隱藏血條
                 healthController.HideHealthBar();

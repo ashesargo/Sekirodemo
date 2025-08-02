@@ -74,10 +74,27 @@ public class ShinobiEX : MonoBehaviour
             }
         }
 
-        if (boss != null && boss.isDead && targetObject != null && !isFading && !hasFaded)
+        if (boss != null && IsBossTrulyDead() && targetObject != null && !isFading && !hasFaded)
         {
             StartCoroutine(FadeInTargetObject());
         }
+    }
+
+    // 檢查Boss是否真正死亡（血量<=0且復活次數<=0）
+    private bool IsBossTrulyDead()
+    {
+        if (boss == null) return false;
+        
+        HealthPostureController healthController = boss.GetComponent<HealthPostureController>();
+        if (healthController == null) return false;
+        
+        // 檢查血量 <= 0 且復活次數 <= 0
+        bool isHealthZero = healthController.GetHealthPercentage() <= 0f;
+        bool isNoLivesLeft = healthController.live <= 0;
+        
+        Debug.Log($"[ShinobiEX] Boss血量: {healthController.GetHealthPercentage() * 100:F1}%, 復活次數: {healthController.live}, 真正死亡: {isHealthZero && isNoLivesLeft}");
+        
+        return isHealthZero && isNoLivesLeft;
     }
 
     private IEnumerator FadeInTargetObject()
