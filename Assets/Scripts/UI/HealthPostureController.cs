@@ -6,8 +6,8 @@ using System.Collections;
 // 生命值與架勢條控制器
 public class HealthPostureController : MonoBehaviour
 {
-    public int live = 1;   // 復活次數
-    [SerializeField] private int maxLive = 1; // 最大生命球數
+    public int live = 0;   // 復活次數
+    [SerializeField] private int maxLive = 0; // 最大生命球數
     [SerializeField] private int maxHealth = 100;   // 最大生命值
     [SerializeField] private int maxPosture = 100;  // 最大架勢值
     [SerializeField] public HealthPostureUI healthPostureUI;   // 生命值與架勢 UI 顯示
@@ -23,96 +23,32 @@ public class HealthPostureController : MonoBehaviour
     [HideInInspector] public bool canIncreasePosture = true;  // 是否可以增加架勢值
     private bool canRevive = false; // 是否可復活
     private Coroutine deathCountdownCoroutine; // 死亡倒數協程
-    Animator playerAnimator;
+    private Animator playerAnimator;
 
     void Awake()
     {
-        // 檢查是否為玩家，如果是則調用玩家初始化
         if (GetComponent<PlayerStatus>() != null)
         {
             InitPlayer();
         }
         else
         {
-            // 敵人初始化邏輯
-            // 自動檢測並設定最大生命值
-            SetMaxHealthBasedOnComponent();
-
-            // 初始化生命值與架勢系統
-            healthPostureSystem = new HealthPostureSystem(maxHealth, maxPosture);
-
-            // 檢查是否為Boss，如果是則確保血條UI正確設置
-            bool isBoss = IsBoss();
-            if (isBoss)
-            {
-                Debug.Log($"[HealthPostureController] {gameObject.name} 是 Boss，檢查血條UI設置");
-                
-                // 檢查血條UI引用
-                if (healthPostureUI == null)
-                {
-                    Debug.LogWarning($"[HealthPostureController] Boss {gameObject.name} 的 healthPostureUI 為 null，嘗試修復");
-                    
-                    // 嘗試在Boss物件下找到血條UI
-                    HealthPostureUI[] healthUIs = GetComponentsInChildren<HealthPostureUI>(true);
-                    if (healthUIs.Length > 0)
-                    {
-                        healthPostureUI = healthUIs[0];
-                        Debug.Log($"[HealthPostureController] 已修復 Boss 血條UI引用: {healthUIs[0].gameObject.name}");
-                    }
-                    else
-                    {
-                        Debug.LogError($"[HealthPostureController] 無法在 Boss {gameObject.name} 下找到血條UI");
-                    }
-                }
-                
-                // 不在此時啟用Boss的血條UI，讓它只在進入觸發區域時才顯示
-                if (healthPostureUI != null)
-                {
-                    Debug.Log($"[HealthPostureController] Boss 血條UI引用已設置: {healthPostureUI.gameObject.name}，但暫時不啟用");
-                }
-            }
-
-            // 初始化 HealthPostureUI
-            if (healthPostureUI != null)
-            {
-                healthPostureUI.SetHealthPostureSystem(healthPostureSystem);
-                healthPostureUI.UpdateLifeBalls(live, maxLive);
-                
-                // 如果是Boss，確保血條UI在初始化時是隱藏的
-                if (isBoss)
-                {
-                    healthPostureUI.gameObject.SetActive(false);
-                    Debug.Log($"[HealthPostureController] Boss 血條UI已隱藏: {healthPostureUI.gameObject.name}");
-                }
-            }
-
-            // 訂閱事件
-            healthPostureSystem.OnDead += OnDead;
-            healthPostureSystem.OnPostureBroken += OnPostureBroken;
-            live = maxLive;
-
-            playerAnimator = GetComponent<Animator>();
+            InitEnemy();
         }
     }
 
     void Update()
     {
-        // 檢查是否為玩家且已死亡
         bool isPlayer = GetComponent<PlayerStatus>() != null;
-
-        if (isPlayer && isPlayerDead)
+        if (isPlayer && isPlayerDead && canRevive && Input.GetMouseButtonDown(0))
         {
-            // 只有可復活時才可操作
-            if (canRevive && Input.GetMouseButtonDown(0))
+            if (live > 0)
             {
-                if (live > 0)
-                {
-                    ResurrectPlayer();
-                }
-                else
-                {
-                    ReturnToMainMenu();
-                }
+                ResurrectPlayer();
+            }
+            else
+            {
+                ReturnToMainMenu();
             }
         }
     }
@@ -120,76 +56,97 @@ public class HealthPostureController : MonoBehaviour
     // 初始化玩家血條架勢條
     public void InitPlayer()
     {
-        // 檢查是否有 PlayerStatus 組件（玩家）
-        if (GetComponent<PlayerStatus>() != null)
+        live = maxLive;
+        maxHealth = PlayerStatus.maxHP;
+        maxPosture = 100;
+        
+        healthPostureSystem = new HealthPostureSystem(maxHealth, maxPosture);
+        
+        if (healthPostureUI != null)
         {
-            // 初始化生命球數
-            live = maxLive;
-            
-            // 初始化生命值
-            maxHealth = PlayerStatus.maxHP;
-            
-            // 初始化架勢值
-            maxPosture = 100; // 玩家最大架勢值預設為100
-            
-            // 設定生命值與架勢系統
-            healthPostureSystem = new HealthPostureSystem(maxHealth, maxPosture);
-            
-            // 設定生命值與架勢 UI
-            if (healthPostureUI != null)
-            {
-                healthPostureUI.SetHealthPostureSystem(healthPostureSystem);
-                healthPostureUI.UpdateLifeBalls(live, maxLive);
-            }
-            
-            // 訂閱事件
-            healthPostureSystem.OnDead += OnDead;
-            healthPostureSystem.OnPostureBroken += OnPostureBroken;
-            
-            // 初始化玩家動畫器
-            playerAnimator = GetComponent<Animator>();
-            
-            // 確保玩家初始狀態正常
-            isPlayerDead = false;
-            canIncreasePosture = true;
-            canRevive = false;
-            
-            Debug.Log($"[玩家初始化] 生命值: {maxHealth}, 架勢值: {maxPosture}, 復活次數: {live}");
+            healthPostureUI.SetHealthPostureSystem(healthPostureSystem);
+            healthPostureUI.UpdateLifeBalls(live, maxLive);
         }
+        
+        SubscribeToEvents();
+        playerAnimator = GetComponent<Animator>();
+        ResetPlayerState();
+    }
+
+    // 初始化敵人
+    private void InitEnemy()
+    {
+        SetMaxHealthBasedOnComponent();
+        healthPostureSystem = new HealthPostureSystem(maxHealth, maxPosture);
+        
+        if (maxLive < 0)
+        {
+            maxLive = 1;
+        }
+        
+        bool isBoss = IsBoss();
+        if (isBoss && healthPostureUI == null)
+        {
+            HealthPostureUI[] healthUIs = GetComponentsInChildren<HealthPostureUI>(true);
+            if (healthUIs.Length > 0)
+            {
+                healthPostureUI = healthUIs[0];
+            }
+        }
+
+        if (healthPostureUI != null)
+        {
+            healthPostureUI.SetHealthPostureSystem(healthPostureSystem);
+            healthPostureUI.UpdateLifeBalls(live, maxLive);
+            
+            if (isBoss)
+            {
+                healthPostureUI.gameObject.SetActive(false);
+            }
+        }
+
+        SubscribeToEvents();
+        live = maxLive;
+        playerAnimator = GetComponent<Animator>();
     }
 
     // 根據組件類型自動設定最大生命值
     private void SetMaxHealthBasedOnComponent()
     {
-        // 檢查是否有 PlayerStatus 組件（玩家）
         if (GetComponent<PlayerStatus>() != null)
         {
             maxHealth = PlayerStatus.maxHP;
         }
-        // 檢查是否有 EnemyTest 組件（敵人）
         else if (GetComponent<EnemyTest>() != null)
         {
             maxHealth = EnemyTest.maxHP;
         }
-        // 如果都沒有，使用預設值
+    }
+
+    // 訂閱事件
+    private void SubscribeToEvents()
+    {
+        healthPostureSystem.OnDead += OnDead;
+        healthPostureSystem.OnPostureBroken += OnPostureBroken;
+    }
+
+    // 重置玩家狀態
+    private void ResetPlayerState()
+    {
+        isPlayerDead = false;
+        canIncreasePosture = true;
+        canRevive = false;
     }
 
     // 受到傷害
     public void TakeDamage(int amount, PlayerStatus.HitState hitState)
     {
-        // 檢查 healthPostureSystem 是否已初始化
-        if (healthPostureSystem == null)
-        {
-            Debug.LogWarning("[架勢控制器] healthPostureSystem 尚未初始化，跳過傷害處理");
-            return;
-        }
+        if (healthPostureSystem == null) return;
 
         healthPostureSystem.HealthDamage(amount);
 
-        // 檢查是否可以增加架勢值
         if (canIncreasePosture)
         {
-            // 檢查是否有剛幹糖效果
             float postureReductionRate = 1f;
             ItemSystem itemSystem = GetComponent<ItemSystem>();
             if (itemSystem != null)
@@ -197,7 +154,6 @@ public class HealthPostureController : MonoBehaviour
                 postureReductionRate = itemSystem.GetPostureReductionRate();
             }
             
-            // 根據攻擊狀態決定架勢增加量（基於最大架勢值的百分比）
             int basePostureAmount = 0;
             bool isParry = (hitState == PlayerStatus.HitState.Parry);
             
@@ -210,201 +166,172 @@ public class HealthPostureController : MonoBehaviour
                     basePostureAmount = Mathf.RoundToInt(healthPostureSystem.GetMaxPosture() * 0.1f); 
                     break;
                 case PlayerStatus.HitState.Parry:
-                    // 當玩家處於Parry狀態時，不增加架勢值
-                    // 因為玩家Parry敵人時，只有被Parry的敵人應該增加架勢值
                     basePostureAmount = 0; 
                     break;
             }
             
-            // 根據剛幹糖效果調整架勢增加量
             int adjustedPostureAmount = Mathf.RoundToInt(basePostureAmount * postureReductionRate);
-            
             healthPostureSystem.PostureIncrease(adjustedPostureAmount, isParry);
         }
-        // 顯示血條並設定為最後一個被攻擊的敵人
+        
         ShowHealthBar();
     }
 
     // 增加架勢
     public void AddPosture(int amount, bool isParry = false)
     {
-        // 檢查 healthPostureSystem 是否已初始化
-        if (healthPostureSystem == null)
-        {
-            return;
-        }
-
-        // 檢查是否可以增加架勢值
-        if (!canIncreasePosture)
-        {
-            return; // 如果架勢被打破，暫時不能增加架勢值
-        }
-
-        // 記錄架勢值增加前的狀態
-        float previousPosturePercentage = healthPostureSystem.GetPostureNormalized();
-        int previousPostureAmount = Mathf.RoundToInt(previousPosturePercentage * healthPostureSystem.GetMaxPosture());
+        if (healthPostureSystem == null || !canIncreasePosture) return;
 
         healthPostureSystem.PostureIncrease(amount, isParry);
-
-        // 記錄架勢值增加後的狀態
-        float currentPosturePercentage = healthPostureSystem.GetPostureNormalized();
-        int currentPostureAmount = Mathf.RoundToInt(currentPosturePercentage * healthPostureSystem.GetMaxPosture());
-
-        // 顯示血條並設定為最後一個被攻擊的敵人
         ShowHealthBar();
     }
+
     // 顯示血條
     private void ShowHealthBar()
     {
-        Debug.Log($"[HealthPostureController] ShowHealthBar 被調用，物件: {gameObject.name}");
+        if (healthPostureSystem == null || healthPostureSystem.GetHealthNormalized() <= 0) return;
         
-        // 檢查 healthPostureSystem 是否已初始化
-        if (healthPostureSystem == null)
-        {
-            Debug.LogWarning($"HealthPostureController: healthPostureSystem 為 null，無法顯示血條，物件: {gameObject.name}");
-            return;
-        }
-        
-        // 檢查血量是否小於等於 0，如果是則不顯示血條
-        if (healthPostureSystem.GetHealthNormalized() <= 0)
-        {
-            return;
-        }
-        // 檢查是否為玩家
         bool isPlayer = GetComponent<PlayerStatus>() != null;
+        
         if (isPlayer)
         {
-            // 檢查架勢值是否大於50%，如果是則常駐顯示
-            float posturePercentage = healthPostureSystem.GetPostureNormalized();
-            if (posturePercentage > 0.5f)
+            HandlePlayerHealthBar();
+        }
+        else
+        {
+            HandleEnemyHealthBar();
+        }
+    }
+
+    // 處理玩家血條顯示
+    private void HandlePlayerHealthBar()
+    {
+        float posturePercentage = healthPostureSystem.GetPostureNormalized();
+        if (posturePercentage > 0.5f)
+        {
+            if (hideUICoroutine != null)
             {
-                // 架勢值大於50%時常駐顯示，停止隱藏協程
-                if (hideUICoroutine != null)
-                {
-                    StopCoroutine(hideUICoroutine);
-                    hideUICoroutine = null;
-                }
+                StopCoroutine(hideUICoroutine);
+                hideUICoroutine = null;
             }
-            
-            // 玩家血條始終顯示，不需要隱藏邏輯
+        }
+        
+        if (healthPostureUI != null)
+        {
+            healthPostureUI.gameObject.SetActive(true);
+        }
+    }
+
+    // 處理敵人血條顯示
+    private void HandleEnemyHealthBar()
+    {
+        bool isBoss = IsBoss();
+        
+        if (isBoss)
+        {
+            HandleBossHealthBar();
+        }
+        else
+        {
+            HandleNormalEnemyHealthBar();
+        }
+    }
+
+    // 處理Boss血條顯示
+    private void HandleBossHealthBar()
+    {
+        bool isPlayerInBossZone = IsPlayerInBossZone();
+        
+        if (isPlayerInBossZone)
+        {
             if (healthPostureUI != null)
             {
                 healthPostureUI.gameObject.SetActive(true);
             }
+            
+            if (hideUICoroutine != null)
+            {
+                StopCoroutine(hideUICoroutine);
+                hideUICoroutine = null;
+            }
+            
+            lastAttackedEnemy = this;
         }
         else
         {
-            // 檢查是否為Boss（通過檢查是否有BossTriggerZone引用）
-            bool isBoss = IsBoss();
-            
-            if (isBoss)
+            if (healthPostureUI != null)
             {
-                // Boss血條邏輯：檢查玩家是否在Boss區域內
-                bool isPlayerInBossZone = IsPlayerInBossZone();
-                Debug.Log($"[HealthPostureController] {gameObject.name} 是 Boss，玩家在區域內: {isPlayerInBossZone}");
-                
-                if (isPlayerInBossZone)
-                {
-                    // 玩家在Boss區域內，顯示血條
-                    if (healthPostureUI != null)
-                    {
-                        healthPostureUI.gameObject.SetActive(true);
-                        Debug.Log($"[HealthPostureController] {gameObject.name} 顯示 Boss 血條");
-                    }
-                    
-                    // 停止隱藏協程
-                    if (hideUICoroutine != null)
-                    {
-                        StopCoroutine(hideUICoroutine);
-                        hideUICoroutine = null;
-                    }
-                    
-                    // 設定為最後一個被攻擊的敵人，防止被其他敵人覆蓋
-                    lastAttackedEnemy = this;
-                }
-                else
-                {
-                    // 玩家不在Boss區域內，隱藏血條
-                    if (healthPostureUI != null)
-                    {
-                        healthPostureUI.gameObject.SetActive(false);
-                        Debug.Log($"[HealthPostureController] {gameObject.name} 隱藏 Boss 血條");
-                    }
-                }
+                healthPostureUI.gameObject.SetActive(false);
             }
-            else
+        }
+    }
+
+    // 處理普通敵人血條顯示
+    private void HandleNormalEnemyHealthBar()
+    {
+        if (lastAttackedEnemy != null && lastAttackedEnemy != this)
+        {
+            bool isPreviousEnemyBoss = lastAttackedEnemy.IsBoss();
+            if (!isPreviousEnemyBoss)
             {
-                // 普通敵人血條邏輯：隱藏其他敵人的血條
-                if (lastAttackedEnemy != null && lastAttackedEnemy != this)
-                {
-                    // 檢查之前的敵人是否為 Boss，如果是則不隱藏
-                    bool isPreviousEnemyBoss = lastAttackedEnemy.IsBoss();
-                    Debug.Log($"[HealthPostureController] {gameObject.name} 嘗試隱藏之前的敵人 {lastAttackedEnemy.gameObject.name}，是否為 Boss: {isPreviousEnemyBoss}");
-                    if (!isPreviousEnemyBoss)
-                    {
-                        lastAttackedEnemy.HideHealthBar();
-                    }
-                    else
-                    {
-                        Debug.Log($"[HealthPostureController] {gameObject.name} 跳過隱藏 Boss 血條: {lastAttackedEnemy.gameObject.name}");
-                    }
-                }
-
-                // 設定為最後一個被攻擊的敵人
-                lastAttackedEnemy = this;
-
-                // 顯示血條 UI
-                if (healthPostureUI != null)
-                {
-                    healthPostureUI.gameObject.SetActive(true);
-                }
-
-                // 停止之前的隱藏協程（如果有的話）
-                if (hideUICoroutine != null)
-                {
-                    StopCoroutine(hideUICoroutine);
-                }
-
-                // 開始新的隱藏協程
-                if (gameObject.activeInHierarchy)
-                {
-                    hideUICoroutine = StartCoroutine(HideHealthBarAfterDelay(5f));
-                }
+                lastAttackedEnemy.HideHealthBar();
             }
+        }
+
+        lastAttackedEnemy = this;
+
+        if (healthPostureUI != null)
+        {
+            healthPostureUI.gameObject.SetActive(true);
+        }
+
+        if (hideUICoroutine != null)
+        {
+            StopCoroutine(hideUICoroutine);
+        }
+
+        if (gameObject.activeInHierarchy)
+        {
+            hideUICoroutine = StartCoroutine(HideHealthBarAfterDelay(5f));
         }
     }
 
     // 隱藏血條
     public void HideHealthBar()
     {
-        Debug.Log($"[HealthPostureController] HideHealthBar 被調用，物件: {gameObject.name}");
-        
-        // 檢查是否為玩家
         bool isPlayer = GetComponent<PlayerStatus>() != null;
 
         if (isPlayer)
         {
-            // 檢查 healthPostureSystem 是否已初始化
-            if (healthPostureSystem == null)
-            {
-                Debug.LogWarning($"HealthPostureController: healthPostureSystem 為 null，無法檢查架勢值，物件: {gameObject.name}");
-                return;
-            }
-            
-            // 檢查架勢值是否大於50%，如果是則不隱藏
-            float posturePercentage = healthPostureSystem.GetPostureNormalized();
-            if (posturePercentage > 0.5f)
-            {
-                // 架勢值大於50%時不隱藏，只停止協程
-                if (hideUICoroutine != null)
-                {
-                    StopCoroutine(hideUICoroutine);
-                    hideUICoroutine = null;
-                }
-                return;
-            }
-            
-            // 玩家血條不隱藏，只停止協程
+            HandlePlayerHealthBarHide();
+            return;
+        }
+
+        if (healthPostureUI != null)
+        {
+            healthPostureUI.gameObject.SetActive(false);
+        }
+
+        if (hideUICoroutine != null)
+        {
+            StopCoroutine(hideUICoroutine);
+            hideUICoroutine = null;
+        }
+
+        if (lastAttackedEnemy == this)
+        {
+            lastAttackedEnemy = null;
+        }
+    }
+
+    // 處理玩家血條隱藏
+    private void HandlePlayerHealthBarHide()
+    {
+        if (healthPostureSystem == null) return;
+        
+        float posturePercentage = healthPostureSystem.GetPostureNormalized();
+        if (posturePercentage > 0.5f)
+        {
             if (hideUICoroutine != null)
             {
                 StopCoroutine(hideUICoroutine);
@@ -412,161 +339,92 @@ public class HealthPostureController : MonoBehaviour
             }
             return;
         }
-
-        // 檢查是否為 Boss，如果是則記錄但不阻止隱藏血條
-        bool isBoss = IsBoss();
-        if (isBoss)
-        {
-            Debug.Log($"[HealthPostureController] {gameObject.name} 是 Boss，允許隱藏血條");
-        }
-
-        // 敵人血條隱藏邏輯
-        if (healthPostureUI != null)
-        {
-            healthPostureUI.gameObject.SetActive(false);
-        }
-
-        // 停止隱藏協程
+        
         if (hideUICoroutine != null)
         {
             StopCoroutine(hideUICoroutine);
             hideUICoroutine = null;
         }
-
-        // 如果不是最後一個被攻擊的敵人，清除引用
-        if (lastAttackedEnemy == this)
-        {
-            lastAttackedEnemy = null;
-        }
-    }
-
-    // 確保 GameObject 及其所有父物件都是啟用的
-    private void EnsureGameObjectHierarchyActive(GameObject targetObject)
-    {
-        if (targetObject == null) return;
-        
-        // 從目標物件開始，向上遍歷所有父物件，確保它們都是啟用的
-        Transform current = targetObject.transform;
-        while (current != null)
-        {
-            if (!current.gameObject.activeSelf)
-            {
-                Debug.Log($"[HealthPostureController] 啟用父物件: {current.gameObject.name}");
-                current.gameObject.SetActive(true);
-            }
-            current = current.parent;
-        }
-        
-        Debug.Log($"[HealthPostureController] 確保 {targetObject.name} 的整個層級都是啟用的");
     }
 
     // 強制顯示血條（用於Boss）
     public void ForceShowHealthBar()
     {
-        Debug.Log($"[HealthPostureController] ForceShowHealthBar 被調用: {gameObject.name}");
-        
         if (healthPostureUI == null)
         {
-            Debug.LogWarning($"[HealthPostureController] healthPostureUI 為 null: {gameObject.name}");
-            
-            // 嘗試自動找到血條UI
             HealthPostureUI[] healthUIs = GetComponentsInChildren<HealthPostureUI>(true);
             if (healthUIs.Length > 0)
             {
                 healthPostureUI = healthUIs[0];
-                Debug.Log($"[HealthPostureController] 自動找到血條UI: {healthUIs[0].gameObject.name}");
             }
             else
             {
-                Debug.LogError($"[HealthPostureController] 無法找到血條UI: {gameObject.name}");
-            return;
+                return;
             }
         }
         
-        // 確保整個層級都是啟用的
         EnsureGameObjectHierarchyActive(gameObject);
         EnsureGameObjectHierarchyActive(healthPostureUI.gameObject);
         
-        Debug.Log($"[HealthPostureController] 強制顯示血條: {gameObject.name}");
-        Debug.Log($"[HealthPostureController] healthPostureUI GameObject 狀態: activeInHierarchy={healthPostureUI.gameObject.activeInHierarchy}, activeSelf={healthPostureUI.gameObject.activeSelf}");
-        
-        // 遞迴啟用所有父物件
         Transform current = healthPostureUI.transform;
         while (current != null)
         {
             if (!current.gameObject.activeSelf)
             {
-                Debug.Log($"[HealthPostureController] 啟用父物件: {current.gameObject.name}");
                 current.gameObject.SetActive(true);
             }
             current = current.parent;
         }
         
-        // 啟用血條 UI
         healthPostureUI.gameObject.SetActive(true);
         
-        Debug.Log($"[HealthPostureController] 血條 UI 已啟用: {healthPostureUI.gameObject.name}");
-        Debug.Log($"[HealthPostureController] 血條 UI 最終狀態: activeInHierarchy={healthPostureUI.gameObject.activeInHierarchy}, activeSelf={healthPostureUI.gameObject.activeSelf}");
-        
-        // 對於 Boss，直接確保血條顯示，不依賴協程
         if (IsBoss())
         {
-            Debug.Log($"[HealthPostureController] Boss {gameObject.name} 血條顯示完成，跳過協程檢查");
-            
-            // 再次確保血條 UI 是啟用的
             if (healthPostureUI != null)
             {
                 healthPostureUI.gameObject.SetActive(true);
-                bool finalActive = healthPostureUI.gameObject.activeInHierarchy;
-                Debug.Log($"[HealthPostureController] Boss 血條最終狀態: {(finalActive ? "啟用" : "禁用")}");
             }
         }
-        else
-        {
-            // 對於非 Boss，使用協程檢查狀態
-        if (gameObject.activeInHierarchy)
+        else if (gameObject.activeInHierarchy)
         {
             StartCoroutine(CheckHealthBarStateAfterFrame());
         }
-        else
+    }
+    
+    // 確保 GameObject 及其所有父物件都是啟用的
+    private void EnsureGameObjectHierarchyActive(GameObject targetObject)
+    {
+        if (targetObject == null) return;
+        
+        Transform current = targetObject.transform;
+        while (current != null)
         {
-            Debug.LogWarning($"[HealthPostureController] GameObject {gameObject.name} 未啟用，無法啟動 Coroutine");
+            if (!current.gameObject.activeSelf)
+            {
+                current.gameObject.SetActive(true);
             }
+            current = current.parent;
         }
     }
     
     private IEnumerator CheckHealthBarStateAfterFrame()
     {
-        yield return null; // 等待一幀
+        yield return null;
         
-        if (healthPostureUI != null)
+        if (healthPostureUI != null && !healthPostureUI.gameObject.activeInHierarchy)
         {
-            bool isActive = healthPostureUI.gameObject.activeInHierarchy;
-            Debug.Log($"[HealthPostureController] 一幀後血條狀態: {(isActive ? "啟用" : "禁用")}");
-            
-            if (!isActive)
-            {
-                Debug.LogWarning($"[HealthPostureController] 警告：血條仍然被禁用！可能被其他腳本干擾");
-                
-                // 再次嘗試啟用
-                healthPostureUI.gameObject.SetActive(true);
-                yield return null;
-                
-                bool finalActive = healthPostureUI.gameObject.activeInHierarchy;
-                Debug.Log($"[HealthPostureController] 最終血條狀態: {(finalActive ? "啟用" : "禁用")}");
-            }
+            healthPostureUI.gameObject.SetActive(true);
+            yield return null;
         }
     }
 
     // 檢查玩家是否在Boss區域內
     private bool IsPlayerInBossZone()
     {
-        // 找到所有BossTriggerZone
         BossTriggerZone[] bossZones = FindObjectsOfType<BossTriggerZone>();
         
         foreach (BossTriggerZone zone in bossZones)
         {
-            // 檢查這個BossTriggerZone是否與當前Boss相關聯
             if (zone.bossObject != null)
             {
                 string currentName = gameObject.name.Replace("(Clone)", "");
@@ -576,7 +434,6 @@ public class HealthPostureController : MonoBehaviour
                     (bossObjectName == "Elite" || bossObjectName == "Boss") && 
                     (currentName == "Elite" || currentName == "Boss"))
                 {
-                    // 使用BossTriggerZone的IsPlayerInZone方法
                     if (zone.IsPlayerInZone())
                     {
                         return true;
@@ -591,112 +448,76 @@ public class HealthPostureController : MonoBehaviour
     // 檢查是否為Boss
     public bool IsBoss()
     {
-        // 檢查是否有BossTriggerZone引用這個物件
         BossTriggerZone[] bossZones = FindObjectsOfType<BossTriggerZone>();
-        Debug.Log($"[HealthPostureController] {gameObject.name} 檢查是否為 Boss，找到 {bossZones.Length} 個 BossTriggerZone");
         
         foreach (BossTriggerZone zone in bossZones)
         {
-            Debug.Log($"[HealthPostureController] 檢查 BossTriggerZone: {zone.name}, bossObject: {zone.bossObject?.name ?? "null"}");
-            // 檢查 zone.bossObject 是否為 null
             if (zone.bossObject != null)
             {
-                // 檢查是否是同一個 Prefab 的實例
                 bool isSamePrefab = false;
                 
-                // 方法1: 檢查名稱是否匹配（去掉Clone後綴）
                 string currentName = gameObject.name.Replace("(Clone)", "");
                 string bossObjectName = zone.bossObject.name.Replace("(Clone)", "");
-                Debug.Log($"[HealthPostureController] 比較名稱: 當前={currentName}, bossObject={bossObjectName}");
+                
                 if (currentName == bossObjectName)
                 {
                     isSamePrefab = true;
-                    Debug.Log($"[HealthPostureController] 通過名稱匹配確認為同一 Prefab: {currentName}");
                 }
                 
-                // 方法2: 檢查 HealthPostureController 實例比較
                 HealthPostureController zoneBossController = zone.bossObject.GetComponent<HealthPostureController>();
                 if (zoneBossController == this)
                 {
                     isSamePrefab = true;
-                    Debug.Log($"[HealthPostureController] 通過實例比較確認為同一 Prefab");
                 }
-                
-                // 方法3: 檢查是否是精確的 Boss 類型匹配（移除過於寬鬆的檢查）
-                // 只進行精確的名稱匹配，避免錯誤識別
                 
                 if (isSamePrefab)
                 {
-                    Debug.Log($"[HealthPostureController] {gameObject.name} 被確認為 Boss！");
                     return true;
                 }
             }
         }
-        Debug.Log($"[HealthPostureController] {gameObject.name} 不是 Boss");
         return false;
     }
 
     // 通知Boss死亡
     private void NotifyBossDeath()
     {
-        Debug.Log($"[HealthPostureController] {gameObject.name} 開始通知 Boss 死亡");
-        
-        // 找到所有Boss觸發區域並通知Boss死亡
         BossTriggerZone[] bossZones = FindObjectsOfType<BossTriggerZone>();
-        Debug.Log($"[HealthPostureController] 找到 {bossZones.Length} 個 BossTriggerZone");
         
-        bool foundMatchingZone = false;
         foreach (BossTriggerZone zone in bossZones)
         {
-            Debug.Log($"[HealthPostureController] 檢查 BossTriggerZone: {zone.name}, bossObject: {zone.bossObject?.name ?? "null"}");
-            // 檢查 zone.bossObject 是否為 null
             if (zone.bossObject != null)
             {
-                // 檢查是否是同一個 Prefab 的實例
                 bool isSamePrefab = false;
                 
-                // 方法1: 檢查名稱是否匹配（去掉Clone後綴）
                 string currentName = gameObject.name.Replace("(Clone)", "");
                 string bossObjectName = zone.bossObject.name.Replace("(Clone)", "");
-                Debug.Log($"[HealthPostureController] 比較名稱: 當前={currentName}, bossObject={bossObjectName}");
+                
                 if (currentName == bossObjectName)
                 {
                     isSamePrefab = true;
-                    Debug.Log($"[HealthPostureController] 通過名稱匹配確認為同一 Prefab: {currentName}");
                 }
                 
-                // 方法2: 檢查 HealthPostureController 實例比較
                 HealthPostureController zoneBossController = zone.bossObject.GetComponent<HealthPostureController>();
                 if (zoneBossController == this)
                 {
                     isSamePrefab = true;
-                    Debug.Log($"[HealthPostureController] 通過實例比較確認為同一 Prefab");
                 }
                 
-                // 方法3: 檢查是否是任何 Boss 類型（包括 Elite）
                 if (bossObjectName == "Elite" || bossObjectName == "Boss")
                 {
-                    // 如果當前物件是 Elite 或 Boss 的實例，也認為是 Boss
                     if (currentName == "Elite" || currentName == "Boss")
                     {
                         isSamePrefab = true;
-                        Debug.Log($"[HealthPostureController] 通過 Boss 類型匹配確認為 Boss: {currentName}");
                     }
                 }
                 
                 if (isSamePrefab)
                 {
-                    Debug.Log($"[HealthPostureController] 找到匹配的 BossTriggerZone: {zone.name}，調用 OnBossDeath");
                     zone.OnBossDeath();
-                    foundMatchingZone = true;
                     break;
                 }
             }
-        }
-        
-        if (!foundMatchingZone)
-        {
-            Debug.LogWarning($"[HealthPostureController] {gameObject.name} 死亡時沒有找到對應的 BossTriggerZone！");
         }
     }
 
@@ -705,7 +526,6 @@ public class HealthPostureController : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
-        // 只有當這個敵人仍然是最後一個被攻擊的敵人時才隱藏
         if (lastAttackedEnemy == this)
         {
             HideHealthBar();
@@ -715,66 +535,70 @@ public class HealthPostureController : MonoBehaviour
     // 死亡
     private void OnDead(object sender, System.EventArgs e)
     {
-        Debug.Log($"[HealthPostureController] {gameObject.name} 死亡事件觸發");
-        
-        // 檢查是否為玩家
         bool isPlayer = GetComponent<PlayerStatus>() != null;
 
         if (isPlayer)
         {
-            Debug.Log($"[HealthPostureController] {gameObject.name} 是玩家，執行玩家死亡邏輯");
-            // 設定玩家死亡狀態
-            isPlayerDead = true;
-            isPlayerDead = true;
-            
-            // 移除所有道具效果
-            RemoveAllItemEffects();
-            
-            // 玩家死亡時延後一秒顯示死亡 UI
-            if (gameObject.activeInHierarchy)
-            {
-                StartCoroutine(ShowDeathUIAfterDelay(1f));
-            }
+            HandlePlayerDeath();
         }
         else
         {
-            Debug.Log($"[HealthPostureController] {gameObject.name} 是敵人，檢查是否為 Boss");
-            // 檢查是否為Boss
-            bool isBoss = IsBoss();
-            
+            HandleEnemyDeath();
+        }
+        
+        if (healthPostureUI != null)
+            healthPostureUI.UpdateLifeBalls(live, maxLive);
+    }
+
+    // 處理玩家死亡
+    private void HandlePlayerDeath()
+    {
+        isPlayerDead = true;
+        RemoveAllItemEffects();
+        
+        if (gameObject.activeInHierarchy)
+        {
+            StartCoroutine(ShowDeathUIAfterDelay(1f));
+        }
+    }
+
+    // 處理敵人死亡
+    private void HandleEnemyDeath()
+    {
+        bool isBoss = IsBoss();
+        
+        if (live > 0)
+        {
+            ResurrectEnemy();
+        }
+        else
+        {
             if (isBoss)
             {
-                Debug.Log($"[HealthPostureController] {gameObject.name} 是 Boss，執行 Boss 死亡邏輯");
-                // Boss死亡時隱藏血條並通知Boss觸發區域
                 HideHealthBar();
                 NotifyBossDeath();
             }
             else
             {
-                Debug.Log($"[HealthPostureController] {gameObject.name} 是普通敵人，執行普通敵人死亡邏輯");
-                // 普通敵人死亡時隱藏血條
                 HideHealthBar();
             }
             
-            // 關閉碰撞器
             if (gameObject.activeInHierarchy)
             {
                 StartCoroutine(DisableColliderAfterEffect());
             }
         }
-        if (healthPostureUI != null)
-            healthPostureUI.UpdateLifeBalls(live, maxLive);
     }
+
     // 失衡
     private void OnUnbalance(object sender, System.EventArgs e)
     {
-        // 移除玩家操控
         PlayerStatus playerStatus = GetComponent<PlayerStatus>();
         if (playerStatus != null)
         {
             playerStatus.Sragger();
         }        
-        // 移除敵人操控
+        
         EnemyTest enemyTest = GetComponent<EnemyTest>();
         if (enemyTest != null)
         {
@@ -787,7 +611,7 @@ public class HealthPostureController : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         ShowDeathUI();
-        // 玩家死亡UI顯示後啟動倒數
+        
         if (GetComponent<PlayerStatus>() != null)
         {
             if (deathCountdownCoroutine != null)
@@ -815,7 +639,7 @@ public class HealthPostureController : MonoBehaviour
 
     private IEnumerator StartDeathUIAnimationNextFrame()
     {
-        yield return null; // 等待一幀，確保物件已啟用
+        yield return null;
         DeathUI deathUIScript = deathUI.GetComponent<DeathUI>();
         if (deathUIScript != null)
         {
@@ -828,7 +652,6 @@ public class HealthPostureController : MonoBehaviour
     {
         if (deathUI != null)
         {
-            // 獲取DeathUI腳本並停止動畫
             DeathUI deathUIScript = deathUI.GetComponent<DeathUI>();
             if (deathUIScript != null)
             {
@@ -849,73 +672,153 @@ public class HealthPostureController : MonoBehaviour
     // 復活玩家
     private void ResurrectPlayer()
     {
-        
-        // 減少一個復活次數
         live--;
-
-        // 重置生命值系統
         ResetHealth();
-
-        // 隱藏死亡UI
         HideDeathUI();
-
-        // 重置死亡狀態
         isPlayerDead = false;
 
-        // 重新開啟玩家控制器
         PlayerStatus playerStatus = GetComponent<PlayerStatus>();
         if (playerStatus != null)
         {
             playerStatus.ResetHealth();
         }
         
-        // 確保玩家可以正常移動和操作
-        TPContraller tpController = GetComponent<TPContraller>();
-        if (tpController != null)
+        PlayReviveEffect();
+        
+        if (playerAnimator != null)
         {
-            // 重置任何可能影響移動的狀態
-            // 這裡可以添加其他需要重置的組件
+            playerAnimator.SetBool("Death", false);
         }
         
-        // 播放復活特效
-        PlayReviveEffect();
-        playerAnimator.SetBool("Death", false);
-        Debug.Log("玩家復活完成，所有狀態已重置");
         if (healthPostureUI != null)
             healthPostureUI.UpdateLifeBalls(live, maxLive);
+    }
+
+    // 復活敵人
+    private void ResurrectEnemy()
+    {
+        if (live <= 0) return;
+        
+        live--;
+        ResetHealth();
+        ResetPosture();
+        canIncreasePosture = true;
+        RemoveAllItemEffects();
+        
+        ResetEnemyComponents();
+        
+        if (gameObject.activeInHierarchy)
+        {
+            StartCoroutine(DelayedAttackRestore(1f));
+        }
+        
+        PlayReviveEffect();
+        
+        if (IsBoss())
+        {
+            // Boss的血條顯示邏輯由BossTriggerZone控制
+        }
+        else
+        {
+            ShowHealthBar();
+        }
+        
+        if (playerAnimator != null)
+        {
+            playerAnimator.SetBool("Death", false);
+            playerAnimator.SetBool("Stagger", false);
+            playerAnimator.SetBool("Hit", false);
+            playerAnimator.SetTrigger("Idle");
+        }
+        
+        if (healthPostureUI != null)
+            healthPostureUI.UpdateLifeBalls(live, maxLive);
+        
+        // 確保敵人處於正常狀態
+        if (healthPostureSystem != null && healthPostureSystem.GetHealthNormalized() <= 0f)
+        {
+            healthPostureSystem.SetHealthNormalized(0.1f);
+        }
+    }
+
+    // 重置敵人組件
+    private void ResetEnemyComponents()
+    {
+        EnemyAI enemyAI = GetComponent<EnemyAI>();
+        if (enemyAI != null)
+        {
+            try
+            {
+                var idleState = new IdleState();
+                enemyAI.SwitchState(idleState);
+            }
+            catch
+            {
+                ResetEnemyAIState(enemyAI);
+            }
+        }
+        
+        EnemyTest enemyTest = GetComponent<EnemyTest>();
+        if (enemyTest != null)
+        {
+            enemyTest.RestoreControl();
+        }
+        
+        if (enemyAI != null)
+        {
+            enemyAI.canAutoAttack = true;
+            enemyAI.canBeParried = true;
+        }
+        
+        Collider enemyCollider = GetComponent<Collider>();
+        if (enemyCollider != null && !enemyCollider.enabled)
+        {
+            enemyCollider.enabled = true;
+            colliderDisabled = false;
+        }
+        
+        CharacterController characterController = GetComponent<CharacterController>();
+        if (characterController != null && !characterController.enabled)
+        {
+            characterController.enabled = true;
+        }
+        
+        if (characterController != null)
+        {
+            characterController.Move(Vector3.zero);
+        }
+        
+        if (transform.position.y < -10f)
+        {
+            transform.position = new Vector3(transform.position.x, 1f, transform.position.z);
+        }
     }
 
     // 回到主選單
     private void ReturnToMainMenu()
     {
-        Debug.Log("遊戲結束 - 回到主選單");
         SceneManager.LoadScene("Main Menu");
     }
 
     // 等待武器特效完成後關閉碰撞器
     private IEnumerator DisableColliderAfterEffect()
     {
-        // 等待武器特效完成
         yield return new WaitForSeconds(0.1f);
-
-        // 關掉敵人 collider
         DisableCollider();
     }
 
     // 立即關閉碰撞器
     public void DisableCollider()
     {
-        if (colliderDisabled) return; // 避免重複關閉
+        if (colliderDisabled) return;
 
-        // 關閉敵人碰撞器
         Collider enemyCollider = GetComponent<Collider>();
-        if (enemyCollider != null && enemyCollider.enabled) // 如果敵人碰撞器存在且啟用
+        if (enemyCollider != null && enemyCollider.enabled)
         {
             enemyCollider.enabled = false;
             colliderDisabled = true;
         }
         
-        // 關閉敵人 CharacterController
         CharacterController characterController = GetComponent<CharacterController>();
         if (characterController != null && characterController.enabled)
         {
@@ -926,23 +829,18 @@ public class HealthPostureController : MonoBehaviour
     // 架勢被打破
     private void OnPostureBroken(object sender, System.EventArgs e)
     {
-        // 檢查是否為敵人
         EnemyAI enemyAI = GetComponent<EnemyAI>();
         if (enemyAI != null)
         {
-            // 敵人進入失衡狀態
             enemyAI.SwitchState(new StaggerState());
-            Debug.Log($"[HealthPostureController] 敵人 {gameObject.name} 架勢滿，進入失衡狀態");
         }
         else
         {
-            // 玩家架勢滿的處理（保持原有邏輯）
             OnUnbalance(sender, e);
         }
         
-        // 禁用架勢增加
         canIncreasePosture = false;
-        // 架勢條緩慢歸零（僅對玩家）
+        
         if (enemyAI == null)
         {
             if (gameObject.activeInHierarchy)
@@ -956,48 +854,34 @@ public class HealthPostureController : MonoBehaviour
     // 獲取當前生命值百分比
     public float GetHealthPercentage()
     {
-        if (healthPostureSystem == null)
-        {
-            Debug.LogWarning($"HealthPostureController: healthPostureSystem 為 null，物件: {gameObject.name}");
-            return 0f;
-        }
+        if (healthPostureSystem == null) return 0f;
         return healthPostureSystem.GetHealthNormalized();
     }
 
     // 獲取當前架勢值百分比
     public float GetPosturePercentage()
     {
-        if (healthPostureSystem == null)
-        {
-            Debug.LogWarning($"HealthPostureController: healthPostureSystem 為 null，物件: {gameObject.name}");
-            return 0f;
-        }
+        if (healthPostureSystem == null) return 0f;
         return healthPostureSystem.GetPostureNormalized();
     }
 
     // 重置生命值系統
     public void ResetHealth()
     {
-        // 檢查是否為玩家
         bool isPlayer = GetComponent<PlayerStatus>() != null;
 
+        healthPostureSystem = new HealthPostureSystem(maxHealth, maxPosture);
+
+        if (healthPostureUI != null)
+        {
+            healthPostureUI.SetHealthPostureSystem(healthPostureSystem);
+            healthPostureUI.UpdateLifeBalls(live, maxLive);
+        }
+
+        SubscribeToEvents();
+        
         if (isPlayer)
         {
-            // 重新創建生命值系統
-            healthPostureSystem = new HealthPostureSystem(maxHealth, maxPosture);
-
-            // 重新設定 UI
-            if (healthPostureUI != null)
-            {
-                healthPostureUI.SetHealthPostureSystem(healthPostureSystem);
-                healthPostureUI.UpdateLifeBalls(live, maxLive);
-            }
-
-            // 重新訂閱事件
-            healthPostureSystem.OnDead += OnDead;
-            healthPostureSystem.OnPostureBroken += OnPostureBroken;
-
-            // 玩家重置時不隱藏血條，只停止協程
             if (hideUICoroutine != null)
             {
                 StopCoroutine(hideUICoroutine);
@@ -1006,30 +890,16 @@ public class HealthPostureController : MonoBehaviour
         }
         else
         {
-            // 檢查是否為 Boss
             bool isBoss = IsBoss();
-            Debug.Log($"[HealthPostureController] ResetHealth - 物件: {gameObject.name}, 是否為 Boss: {isBoss}");
-            
-            if (!isBoss)
+            if (!isBoss && healthPostureUI != null)
             {
-                // 只有非 Boss 敵人才隱藏血條
-                if (healthPostureUI != null)
-                {
-                    healthPostureUI.gameObject.SetActive(false);
-                    Debug.Log($"[HealthPostureController] ResetHealth - 隱藏非 Boss 血條: {gameObject.name}");
-                }
+                healthPostureUI.gameObject.SetActive(false);
             }
-            else
+            else if (isBoss && healthPostureUI != null)
             {
-                // Boss 血條在初始化時也應該隱藏，只有在玩家進入區域時才顯示
-                if (healthPostureUI != null)
-                {
-                    healthPostureUI.gameObject.SetActive(false);
-                    Debug.Log($"[HealthPostureController] ResetHealth - Boss 血條初始化時隱藏: {gameObject.name}");
-                }
+                healthPostureUI.gameObject.SetActive(false);
             }
             
-            // 停止隱藏協程
             if (hideUICoroutine != null)
             {
                 StopCoroutine(hideUICoroutine);
@@ -1037,7 +907,6 @@ public class HealthPostureController : MonoBehaviour
             }
         }
 
-        // 重置碰撞器狀態
         colliderDisabled = false;
         Collider enemyCollider = GetComponent<Collider>();
         if (enemyCollider != null)
@@ -1045,12 +914,12 @@ public class HealthPostureController : MonoBehaviour
             enemyCollider.enabled = true;
         }
         
-        // 重新啟用 CharacterController
         CharacterController characterController = GetComponent<CharacterController>();
         if (characterController != null)
         {
             characterController.enabled = true;
         }
+        
         if (healthPostureUI != null)
             healthPostureUI.UpdateLifeBalls(live, maxLive);
     }
@@ -1058,7 +927,6 @@ public class HealthPostureController : MonoBehaviour
     // 當物件被銷毀時清理
     private void OnDestroy()
     {
-        // 如果這個敵人是最後一個被攻擊的敵人，清除引用
         if (lastAttackedEnemy == this)
         {
             lastAttackedEnemy = null;
@@ -1069,7 +937,6 @@ public class HealthPostureController : MonoBehaviour
     private IEnumerator RestoreControlAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        // 恢復敵人操控
         EnemyTest enemyTest = GetComponent<EnemyTest>();
         if (enemyTest != null)
         {
@@ -1082,24 +949,18 @@ public class HealthPostureController : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         
-        // 開始緩慢回復架勢值到 0
         if (gameObject.activeInHierarchy)
         {
-            StartCoroutine(GraduallyRestorePosture(1f)); // 3秒內緩慢回復到 0
+            StartCoroutine(GraduallyRestorePosture(1f));
         }
         
-        // 重新啟用架勢增加
         canIncreasePosture = true;
     }
 
     // 緩慢回復架勢值的協程
     private IEnumerator GraduallyRestorePosture(float duration)
     {
-        if (healthPostureSystem == null)
-        {
-            Debug.LogWarning($"HealthPostureController: healthPostureSystem 為 null，無法回復架勢值，物件: {gameObject.name}");
-            yield break;
-        }
+        if (healthPostureSystem == null) yield break;
         
         float startPosture = healthPostureSystem.GetPostureNormalized();
         float elapsedTime = 0f;
@@ -1108,17 +969,11 @@ public class HealthPostureController : MonoBehaviour
         {
             elapsedTime += Time.deltaTime;
             float progress = elapsedTime / duration;
-            
-            // 使用平滑的插值函數
             float currentPosture = Mathf.Lerp(startPosture, 0f, progress);
-            
-            // 設定架勢值（需要添加一個方法來直接設定架勢值）
             SetPostureValue(currentPosture);
-            
             yield return null;
         }
         
-        // 確保最終值為 0
         SetPostureValue(0f);
     }
 
@@ -1127,49 +982,36 @@ public class HealthPostureController : MonoBehaviour
     {
         if (reviveEffectPrefab != null)
         {
-            // 使用指定的特效生成位置，如果沒有設定則使用玩家位置
-            Vector3 effectPosition;
-            if (reviveEffectPosition != null)
-            {
-                effectPosition = reviveEffectPosition.position;
-            }
-            else
-            {
-                effectPosition = transform.position;
-            }
+            Vector3 effectPosition = reviveEffectPosition != null ? 
+                reviveEffectPosition.position : transform.position;
             
             GameObject reviveEffect = Instantiate(reviveEffectPrefab, effectPosition, Quaternion.identity);
-            
-            // 3秒後自動銷毀特效
             Destroy(reviveEffect, 3f);
-            
-            Debug.Log("播放復活特效");
         }
-        else
+    }
+    
+    // 播放自訂復活特效（可指定特效Prefab）
+    public void PlayCustomReviveEffect(GameObject customEffectPrefab, Vector3? customPosition = null, float destroyDelay = 3f)
+    {
+        if (customEffectPrefab != null)
         {
-            Debug.LogWarning("復活特效Prefab未設定");
+            Vector3 effectPosition = customPosition ?? transform.position;
+            GameObject reviveEffect = Instantiate(customEffectPrefab, effectPosition, Quaternion.identity);
+            Destroy(reviveEffect, destroyDelay);
         }
     }
 
     // 設定架勢值的方法
     public void SetPostureValue(float normalizedValue)
     {
-        if (healthPostureSystem == null)
-        {
-            Debug.LogWarning($"HealthPostureController: healthPostureSystem 為 null，無法設定架勢值，物件: {gameObject.name}");
-            return;
-        }
+        if (healthPostureSystem == null) return;
         healthPostureSystem.SetPostureNormalized(normalizedValue);
     }
     
     // 設定生命值的方法
     public void SetHealthValue(float normalizedValue)
     {
-        if (healthPostureSystem == null)
-        {
-            Debug.LogWarning($"HealthPostureController: healthPostureSystem 為 null，無法設定生命值，物件: {gameObject.name}");
-            return;
-        }
+        if (healthPostureSystem == null) return;
         healthPostureSystem.SetHealthNormalized(normalizedValue);
     }
     
@@ -1182,25 +1024,17 @@ public class HealthPostureController : MonoBehaviour
     // 治療生命值
     public void HealHealth(int healAmount)
     {
-        if (healthPostureSystem == null)
-        {
-            Debug.LogWarning($"HealthPostureController: healthPostureSystem 為 null，無法治療生命值，物件: {gameObject.name}");
-            return;
-        }
+        if (healthPostureSystem == null) return;
         healthPostureSystem.HealthHeal(healAmount);
     }
 
     // 移除所有道具效果
     private void RemoveAllItemEffects()
     {
-        // 獲取道具系統組件
         ItemSystem itemSystem = GetComponent<ItemSystem>();
         if (itemSystem != null)
         {
-            // 重置道具系統狀態（包括停止道具效果協程）
             itemSystem.ResetItemEffects();
-            
-            Debug.Log("[架勢控制器] 已移除所有道具效果");
         }
     }
 
@@ -1210,20 +1044,72 @@ public class HealthPostureController : MonoBehaviour
         float timer = 10f;
         while (timer > 0f)
         {
-            if (!isPlayerDead) yield break; // 已復活則結束
+            if (!isPlayerDead) yield break;
             timer -= Time.deltaTime;
             yield return null;
         }
-        // 10秒到，鎖定復活
+        
         canRevive = false;
-        // 閃紅光
         DeathUI deathUIScript = deathUI.GetComponent<DeathUI>();
         if (deathUIScript != null)
         {
             deathUIScript.StartRedFlash();
         }
-        // 5秒後回主選單
+        
         yield return new WaitForSeconds(5f);
         ReturnToMainMenu();
+    }
+    
+    // 延遲恢復攻擊能力協程
+    private IEnumerator DelayedAttackRestore(float delay)
+    {
+        EnemyAI enemyAI = GetComponent<EnemyAI>();
+        if (enemyAI != null)
+        {
+            enemyAI.canAutoAttack = false;
+        }
+        
+        yield return new WaitForSeconds(delay);
+        
+        if (enemyAI != null)
+        {
+            enemyAI.canAutoAttack = true;
+        }
+    }
+    
+    // 備用AI狀態重置方法
+    private void ResetEnemyAIState(EnemyAI enemyAI)
+    {
+        if (enemyAI == null) return;
+        
+        enemyAI.canAutoAttack = true;
+        enemyAI.canBeParried = true;
+        
+        if (playerAnimator != null)
+        {
+            playerAnimator.SetBool("Stagger", false);
+            playerAnimator.SetBool("Death", false);
+            playerAnimator.SetBool("Hit", false);
+            playerAnimator.SetTrigger("Idle");
+        }
+        
+        EnemyTest enemyTest = GetComponent<EnemyTest>();
+        if (enemyTest != null)
+        {
+            enemyTest.RestoreControl();
+        }
+        
+        Collider enemyCollider = GetComponent<Collider>();
+        if (enemyCollider != null)
+        {
+            enemyCollider.enabled = true;
+            colliderDisabled = false;
+        }
+        
+        CharacterController characterController = GetComponent<CharacterController>();
+        if (characterController != null)
+        {
+            characterController.enabled = true;
+        }
     }
 }
