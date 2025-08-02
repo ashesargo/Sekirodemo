@@ -8088,6 +8088,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isDead: 0
+  isStaggered: 0
   defendChance: 0.3
   defendPostureIncrease: 10
   hitPostureIncrease: 0
@@ -8105,7 +8106,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 2912090041193765960}
   characterController: {fileID: 5125634401423986934}
-  visionRange: 100
+  visionRange: 80
   attackRange: 20
   maxSpeed: 25
   avoidDistance: 20
