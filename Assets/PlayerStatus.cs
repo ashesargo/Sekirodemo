@@ -75,8 +75,8 @@ public class PlayerStatus : MonoBehaviour
         if (GetCurrentHP() <= 0 && !isDeath)
         {
             isDeath = true;
-            _animator.Play("Idle", 0, 0f);
-            _animator.SetBool("Death", true);
+            _animator.Play("Death", 0, 0f); // 直接播放 Death 動畫
+            _animator.SetBool("Death", true); // 設置 Death 參數，確保動畫控制器保持死亡狀態
         }
         else if (GetCurrentHP() > 0)
         {
@@ -109,12 +109,13 @@ public class PlayerStatus : MonoBehaviour
         {
             healthController.TakeDamage(Mathf.RoundToInt(damage), currentHitState);
         }
-        
+
         // 檢查是否死亡
         if (GetCurrentHP() <= 0 && !isDeath)
         {
             isDeath = true;
-            _animator.SetBool("Death", true);
+            _animator.Play("Death", 0, 0f); // 直接播放 Death 動畫
+            _animator.SetBool("Death", true); // 設置 Death 參數，確保動畫控制器保持死亡狀態
         }
         else if (GetCurrentHP() > 0)
         {
