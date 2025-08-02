@@ -185,18 +185,18 @@ public class BossTriggerZone : MonoBehaviour
         string bossName = bossObject.name;
         Debug.Log($"[BossTriggerZone] 尋找 Boss 實例，名稱: {bossName}");
         
-        // 方法1: 嘗試找到具有相同名稱的啟用物件
+        // 方法1: 嘗試找到具有相同名稱的物件（包括被禁用的）
         GameObject[] allObjects = FindObjectsOfType<GameObject>();
         Debug.Log($"[BossTriggerZone] 場景中共有 {allObjects.Length} 個物件");
         
         foreach (GameObject obj in allObjects)
         {
-            if (obj.name == bossName && obj.activeInHierarchy)
+            if (obj.name == bossName)
             {
                 HealthPostureController controller = obj.GetComponent<HealthPostureController>();
                 if (controller != null)
                 {
-                    Debug.Log($"[BossTriggerZone] 找到 Boss 實例 (完全匹配): {obj.name}");
+                    Debug.Log($"[BossTriggerZone] 找到 Boss 實例 (完全匹配): {obj.name}, activeInHierarchy: {obj.activeInHierarchy}, enabled: {obj.activeSelf}");
                     return controller;
                 }
             }
@@ -208,12 +208,12 @@ public class BossTriggerZone : MonoBehaviour
             string objNameWithoutClone = obj.name.Replace("(Clone)", "");
             string bossNameWithoutClone = bossName.Replace("(Clone)", "");
             
-            if (objNameWithoutClone == bossNameWithoutClone && obj.activeInHierarchy)
+            if (objNameWithoutClone == bossNameWithoutClone)
             {
                 HealthPostureController controller = obj.GetComponent<HealthPostureController>();
                 if (controller != null && controller.IsBoss())
                 {
-                    Debug.Log($"[BossTriggerZone] 找到精確匹配的 Boss 實例: {obj.name} (去掉Clone後綴後匹配)");
+                    Debug.Log($"[BossTriggerZone] 找到精確匹配的 Boss 實例: {obj.name} (去掉Clone後綴後匹配), activeInHierarchy: {obj.activeInHierarchy}, enabled: {obj.activeSelf}");
                     return controller;
                 }
             }
@@ -229,11 +229,11 @@ public class BossTriggerZone : MonoBehaviour
             string controllerNameWithoutClone = controller.gameObject.name.Replace("(Clone)", "");
             string bossNameWithoutClone = bossName.Replace("(Clone)", "");
             
-            Debug.Log($"[BossTriggerZone] 檢查控制器: {controller.gameObject.name}, IsBoss: {controller.IsBoss()}, activeInHierarchy: {controller.gameObject.activeInHierarchy}");
+            Debug.Log($"[BossTriggerZone] 檢查控制器: {controller.gameObject.name}, IsBoss: {controller.IsBoss()}, activeInHierarchy: {controller.gameObject.activeInHierarchy}, enabled: {controller.gameObject.activeSelf}");
             
-            if (controller.IsBoss() && controller.gameObject.activeInHierarchy && controllerNameWithoutClone == bossNameWithoutClone)
+            if (controller.IsBoss() && controllerNameWithoutClone == bossNameWithoutClone)
             {
-                Debug.Log($"[BossTriggerZone] 找到正確類型的 Boss 實例: {controller.gameObject.name}");
+                Debug.Log($"[BossTriggerZone] 找到正確類型的 Boss 實例: {controller.gameObject.name}, activeInHierarchy: {controller.gameObject.activeInHierarchy}, enabled: {controller.gameObject.activeSelf}");
                 return controller;
             }
         }
@@ -242,9 +242,9 @@ public class BossTriggerZone : MonoBehaviour
         Debug.LogWarning($"[BossTriggerZone] 找不到與 {bossName} 相同類型的 Boss，這可能表示配置錯誤");
         foreach (HealthPostureController controller in allControllers)
         {
-            if (controller.IsBoss() && controller.gameObject.activeInHierarchy)
+            if (controller.IsBoss())
             {
-                Debug.Log($"[BossTriggerZone] 找到其他類型的 Boss 實例 (備用): {controller.gameObject.name}");
+                Debug.Log($"[BossTriggerZone] 找到其他類型的 Boss 實例 (備用): {controller.gameObject.name}, activeInHierarchy: {controller.gameObject.activeInHierarchy}, enabled: {controller.gameObject.activeSelf}");
                 return controller;
             }
         }
@@ -502,16 +502,26 @@ public class BossTriggerZone : MonoBehaviour
     // 檢查Boss是否已死亡
     public bool IsBossDead()
     {
-        if (bossHealthController == null) 
+        // 使用動態找到的Boss實例
+        HealthPostureController actualBossController = FindActualBossInstance();
+        if (actualBossController == null)
         {
-            Debug.LogWarning($"[BossTriggerZone] IsBossDead: bossHealthController 為 null");
-            return true;
+            // 如果找不到動態實例，使用備用的bossHealthController
+            if (bossHealthController == null) 
+            {
+                Debug.LogWarning($"[BossTriggerZone] IsBossDead: 無法找到Boss實例");
+                return true;
+            }
+            actualBossController = bossHealthController;
         }
         
-        // 檢查Boss的血量是否為0
-        float healthPercentage = bossHealthController.GetHealthPercentage();
-        bool isDead = healthPercentage <= 0f;
-        Debug.Log($"[BossTriggerZone] Boss {bossHealthController.gameObject.name} 血量檢查: {healthPercentage * 100:F1}%, 是否死亡: {isDead}");
+        // 檢查Boss的血量是否為0且復活次數為0
+        float healthPercentage = actualBossController.GetHealthPercentage();
+        bool isHealthZero = healthPercentage <= 0f;
+        bool isNoLivesLeft = actualBossController.live <= 0;
+        bool isDead = isHealthZero && isNoLivesLeft;
+        
+        Debug.Log($"[BossTriggerZone] Boss {actualBossController.gameObject.name} 血量檢查: {healthPercentage * 100:F1}%, 復活次數: {actualBossController.live}, 是否死亡: {isDead}");
         return isDead;
     }
 
@@ -525,16 +535,24 @@ public class BossTriggerZone : MonoBehaviour
         Debug.Log($"[BossTriggerZone] 當前音樂: {(backgroundMusicSource != null && backgroundMusicSource.clip != null ? backgroundMusicSource.clip.name : "null")}");
         Debug.Log($"[BossTriggerZone] 當前音量: {(backgroundMusicSource != null ? backgroundMusicSource.volume.ToString() : "N/A")}");
         
-        // 隱藏Boss血條
-        if (bossHealthController != null)
+        // 隱藏Boss血條 - 使用動態找到的Boss實例
+        HealthPostureController actualBossController = FindActualBossInstance();
+        if (actualBossController != null)
         {
-            Debug.Log($"[BossTriggerZone] 隱藏 Boss 血條: {bossHealthController.gameObject.name}");
-            bossHealthController.HideHealthBar();
+            Debug.Log($"[BossTriggerZone] 隱藏 Boss 血條: {actualBossController.gameObject.name}");
+            actualBossController.HideHealthBar();
             Debug.Log($"[BossTriggerZone] 已隱藏 Boss 血條");
+        }
+        else if (bossHealthController != null)
+        {
+            // 如果找不到動態實例，使用備用的bossHealthController
+            Debug.Log($"[BossTriggerZone] 使用備用Boss血條控制器: {bossHealthController.gameObject.name}");
+            bossHealthController.HideHealthBar();
+            Debug.Log($"[BossTriggerZone] 已隱藏備用Boss血條");
         }
         else
         {
-            Debug.LogWarning($"[BossTriggerZone] OnBossDeath: bossHealthController 為 null，無法隱藏血條");
+            Debug.LogWarning($"[BossTriggerZone] OnBossDeath: 無法找到Boss血條控制器");
         }
         
         // 淡出回到原始音樂
