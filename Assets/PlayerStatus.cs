@@ -75,6 +75,7 @@ public class PlayerStatus : MonoBehaviour
         if (GetCurrentHP() <= 0 && !isDeath)
         {
             isDeath = true;
+            _animator.Play("Idle", 0, 0f);
             _animator.SetBool("Death", true);
         }
         else if (GetCurrentHP() > 0)
