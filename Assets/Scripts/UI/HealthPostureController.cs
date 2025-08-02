@@ -747,6 +747,12 @@ public class HealthPostureController : MonoBehaviour
         EnemyAI enemyAI = GetComponent<EnemyAI>();
         if (enemyAI != null)
         {
+            // 重新啟用AI組件（如果被禁用）
+            if (!enemyAI.enabled)
+            {
+                enemyAI.enabled = true;
+            }
+            
             try
             {
                 var idleState = new IdleState();
@@ -1081,6 +1087,12 @@ public class HealthPostureController : MonoBehaviour
     private void ResetEnemyAIState(EnemyAI enemyAI)
     {
         if (enemyAI == null) return;
+        
+        // 重新啟用AI組件（如果被禁用）
+        if (!enemyAI.enabled)
+        {
+            enemyAI.enabled = true;
+        }
         
         enemyAI.canAutoAttack = true;
         enemyAI.canBeParried = true;

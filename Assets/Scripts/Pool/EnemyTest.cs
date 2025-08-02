@@ -212,6 +212,10 @@ public class EnemyTest : MonoBehaviour
     // 恢復敵人控制
     public void RestoreControl()
     {
+        // 重置死亡和失衡標記
+        isDead = false;
+        isStaggered = false;
+        
         // 重新啟用敵人 AI
         EnemyAI ai = GetComponent<EnemyAI>();
         if (ai != null)
