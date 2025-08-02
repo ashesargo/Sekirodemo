@@ -311,7 +311,6 @@ public class TPCamera : MonoBehaviour
     // 每幀更新（建議用 LateUpdate 以確保角色移動後再更新攝影機）
     void LateUpdate()
     {
-        Debug.Log(isLock + "CA");
 
         // 限制 Time.deltaTime 以避免幀率不穩定
         float deltaTime = Mathf.Min(Time.deltaTime, maxDeltaTime);
