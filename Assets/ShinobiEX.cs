@@ -21,7 +21,7 @@ public class ShinobiEX : MonoBehaviour
         {
             Debug.LogWarning("ShinobiEX: 找不到名為 'Boss' 的遊戲對象");
         }
-        
+
         if (targetObject != null)
         {
             targetObject.SetActive(false);
@@ -30,8 +30,8 @@ public class ShinobiEX : MonoBehaviour
         {
             Debug.LogWarning("ShinobiEX: targetObject 未設置");
         }
-        
-        if (boss == null) 
+
+        if (boss == null)
         {
             Debug.LogWarning("ShinobiEX: 無法獲取 EnemyTest 組件");
         }
@@ -40,14 +40,18 @@ public class ShinobiEX : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (boss == null) 
+        if (bossStatus == null)
+        {
+            bossStatus = GameObject.Find("Boss");
+        }
+        if (boss == null)
         {
             if (bossStatus != null)
             {
                 boss = bossStatus.GetComponent<EnemyTest>();
             }
         }
-        
+
         if (boss != null)
         {
             if (boss.isDead)
