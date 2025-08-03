@@ -62,9 +62,9 @@ public class LockOnIconFollow : MonoBehaviour
     {
         if (iconImage == null) yield break;
 
-        // 變紅色並變大2倍
+        // 變紅色並變大5倍
         iconImage.color = Color.red;
-        rectTransform.localScale = originalScale * 2f;
+        rectTransform.localScale = originalScale * 5f;
 
         // 等待3秒
         yield return new WaitForSeconds(3f);
