@@ -387,7 +387,6 @@ GameObject:
   - component: {fileID: 8548961489769753933}
   - component: {fileID: 7278955323816355731}
   - component: {fileID: 8856588489211622491}
-  - component: {fileID: 1907094606346723628}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -462,7 +461,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &8856588489211622491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -480,18 +479,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &1907094606346723628
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5282757897303277057}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f25a0475556d9847b707c0ad81baa64, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &6236744297027800669
 GameObject:
   m_ObjectHideFlags: 0
@@ -914,8 +901,8 @@ MonoBehaviour:
   postureBarGameObject: {fileID: 7820795137195294675}
   lifeBallContainer: {fileID: 3558541890748053695}
   lifeBallPrefab: {fileID: 1753119836448374920, guid: 36f160f9872b73b4bace509b842f8d9f, type: 3}
-  lifeBallNormalSprite: {fileID: 0}
-  lifeBallCrossSprite: {fileID: 0}
+  lifeBallCrossPrefab: {fileID: 0}
+  lifeBallSpacing: 50
 --- !u!114 &2748173040116489867
 MonoBehaviour:
   m_ObjectHideFlags: 0

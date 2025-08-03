@@ -11,7 +11,8 @@ public class HealthPostureController : MonoBehaviour
     [SerializeField] private int maxHealth = 100;   // 最大生命值
     [SerializeField] private int maxPosture = 100;  // 最大架勢值
     [SerializeField] public HealthPostureUI healthPostureUI;   // 生命值與架勢 UI 顯示
-    [SerializeField] private GameObject deathUI;   // 死亡UI
+    [SerializeField] private GameObject deathUI;   // 死亡 UI
+    [SerializeField] private GameObject killUI;   // 處決 UI
     [SerializeField] private GameObject reviveEffectPrefab;   // 復活特效Prefab
     [SerializeField] private Transform reviveEffectPosition;   // 復活特效生成位置
 
@@ -918,6 +919,10 @@ public class HealthPostureController : MonoBehaviour
     // 架勢被打破
     private void OnPostureBroken(object sender, System.EventArgs e)
     {
+        Debug.Log($"[OnPostureBroken] 架勢條滿，觸發 killUI，物件: {gameObject.name}");
+        // 顯示處決UI三秒鐘
+        ShowKillUI();
+        
         EnemyAI enemyAI = GetComponent<EnemyAI>();
         if (enemyAI != null)
         {
@@ -1163,6 +1168,31 @@ public class HealthPostureController : MonoBehaviour
         if (enemyAI != null)
         {
             enemyAI.canAutoAttack = true;
+        }
+    }
+    
+    // 顯示處決UI
+    private void ShowKillUI()
+    {
+        if (killUI != null)
+        {
+            Debug.Log($"[ShowKillUI] killUI 顯示於 {Time.time}，物件: {gameObject.name}");
+            killUI.SetActive(true);
+            StartCoroutine(HideKillUIAfterDelay(3f));
+        }
+        else
+        {
+            Debug.LogWarning($"[ShowKillUI] killUI 為 null，物件: {gameObject.name}");
+        }
+    }
+    
+    // 延遲隱藏處決UI的協程
+    private IEnumerator HideKillUIAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (killUI != null)
+        {
+            killUI.SetActive(false);
         }
     }
     
