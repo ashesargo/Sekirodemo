@@ -30,6 +30,14 @@ public class ExecutedState : BaseEnemyState
             enemyTest.isDead = true;
         }
         
+        // Boss和Elite被處決時受到1000點傷害
+        HealthPostureController healthController = enemy.GetComponent<HealthPostureController>();
+        if (healthController != null && healthController.IsBoss())
+        {
+            Debug.Log($"[ExecutedState] Boss/Elite {enemy.name} 被處決，受到1000點傷害");
+            healthController.TakeDamage(1000, PlayerStatus.HitState.Hit);
+        }
+        
         // 不要設置生命值為0，讓ReviveState來處理復活邏輯
         // 這樣可以避免觸發OnDead事件，讓ExecutedState自己控制狀態轉換
         

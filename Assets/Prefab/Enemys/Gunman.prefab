@@ -7243,7 +7243,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 8985917237467426635, guid: 57c781ea0ff0f754cad1c28f4c9d8d0b, type: 3}
   firePoint: {fileID: 4280088553051569232}
-  projectileSpeed: 150
+  projectileSpeed: 120
   projectileDamage: 10
   shootSound: {fileID: 8300000, guid: 7cff378b9b9307c48bf3cad91a0bd381, type: 3}
   reloadSound: {fileID: 0}

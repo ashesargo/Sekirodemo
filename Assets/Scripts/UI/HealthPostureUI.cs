@@ -157,9 +157,23 @@ public class HealthPostureUI : MonoBehaviour
 
         // 檢查是否為玩家（玩家UI在GUI父物件底下，需要特殊判斷）
         bool isPlayer = IsPlayerUI();
+        
+        // 檢查是否為Boss或Elite
+        bool isBossOrElite = IsBossOrEliteUI();
 
+        // Boss和Elite的架勢條不受5秒隱藏和50%邏輯影響，只要架勢值大於0就顯示
+        if (isBossOrElite && postureNormalized > 0f)
+        {
+            ShowPostureBar();
+            // 停止隱藏協程
+            if (hidePostureBarCoroutine != null)
+            {
+                StopCoroutine(hidePostureBarCoroutine);
+                hidePostureBarCoroutine = null;
+            }
+        }
         // 玩家架勢值大於50%時常駐顯示
-        if (isPlayer && postureNormalized > 0.5f)
+        else if (isPlayer && postureNormalized > 0.5f)
         {
             ShowPostureBar();
             // 停止隱藏協程
@@ -369,6 +383,39 @@ public class HealthPostureUI : MonoBehaviour
         // 你可以在玩家UI上掛一個特殊的組件來標記
         if (GetComponent<PlayerUIMarker>() != null)
             return true;
+        
+        return false;
+    }
+
+    // 判斷是否為Boss或Elite UI
+    private bool IsBossOrEliteUI()
+    {
+        // 檢查父物件是否有 HealthPostureController 組件
+        HealthPostureController healthController = GetComponentInParent<HealthPostureController>();
+        if (healthController != null)
+        {
+            // 使用 HealthPostureController 的 IsBoss() 方法來判斷
+            return healthController.IsBoss();
+        }
+        
+        // 備用方法：檢查物件名稱
+        string objectName = gameObject.name.Replace("(Clone)", "");
+        if (objectName == "Boss" || objectName == "Elite")
+        {
+            return true;
+        }
+        
+        // 檢查父物件名稱
+        Transform parent = transform.parent;
+        while (parent != null)
+        {
+            string parentName = parent.name.Replace("(Clone)", "");
+            if (parentName == "Boss" || parentName == "Elite")
+            {
+                return true;
+            }
+            parent = parent.parent;
+        }
         
         return false;
     }

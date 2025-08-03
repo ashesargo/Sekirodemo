@@ -798,9 +798,17 @@ public class HealthPostureController : MonoBehaviour
         
         PlayReviveEffect();
         
+        // Boss和Elite的血條顯示邏輯
         if (IsBoss())
         {
+            Debug.Log($"[HealthPostureController] Boss復活，強制顯示UI 10秒，敵人: {gameObject.name}");
             // Boss的血條顯示邏輯由BossTriggerZone控制
+            // 但復活時強制顯示10秒
+            if (healthPostureUI != null)
+            {
+                healthPostureUI.gameObject.SetActive(true);
+                StartCoroutine(ForceShowBossUIForDuration(10f));
+            }
         }
         else
         {
@@ -991,7 +999,10 @@ public class HealthPostureController : MonoBehaviour
             }
             else if (isBoss && healthPostureUI != null)
             {
-                healthPostureUI.gameObject.SetActive(false);
+                Debug.Log($"[HealthPostureController] Boss ResetHealth，強制顯示UI 10秒，敵人: {gameObject.name}");
+                // Boss和Elite的UI在復活時強制顯示10秒
+                healthPostureUI.gameObject.SetActive(true);
+                StartCoroutine(ForceShowBossUIForDuration(10f));
             }
             
             if (hideUICoroutine != null)
@@ -1168,6 +1179,42 @@ public class HealthPostureController : MonoBehaviour
         if (enemyAI != null)
         {
             enemyAI.canAutoAttack = true;
+        }
+    }
+    
+    // 強制顯示Boss UI一段時間的協程
+    private IEnumerator ForceShowBossUIForDuration(float duration)
+    {
+        if (healthPostureUI == null) yield break;
+        
+        Debug.Log($"[HealthPostureController] 開始強制顯示Boss UI {duration}秒，敵人: {gameObject.name}");
+        
+        // 確保UI顯示
+        healthPostureUI.gameObject.SetActive(true);
+        
+        // 等待指定時間
+        yield return new WaitForSeconds(duration);
+        
+        Debug.Log($"[HealthPostureController] Boss UI強制顯示時間結束，檢查玩家是否在Boss區域內，敵人: {gameObject.name}");
+        
+        // 檢查是否仍然在Boss區域內
+        if (IsPlayerInBossZone())
+        {
+            // 如果玩家仍在Boss區域內，保持UI顯示
+            if (healthPostureUI != null)
+            {
+                healthPostureUI.gameObject.SetActive(true);
+                Debug.Log($"[HealthPostureController] 玩家仍在Boss區域內，保持UI顯示，敵人: {gameObject.name}");
+            }
+        }
+        else
+        {
+            // 如果玩家已離開Boss區域，隱藏UI
+            if (healthPostureUI != null)
+            {
+                healthPostureUI.gameObject.SetActive(false);
+                Debug.Log($"[HealthPostureController] 玩家已離開Boss區域，隱藏UI，敵人: {gameObject.name}");
+            }
         }
     }
     
