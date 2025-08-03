@@ -166,11 +166,20 @@ public class HealthPostureController : MonoBehaviour
                     basePostureAmount = Mathf.RoundToInt(healthPostureSystem.GetMaxPosture() * 0.1f); 
                     break;
                 case PlayerStatus.HitState.Parry:
-                    basePostureAmount = 0; 
+                    basePostureAmount = Mathf.RoundToInt(healthPostureSystem.GetMaxPosture() * 0.05f);  
                     break;
             }
             
             int adjustedPostureAmount = Mathf.RoundToInt(basePostureAmount * postureReductionRate);
+            
+            // 檢查是否為Boss或Elite，如果是則將架勢值增加量乘以0.5
+            bool isBossOrElite = IsBoss();
+            if (isBossOrElite)
+            {
+                adjustedPostureAmount = Mathf.RoundToInt(adjustedPostureAmount * 0.5f);
+                Debug.Log($"[HealthPostureController] Boss/Elite受傷架勢值增加調整: {basePostureAmount} → {adjustedPostureAmount} (乘以0.5)");
+            }
+            
             healthPostureSystem.PostureIncrease(adjustedPostureAmount, isParry);
         }
         
@@ -182,7 +191,17 @@ public class HealthPostureController : MonoBehaviour
     {
         if (healthPostureSystem == null || !canIncreasePosture) return;
 
-        healthPostureSystem.PostureIncrease(amount, isParry);
+        // 檢查是否為Boss或Elite，如果是則將架勢值增加量乘以0.5
+        bool isBossOrElite = IsBoss();
+        int adjustedAmount = amount;
+        
+        if (isBossOrElite)
+        {
+            adjustedAmount = Mathf.RoundToInt(amount * 0.5f);
+            Debug.Log($"[HealthPostureController] Boss/Elite架勢值增加調整: {amount} → {adjustedAmount} (乘以0.5)");
+        }
+
+        healthPostureSystem.PostureIncrease(adjustedAmount, isParry);
         ShowHealthBar();
     }
 
