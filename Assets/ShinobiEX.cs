@@ -106,8 +106,8 @@ public class ShinobiEX : MonoBehaviour
         {
             targetObject.SetActive(true);
 
-            float duration = 1f; // Duration of fade-in effect
-            float elapsed = 5f;
+            float duration = 5.0f; // Duration of fade-in effect
+            float elapsed = 0.3f; 
 
             while (elapsed < duration)
             {
@@ -139,5 +139,9 @@ public class ShinobiEX : MonoBehaviour
 
         isFading = false;
         hasFaded = true; // Mark fade-in as completed
+        
+        // 等待2秒後回到主選單
+        yield return new WaitForSeconds(3f);
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Main Menu");
     }
 }
