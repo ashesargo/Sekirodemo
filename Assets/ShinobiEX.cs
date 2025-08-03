@@ -100,14 +100,14 @@ public class ShinobiEX : MonoBehaviour
     private IEnumerator FadeInTargetObject()
     {
         isFading = true;
-        yield return new WaitForSeconds(1f); // 1-second delay
+        yield return new WaitForSeconds(5f); // 1-second delay
         _audioSource.PlayOneShot(_audioClip);
         if (targetObject != null)
         {
             targetObject.SetActive(true);
 
             float duration = 1f; // Duration of fade-in effect
-            float elapsed = 0f;
+            float elapsed = 5f;
 
             while (elapsed < duration)
             {
