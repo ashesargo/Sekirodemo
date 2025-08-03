@@ -30,11 +30,11 @@ public class ExecutedState : BaseEnemyState
             enemyTest.isDead = true;
         }
         
-        // Boss和Elite被處決時受到1000點傷害
+        // 所有敵人被處決時受到1000點傷害
         HealthPostureController healthController = enemy.GetComponent<HealthPostureController>();
-        if (healthController != null && healthController.IsBoss())
+        if (healthController != null)
         {
-            Debug.Log($"[ExecutedState] Boss/Elite {enemy.name} 被處決，受到1000點傷害");
+            Debug.Log($"[ExecutedState] 敵人 {enemy.name} 被處決，受到1000點傷害");
             healthController.TakeDamage(1000, PlayerStatus.HitState.Hit);
         }
         

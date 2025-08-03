@@ -65,11 +65,18 @@ public class HealthPostureUI : MonoBehaviour
 
         // 檢查是否為玩家（玩家UI在GUI父物件底下，需要特殊判斷）
         bool isPlayer = IsPlayerUI();
+        // 檢查是否為Boss或Elite
+        bool isBossOrElite = IsBossOrEliteUI();
         
-        // 初始化時隱藏架勢條（除非是玩家且架勢值大於50%）
+        // 初始化時隱藏架勢條（除非是玩家且架勢值大於50%，或是Boss/Elite）
         if (postureBarGameObject != null)
         {
-            if (isPlayer && healthPostureSystem != null)
+            if (isBossOrElite)
+            {
+                // Boss和Elite的架勢條在初始化時就顯示
+                postureBarGameObject.SetActive(true);
+            }
+            else if (isPlayer && healthPostureSystem != null)
             {
                 float postureNormalized = healthPostureSystem.GetPostureNormalized();
                 if (postureNormalized > 0.5f)
@@ -161,8 +168,8 @@ public class HealthPostureUI : MonoBehaviour
         // 檢查是否為Boss或Elite
         bool isBossOrElite = IsBossOrEliteUI();
 
-        // Boss和Elite的架勢條不受5秒隱藏和50%邏輯影響，只要架勢值大於0就顯示
-        if (isBossOrElite && postureNormalized > 0f)
+        // Boss和Elite的架勢條不受5秒隱藏和50%邏輯影響，復活後即使架勢值歸零也要繼續顯示
+        if (isBossOrElite)
         {
             ShowPostureBar();
             // 停止隱藏協程
@@ -270,7 +277,16 @@ public class HealthPostureUI : MonoBehaviour
     {
         // 檢查是否為玩家（玩家UI在GUI父物件底下，需要特殊判斷）
         bool isPlayer = IsPlayerUI();
+        // 檢查是否為Boss或Elite
+        bool isBossOrElite = IsBossOrEliteUI();
         float postureNormalized = healthPostureSystem.GetPostureNormalized();
+        
+        // Boss和Elite的架勢條不能被隱藏
+        if (isBossOrElite)
+        {
+            return;
+        }
+        
         if (isPlayer && postureNormalized > 0.5f)
         {
             return;
