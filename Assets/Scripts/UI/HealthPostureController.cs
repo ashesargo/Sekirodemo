@@ -12,7 +12,6 @@ public class HealthPostureController : MonoBehaviour
     [SerializeField] private int maxPosture = 100;  // 最大架勢值
     [SerializeField] public HealthPostureUI healthPostureUI;   // 生命值與架勢 UI 顯示
     [SerializeField] private GameObject deathUI;   // 死亡 UI
-    [SerializeField] private GameObject killUI;   // 處決 UI
     [SerializeField] private GameObject reviveEffectPrefab;   // 復活特效Prefab
     [SerializeField] private Transform reviveEffectPosition;   // 復活特效生成位置
 
@@ -927,9 +926,10 @@ public class HealthPostureController : MonoBehaviour
     // 架勢被打破
     private void OnPostureBroken(object sender, System.EventArgs e)
     {
-        Debug.Log($"[OnPostureBroken] 架勢條滿，觸發 killUI，物件: {gameObject.name}");
-        // 顯示處決UI三秒鐘
-        ShowKillUI();
+        Debug.Log($"[OnPostureBroken] 架勢條滿，物件: {gameObject.name}");
+        
+        // 通知攝影機觸發鎖定圖示效果
+        NotifyCameraPostureFullEffect();
         
         EnemyAI enemyAI = GetComponent<EnemyAI>();
         if (enemyAI != null)
@@ -949,6 +949,23 @@ public class HealthPostureController : MonoBehaviour
             {
                 StartCoroutine(RestorePostureAfterDelay(0.01f));
                 StartCoroutine(RestoreControlAfterDelay(1f));
+            }
+        }
+    }
+
+    /// <summary>
+    /// 通知攝影機觸發架勢滿效果
+    /// </summary>
+    private void NotifyCameraPostureFullEffect()
+    {
+        // 尋找攝影機並通知效果
+        TPCamera[] cameras = FindObjectsOfType<TPCamera>();
+        foreach (TPCamera camera in cameras)
+        {
+            if (camera.isLock && camera.lockTarget == transform)
+            {
+                camera.NotifyPostureFullEffect();
+                break;
             }
         }
     }
@@ -1218,30 +1235,7 @@ public class HealthPostureController : MonoBehaviour
         }
     }
     
-    // 顯示處決UI
-    private void ShowKillUI()
-    {
-        if (killUI != null)
-        {
-            Debug.Log($"[ShowKillUI] killUI 顯示於 {Time.time}，物件: {gameObject.name}");
-            killUI.SetActive(true);
-            StartCoroutine(HideKillUIAfterDelay(3f));
-        }
-        else
-        {
-            Debug.LogWarning($"[ShowKillUI] killUI 為 null，物件: {gameObject.name}");
-        }
-    }
-    
-    // 延遲隱藏處決UI的協程
-    private IEnumerator HideKillUIAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        if (killUI != null)
-        {
-            killUI.SetActive(false);
-        }
-    }
+
     
     // 備用AI狀態重置方法
     private void ResetEnemyAIState(EnemyAI enemyAI)

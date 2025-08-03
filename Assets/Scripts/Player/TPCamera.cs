@@ -308,6 +308,21 @@ public class TPCamera : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 通知鎖定圖示觸發架勢滿效果
+    /// </summary>
+    public void NotifyPostureFullEffect()
+    {
+        if (isLock && currentLockOnIcon != null)
+        {
+            LockOnIconFollow follow = currentLockOnIcon.GetComponent<LockOnIconFollow>();
+            if (follow != null)
+            {
+                follow.TriggerPostureFullEffect();
+            }
+        }
+    }
+
     // 每幀更新（建議用 LateUpdate 以確保角色移動後再更新攝影機）
     void LateUpdate()
     {
