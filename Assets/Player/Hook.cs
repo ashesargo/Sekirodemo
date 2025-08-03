@@ -370,11 +370,6 @@ public class PlayerGrapple : MonoBehaviour
         }
         // 等待下垂和拉緊完成
         yield return new WaitForSeconds(pullTautDuration);
-        if (controller != null)
-        {
-            controller.enabled = false;
-        }
-
     }
     public void StartRopeExtend()
     {
@@ -409,15 +404,13 @@ public class PlayerGrapple : MonoBehaviour
         Vector3 startPos = transform.position;
         float distance = Vector3.Distance(startPos, targetPos);
         float moveTime = distance / grappleSpeed;
-
-        while (elapsedTime < moveTime && Vector3.Distance(transform.position, targetPos) > 0.01f)
+        while (elapsedTime < moveTime && Vector3.Distance(transform.position, targetPos) > 0.0001f)
         {
             elapsedTime += Time.deltaTime;
             float t = elapsedTime / moveTime;
             transform.position = Vector3.Lerp(startPos, targetPos, t);
             yield return null;
         }
-
         transform.position = targetPos;
         if (animator != null)
         {
@@ -426,15 +419,9 @@ public class PlayerGrapple : MonoBehaviour
             animator.ResetTrigger("Grapple2");
         }
 
-        if (controller != null)
-        {
-            controller.enabled = true;
-        }
-
         isGrappling = false;
         nearbyPoints.Clear();
         selectedPoint = null;
-
         if (grappleRope != null)
         {
             grappleRope.enabled = false;
