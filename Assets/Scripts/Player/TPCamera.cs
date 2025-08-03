@@ -135,7 +135,8 @@ public class TPCamera : MonoBehaviour
     public void UpdateCameraTransform()
     {
         // 限制 Time.deltaTime 以避免幀率不穩定
-        float deltaTime = Mathf.Min(Time.deltaTime, maxDeltaTime);
+        //float deltaTime = Mathf.Min(Time.deltaTime, maxDeltaTime);
+        float deltaTime = Time.deltaTime;
 
         if (!isLock && !stateInfo.IsTag("Execution"))
         {

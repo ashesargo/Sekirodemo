@@ -40,6 +40,8 @@ public class PlayerGrapple : MonoBehaviour
     private GrapplePoint selectedPoint;
     AudioSource _audioSource;
     public AudioClip ropeSound;
+    bool isBend = false;
+
     // 新增的目標和圖示管理
     [System.Serializable]
     private class TargetInfo
@@ -88,7 +90,7 @@ public class PlayerGrapple : MonoBehaviour
 
     void LateUpdate()
     {
-        if (isGrappling && grappleRope != null && grappleRope.enabled)
+        if (isGrappling && grappleRope != null && grappleRope.enabled && !isExtendingRope && !isBend)
         {
             Vector3 ropeStartPos = ropeStartPoint.position;
             Vector3 ropeEndPos = currentTargetPos;
@@ -230,11 +232,13 @@ public class PlayerGrapple : MonoBehaviour
             StartCoroutine(StartGrappleWithTurn(closestPoint));
         }
     }
+
     public void PlayRopeSound()
     {
         _audioSource.volume = 1f;
         _audioSource.PlayOneShot(ropeSound);
     }
+
     void UpdateIndicators()
     {
         // 取得攝影機前方向量（忽略 y 軸以專注於水平朝向）
@@ -346,27 +350,32 @@ public class PlayerGrapple : MonoBehaviour
     {
         isGrappling = true;
         currentTargetPos = target.transform.position;
-
         if (animator != null)
         {
             animator.SetTrigger("Grapple");
         }
+        PlayRopeSound();
 
+        StartRopeExtend();
+
+        StartCoroutine(WaitForRopeExtendAndSag(target));
+
+    }
+
+    IEnumerator WaitForRopeExtendAndSag(GrapplePoint target)
+    {
+        while (isExtendingRope)
+        {
+            yield return null;
+        }
+        // 等待下垂和拉緊完成
+        yield return new WaitForSeconds(pullTautDuration);
         if (controller != null)
         {
             controller.enabled = false;
         }
 
-        if (grappleRope != null)
-        {
-            grappleRope.enabled = true;
-            grappleRope.positionCount = 2;
-            grappleRope.SetPosition(0, ropeStartPoint.position);
-            grappleRope.SetPosition(1, currentTargetPos);
-            StartCoroutine(DelayedUpdateRope(currentTargetPos));
-        }
     }
-
     public void StartRopeExtend()
     {
         if (extendRopeCoroutine != null)
@@ -388,11 +397,9 @@ public class PlayerGrapple : MonoBehaviour
 
     IEnumerator DelayedMoveToGrapple()
     {
-        yield return new WaitForSeconds(grapple2Duration);
         animator.SetBool("IsJumping", true);
+        yield return new WaitForSeconds(grapple2Duration);
         float distance = Vector3.Distance(transform.position, currentTargetPos);
-        float moveTime = distance / grappleSpeed;
-        animator.speed = jumpAnimationDuration / Mathf.Max(moveTime, 0.1f);
         StartCoroutine(MoveToGrapplePoint(currentTargetPos));
     }
 
@@ -412,19 +419,11 @@ public class PlayerGrapple : MonoBehaviour
         }
 
         transform.position = targetPos;
-
-        float remainingTime = jumpAnimationDuration - elapsedTime;
-        if (remainingTime > 0)
-        {
-            yield return new WaitForSeconds(remainingTime);
-        }
-
         if (animator != null)
         {
             animator.SetBool("IsJumping", false);
             animator.ResetTrigger("Grapple");
             animator.ResetTrigger("Grapple2");
-            animator.speed = 1f;
         }
 
         if (controller != null)
@@ -436,34 +435,6 @@ public class PlayerGrapple : MonoBehaviour
         nearbyPoints.Clear();
         selectedPoint = null;
 
-        if (grappleRope != null)
-        {
-            grappleRope.enabled = false;
-            grappleRope.positionCount = 0;
-        }
-    }
-
-    IEnumerator DelayedUpdateRope(Vector3 targetPos)
-    {
-        yield return new WaitForSeconds(ropeExtendDuration);
-        isExtendingRope = false;
-        yield return StartCoroutine(UpdateRope(targetPos));
-    }
-
-    IEnumerator UpdateRope(Vector3 targetPos)
-    {
-        float elapsedTime = 0f;
-        while (isGrappling)
-        {
-            if (!isExtendingRope)
-            {
-                float t = Mathf.Clamp01(elapsedTime / pullTautDuration);
-                float currentSag = Mathf.Lerp(sagAmount, 0f, t);
-                UpdateRopeWithSag(ropeStartPoint.position, targetPos, currentSag, ropeSegments);
-                elapsedTime += Time.deltaTime;
-            }
-            yield return null;
-        }
         if (grappleRope != null)
         {
             grappleRope.enabled = false;
@@ -487,10 +458,39 @@ public class PlayerGrapple : MonoBehaviour
             int currentSegments = Mathf.FloorToInt(Mathf.Lerp(2, ropeSegments, t));
             Vector3 ropeStartPos = ropeStartPoint.position;
             Vector3 ropeEndPos = Vector3.Lerp(ropeStartPoint.position, targetPos, t);
-            UpdateRopeWithSag(ropeStartPos, ropeEndPos, sagAmount, currentSegments);
+            UpdateRopeWithSag(ropeStartPos, ropeEndPos, 0f, currentSegments); // 保持伸直
             yield return null;
         }
+        // 繩子延伸完成
         isExtendingRope = false;
+        UpdateRopeWithSag(ropeStartPoint.position, targetPos, 0f, ropeSegments); // 保持伸直
+        // 啟動下垂和拉緊協程
+        StartCoroutine(SagAndPullTaut(targetPos));
+    }
+    IEnumerator SagAndPullTaut(Vector3 targetPos)
+    {
+        isBend = true;
+        // 繩子下垂
+        float sagTime = 0f;
+        while (sagTime < pullTautDuration / 2f)
+        {
+            sagTime += Time.deltaTime;
+            float t = sagTime / (pullTautDuration / 2);
+            float currentSag = Mathf.Lerp(0f, sagAmount, t);
+            UpdateRopeWithSag(ropeStartPoint.position, targetPos, currentSag, ropeSegments);
+            yield return null;
+        }
+        // 繩子拉緊
+        float pullTime = 0f;
+        while (pullTime < pullTautDuration / 2)
+        {
+            pullTime += Time.deltaTime;
+            float t = pullTime / (pullTautDuration / 2);
+            float currentSag = Mathf.Lerp(sagAmount, 0f, t);
+            UpdateRopeWithSag(ropeStartPoint.position, targetPos, currentSag, ropeSegments);
+            yield return null;
+        }
+        isBend = true;
     }
 
     void UpdateRopeWithSag(Vector3 startPos, Vector3 endPos, float currentSag, int segments)
