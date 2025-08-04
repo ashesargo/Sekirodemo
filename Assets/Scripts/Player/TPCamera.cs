@@ -136,7 +136,7 @@ public class TPCamera : MonoBehaviour
     {
         // 限制 Time.deltaTime 以避免幀率不穩定
         float deltaTime = Mathf.Min(Time.deltaTime, maxDeltaTime);
-
+    
         if (!isLock && !stateInfo.IsTag("Execution"))
         {
             // 一般模式：根據滑鼠移動旋轉攝影機
