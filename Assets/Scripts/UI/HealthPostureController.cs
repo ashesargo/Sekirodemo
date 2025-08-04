@@ -172,12 +172,12 @@ public class HealthPostureController : MonoBehaviour
             
             int adjustedPostureAmount = Mathf.RoundToInt(basePostureAmount * postureReductionRate);
             
-            // 檢查是否為Boss或Elite，如果是則將架勢值增加量乘以0.5
+            // 檢查是否為Boss或Elite，如果是則將架勢值增加量乘以0.8
             bool isBossOrElite = IsBoss();
             if (isBossOrElite)
             {
-                adjustedPostureAmount = Mathf.RoundToInt(adjustedPostureAmount * 0.5f);
-                Debug.Log($"[HealthPostureController] Boss/Elite受傷架勢值增加調整: {basePostureAmount} → {adjustedPostureAmount} (乘以0.5)");
+                adjustedPostureAmount = Mathf.RoundToInt(adjustedPostureAmount * 0.8f);
+                Debug.Log($"[HealthPostureController] Boss/Elite受傷架勢值增加調整: {basePostureAmount} → {adjustedPostureAmount} (乘以0.8)");
             }
             
             healthPostureSystem.PostureIncrease(adjustedPostureAmount, isParry);
