@@ -5279,6 +5279,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2127440841918773903, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3890029273807365782}
+    - targetCorrespondingSourceObject: {fileID: 2127440841918773903, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7221371238159498200}
+    - targetCorrespondingSourceObject: {fileID: 2127440841918773903, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8346329437395251444}
   m_SourcePrefab: {fileID: 100100000, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
 --- !u!137 &167012479499398312 stripped
 SkinnedMeshRenderer:
@@ -5588,6 +5594,40 @@ CapsuleCollider:
   m_Height: 1.0272808
   m_Direction: 1
   m_Center: {x: -0.00045237513, y: -0.34444106, z: 0.0028558024}
+--- !u!114 &7221371238159498200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4746884258392470699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bff4f5a8991d7fa47baed5c5ff25979f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: ae721c767fcd6664ca1cf46b36bb56b7, type: 2}
+  duration: 1.2
+  corner: 50
+  loop: 0
+  points:
+  - {x: -0.0028229624, y: -0.85764796, z: -0.04222051}
+  - {x: 0.00617629, y: -0.46839952, z: 0.020526823}
+  - {x: -0.003562284, y: -0.1526027, z: -0.0032003473}
+--- !u!114 &8346329437395251444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4746884258392470699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eb7e0624ddd6fc4da04d66fa31d050f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bladeTrail: {fileID: 7221371238159498200}
+  animator: {fileID: 1191984664551618550}
 --- !u!137 &4747822995204295653 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 2127323974962300353, guid: bbb967bfb1840aa409d61040bc76e284, type: 3}
