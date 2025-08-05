@@ -714,27 +714,27 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8798452630711129948, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_AABB.m_Center.x
-      value: NaN
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8798452630711129948, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_AABB.m_Center.y
-      value: NaN
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8798452630711129948, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_AABB.m_Center.z
-      value: NaN
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8798452630711129948, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_AABB.m_Extent.x
-      value: NaN
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8798452630711129948, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_AABB.m_Extent.y
-      value: NaN
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8798452630711129948, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_AABB.m_Extent.z
-      value: NaN
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8780530743504904975, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -882,27 +882,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -2424044922274093685, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_AABB.m_Center.x
-      value: NaN
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -2424044922274093685, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_AABB.m_Center.y
-      value: NaN
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -2424044922274093685, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_AABB.m_Center.z
-      value: NaN
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -2424044922274093685, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_AABB.m_Extent.x
-      value: NaN
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -2424044922274093685, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_AABB.m_Extent.y
-      value: NaN
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -2424044922274093685, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_AABB.m_Extent.z
-      value: NaN
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -2109214106225666654, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_IsActive
@@ -1014,27 +1014,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7393692682573126483, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_AABB.m_Center.x
-      value: NaN
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7393692682573126483, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_AABB.m_Center.y
-      value: NaN
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7393692682573126483, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_AABB.m_Center.z
-      value: NaN
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7393692682573126483, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_AABB.m_Extent.x
-      value: NaN
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7393692682573126483, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_AABB.m_Extent.y
-      value: NaN
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7393692682573126483, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_AABB.m_Extent.z
-      value: NaN
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7393692682573126483, guid: 6469acb63f9308948931637bccafa65a, type: 3}
       propertyPath: m_LightProbeUsage
