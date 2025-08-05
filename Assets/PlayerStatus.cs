@@ -175,7 +175,8 @@ public class PlayerStatus : MonoBehaviour
             healthController.ResetHealth();
         }
         isDeath = false;
-        
+        _animator.SetBool("Death", false);
+
         // 重置動畫狀態，確保玩家可以正常操作
         if (_animator != null)
         {
