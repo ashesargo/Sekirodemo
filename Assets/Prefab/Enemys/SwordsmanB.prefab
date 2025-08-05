@@ -6430,7 +6430,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8185417083674443760, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: BlurStrength
-      value: 0.5
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 8185417083674443760, guid: eb198f9017afb5e45a01d418e8811423, type: 3}
       propertyPath: HitBlurStrength
@@ -6924,6 +6924,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isDead: 0
+  isStaggered: 0
   defendChance: 0.5
   defendPostureIncrease: 10
   hitPostureIncrease: 0
@@ -6967,7 +6968,7 @@ MonoBehaviour:
     m_Bits: 512
   showDebugInfo: 0
   lookAtTurnSpeed: 3
-  minDistanceToPlayer: 10
+  minDistanceToPlayer: 5
   groundCheckDistance: 5
   groundMask:
     serializedVersion: 2

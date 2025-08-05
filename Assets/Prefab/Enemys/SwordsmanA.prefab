@@ -6274,7 +6274,7 @@ MonoBehaviour:
     m_Bits: 512
   showDebugInfo: 0
   lookAtTurnSpeed: 3
-  minDistanceToPlayer: 8
+  minDistanceToPlayer: 5
   groundCheckDistance: 5
   groundMask:
     serializedVersion: 2

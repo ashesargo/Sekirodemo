@@ -176,7 +176,7 @@ public class HealthPostureController : MonoBehaviour
             bool isBossOrElite = IsBoss();
             if (isBossOrElite)
             {
-                adjustedPostureAmount = Mathf.RoundToInt(adjustedPostureAmount * 0.8f);
+                adjustedPostureAmount = Mathf.RoundToInt(adjustedPostureAmount * 1f);
                 Debug.Log($"[HealthPostureController] Boss/Elite受傷架勢值增加調整: {basePostureAmount} → {adjustedPostureAmount} (乘以0.8)");
             }
             
