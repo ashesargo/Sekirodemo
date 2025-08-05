@@ -55,7 +55,8 @@ public class TPContraller : MonoBehaviour
     public float attackRadius = 15f;
     public float attackAngle = 120f;
     public LayerMask targetLayer;
-
+    private const float maxDeltaTime = 0.02f; // 對應 50 FPS
+    float deltaTime;
     public TPCamera _TPCamera;
     Transform lockTarget;
     bool isLock;
@@ -97,9 +98,9 @@ public class TPContraller : MonoBehaviour
         {
             if (_characterController != null)
             {
-                _characterController.Move(dashDirection * dashDis * Time.deltaTime / dashTime);
+                _characterController.Move(dashDirection * dashDis * deltaTime / dashTime);
             }
-            elapsed += Time.deltaTime;
+            elapsed += deltaTime;
             yield return null;
         }
         canMove = true;
@@ -130,6 +131,7 @@ public class TPContraller : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
         _animator = GetComponent<Animator>();
         _characterController = GetComponent<CharacterController>();
         _playerGrapple = GetComponent<PlayerGrapple>();
@@ -154,6 +156,8 @@ public class TPContraller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        deltaTime = Mathf.Min(Time.deltaTime, maxDeltaTime);
+
         if (_TPCamera != null)
         {
             lockTarget = _TPCamera.lockTarget;
@@ -187,7 +191,7 @@ public class TPContraller : MonoBehaviour
         }
         if (comboTimer > 0)
         {
-            comboTimer -= Time.deltaTime;
+            comboTimer -= deltaTime;
             if (comboTimer <= 0)
             {
                 ResetCombo();
@@ -291,12 +295,12 @@ public class TPContraller : MonoBehaviour
                 moveDirection.Normalize();
                 if (!isDashing && !isRunning)
                 {
-                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(lockForward), rotateSensitivity * Time.deltaTime);
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(lockForward), rotateSensitivity * deltaTime);
                 }
                 else
                 {
                     Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-                    transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotateSensitivity * Time.deltaTime);
+                    transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotateSensitivity * deltaTime);
                 }
             }
             else
@@ -311,7 +315,7 @@ public class TPContraller : MonoBehaviour
                     if (moveDirection.sqrMagnitude > 0.001f)
                     {
                         Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-                        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotateSensitivity * Time.deltaTime);
+                        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotateSensitivity * deltaTime);
                     }
                 }
                 else
@@ -323,7 +327,7 @@ public class TPContraller : MonoBehaviour
                     if (moveDirection.sqrMagnitude > 0.001f)
                     {
                         Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-                        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotateSensitivity * Time.deltaTime);
+                        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotateSensitivity * deltaTime);
                     }
                 }
             }
@@ -379,12 +383,12 @@ public class TPContraller : MonoBehaviour
                     _animator.SetTrigger("DangerJump");
                 }
             }
-            verticalVelocity += gravity * Time.deltaTime;
+            verticalVelocity += gravity * deltaTime;
             Vector3 velocity = moveSpeed * moveDirection;
             velocity.y = Mathf.Max(verticalVelocity, -100);
             if (_characterController != null)
             {
-                _characterController.Move(velocity * Time.deltaTime);
+                _characterController.Move(velocity * deltaTime);
             }
             if (_animator != null)
             {
@@ -393,12 +397,12 @@ public class TPContraller : MonoBehaviour
         }
         else
         {
-            verticalVelocity += gravity * Time.deltaTime;
+            verticalVelocity += gravity * deltaTime;
             Vector3 velocity = Vector3.zero;
             velocity.y = Mathf.Max(verticalVelocity, -100);
             if (_characterController != null)
             {
-                _characterController.Move(velocity * Time.deltaTime);
+                _characterController.Move(velocity * deltaTime);
             }
             if (_animator != null)
             {
