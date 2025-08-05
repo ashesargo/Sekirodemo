@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using UnityEditor;
+using UnityEngine;
 
 public class PlayerStatus : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class PlayerStatus : MonoBehaviour
     TPContraller _TPContraller;
     PlayerGrapple _playerGrapple;
     public HitState currentHitState;
+    AnimatorStateInfo stateInfo;
     public enum HitState
     {
         Hit = 0,
@@ -32,11 +34,12 @@ public class PlayerStatus : MonoBehaviour
         {
             healthController = gameObject.AddComponent<HealthPostureController>();
         }
+        stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+
     }
 
     public void TakeDamage(float damage)
     {
-        AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
         if (isDeath || _playerGrapple.IsGrappling() || stateInfo.IsTag("Execution")) return; // 死亡後不再受傷
         if (stateInfo.IsTag("Parry"))
         {
@@ -76,6 +79,7 @@ public class PlayerStatus : MonoBehaviour
         {
             isDeath = true;
             _animator.Play("Death", 0, 0f); // 直接播放 Death 動畫
+            _animator.Update(0f);
             _animator.SetBool("Death", true); // 設置 Death 參數，確保動畫控制器保持死亡狀態
         }
         else if (GetCurrentHP() > 0)
@@ -83,6 +87,15 @@ public class PlayerStatus : MonoBehaviour
             if (currentHitState == HitState.Parry) return;
             if (currentHitState == HitState.Guard) _animator.SetTrigger("GuardHit");
             else _animator.SetTrigger("Hit");
+        }
+    }
+    private void Update()
+    {
+        stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+        if (isDeath && !stateInfo.IsTag("Death"))
+        {
+            _animator.Play("Death", 0, 0f); // 直接播放 Death 動畫
+            _animator.SetBool("Death", true); // 設置 Death 參數，確保動畫控制器保持死亡狀態
         }
     }
 
@@ -120,7 +133,7 @@ public class PlayerStatus : MonoBehaviour
         else if (GetCurrentHP() > 0)
         {
             // 播放危攻擊受傷動畫
-            _animator.SetTrigger("DangerousHit");
+            _animator.SetTrigger("Hit");
         }
     }
 
