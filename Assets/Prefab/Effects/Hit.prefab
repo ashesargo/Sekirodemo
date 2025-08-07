@@ -19510,9 +19510,9 @@ MonoBehaviour:
   playOnParticleEnd: 0
   avoidRepeat: 1
   volume: 0.3
-  randomVolume: 0
-  minVolume: 0.5
-  maxVolume: 0.8
+  randomVolume: 1
+  minVolume: 0.3
+  maxVolume: 0.5
   randomPitch: 0
   minPitch: 0.9
   maxPitch: 1.1

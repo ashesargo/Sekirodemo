@@ -19513,8 +19513,8 @@ MonoBehaviour:
   avoidRepeat: 1
   volume: 1
   randomVolume: 1
-  minVolume: 0.8
-  maxVolume: 1
+  minVolume: 0.6
+  maxVolume: 0.8
   randomPitch: 0
   minPitch: 0.9
   maxPitch: 1.1
